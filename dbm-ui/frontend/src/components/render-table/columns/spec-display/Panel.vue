@@ -21,51 +21,49 @@
     <slot />
     <template #content>
       <div class="spec-diaplay-panel">
-        <div class="title">
-          {{ data.name }} {{ $t('规格') }}
-        </div>
-        <div class="items">
-          <div class="item">
-            <div class="item__title">CPU：</div>
-            <div class="item__content">
+        <div class="spec-diaplay-panel-title">{{ data.name }} {{ t('规格') }}</div>
+        <div class="spec-diaplay-panel-content">
+          <div class="content-item">
+            <div class="item-title">CPU：</div>
+            <div class="item-content">
               {{
                 data.cpu.min === data.cpu.max
-                  ? $t('n核', { n: data.cpu.min })
-                  : $t('((n-m))核', { n: data.cpu.min, m: data.cpu.max })
+                  ? t('n核', { n: data.cpu.min })
+                  : t('((n-m))核', { n: data.cpu.min, m: data.cpu.max })
               }}
             </div>
           </div>
-          <div class="item">
-            <div class="item__title">{{ $t('内存') }}：</div>
-            <div class="item__content">
+          <div class="content-item">
+            <div class="item-title">{{ t('内存') }}：</div>
+            <div class="item-content">
               {{ data.mem.min === data.mem.max ? data.mem.min : `(${data.mem.min}~${data.mem.max})` }} G
             </div>
           </div>
           <div
-            class="item"
+            class="content-item"
             style="align-items: flex-start">
-            <div class="item__title">{{ $t('磁盘') }}：</div>
-            <div class="item__content">
-              <div class="table">
-                <div class="head">
-                  <div class="head_one">
-                    {{ $t('挂载点') }}
+            <div class="item-title">{{ t('磁盘') }}：</div>
+            <div class="item-content">
+              <div class="disk-table">
+                <div class="table-head">
+                  <div class="head-one">
+                    {{ t('挂载点') }}
                   </div>
-                  <div class="head_two">
-                    {{ $t('最小容量(G)') }}
+                  <div class="head-two">
+                    {{ t('最小容量(G)') }}
                   </div>
-                  <div class="head_three">
-                    {{ $t('磁盘类别') }}
+                  <div class="head-three">
+                    {{ t('磁盘类别') }}
                   </div>
                 </div>
-                <div class="row">
-                  <div class="row_one">
+                <div class="table-row">
+                  <div class="row-one">
                     {{ data.storage_spec[0].mount_point }}
                   </div>
-                  <div class="row_two">
+                  <div class="row-two">
                     {{ data.storage_spec[0].size }}
                   </div>
-                  <div class="row_three">
+                  <div class="row-three">
                     {{ data.storage_spec[0].type }}
                   </div>
                 </div>
@@ -74,11 +72,11 @@
           </div>
           <div
             v-if="!hideQps"
-            class="item">
-            <div class="item__title">
-              {{ $t('单机 QPS') }}
+            class="content-item">
+            <div class="item-title">
+              {{ t('单机 QPS') }}
             </div>
-            <div class="item__content">
+            <div class="item-content">
               {{ data.qps.min === data.qps.max ? `${data.qps.min}/s` : `${data.qps.min}/s~${data.qps.max}/s` }}
             </div>
           </div>
@@ -88,6 +86,8 @@
   </BkPopover>
 </template>
 <script setup lang="ts">
+  import { useI18n } from 'vue-i18n';
+
   export interface SpecInfo {
     name: string;
     cpu: {
@@ -143,31 +143,11 @@
     }),
     hideQps: false,
   });
+
+  const { t } = useI18n();
 </script>
 <style lang="less" scoped>
-
-.spec-diaplay-panel {
-  display: flex;
-  width: 514px;
-  padding: 16px 24px 20px 16px;
-  margin-top: -12px;
-  margin-left: -12px;
-  background: #FFF;
-  border: 1px solid #DCDEE5;
-  box-shadow: 0 3px 6px 0 #00000029;
-  box-sizing: border-box;
-  flex-direction: column;
-
-  .title {
-    height: 20px;
-    margin-bottom: 18px;
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 20px;
-    color: #63656E;
-  }
-
-  .items {
+  .spec-diaplay-panel {
     display: flex;
     width: 514px;
     padding: 16px 24px 20px 16px;
@@ -179,62 +159,74 @@
     box-sizing: border-box;
     flex-direction: column;
 
-    .title {
+    .spec-diaplay-panel-title {
       height: 20px;
-      margin-bottom: 18px;
+      margin-bottom: 12px;
       font-size: 12px;
       font-weight: 700;
       line-height: 20px;
       color: #63656e;
     }
 
-    .items {
+    .spec-diaplay-panel-content {
       display: flex;
       flex-direction: column;
-      gap: 18px;
 
-      .item {
+      .content-title {
+        height: 20px;
+        margin-bottom: 18px;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 20px;
+        color: #63656e;
+      }
+
+      .content-item {
         display: flex;
         width: 100%;
         align-items: center;
+        line-height: 32px;
 
-        &__title {
-          min-width: 36px;
+        .item-title {
+          width: 80px;
           font-size: 12px;
           letter-spacing: 0;
           color: #63656e;
           text-align: right;
+          flex-shrink: 0;
         }
 
-        &__content {
+        .item-content {
           font-size: 12px;
           letter-spacing: 0;
           color: #313238;
 
-          .table {
+          .disk-table {
             display: flex;
             flex-direction: column;
+            margin-top: 10px;
 
-            .cell_common {
-              width: 200px;
+            .cell-common {
+              width: 160px;
               height: 42px;
-              padding: 11px 16px;
+              padding: 0 16px;
               border: 1px solid #dcdee5;
+              line-height: 42px;
             }
 
-            .head {
+            .table-head {
               display: flex;
               width: 100%;
               background: #f0f1f5;
 
-              &_one {
-                .cell_common();
+              .head-one {
+                .cell-common();
 
                 border-bottom: none;
               }
 
-              &_two {
-                .cell_common();
+              .head-two {
+                .cell-common();
 
                 width: 120px;
                 border-right: none;
@@ -242,32 +234,32 @@
                 border-left: none;
               }
 
-              &_three {
-                .cell_common();
+              .head-three {
+                .cell-common();
 
                 width: 120px;
                 border-bottom: none;
               }
             }
 
-            .row {
+            .table-row {
               display: flex;
               width: 100%;
 
-              &_one {
-                .cell_common();
+              .row-one {
+                .cell-common();
               }
 
-              &_two {
-                .cell_common();
+              .row-two {
+                .cell-common();
 
                 width: 120px;
                 border-right: none;
                 border-left: none;
               }
 
-              &_three {
-                .cell_common();
+              .row-three {
+                .cell-common();
 
                 width: 120px;
               }
@@ -276,6 +268,5 @@
         }
       }
     }
-   } 
   }
 </style>

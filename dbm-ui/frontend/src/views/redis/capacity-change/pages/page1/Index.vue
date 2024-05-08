@@ -67,6 +67,7 @@
   import { useI18n } from 'vue-i18n';
   import { useRouter } from 'vue-router';
 
+  import RedisModel from '@services/model/redis/redis';
   import { getRedisList } from '@services/source/redis';
   import { createTicket } from '@services/source/ticket';
   import { getClusterTypeToVersions } from '@services/source/version';
@@ -82,8 +83,6 @@
 
   import RenderData from './components/Index.vue';
   import RenderDataRow, { createRowData, type IDataRow, type InfoItem } from './components/Row.vue';
-
-  type RedisModel = ServiceReturnType<typeof getRedisList>['results'][number];
 
   const router = useRouter();
   const { currentBizId } = useGlobalBizs();
@@ -105,7 +104,57 @@
   const rowRefs = ref();
   const isShowMasterInstanceSelector = ref(false);
   const isSubmitting = ref(false);
-  const tableData = ref([createRowData()]);
+  // const tableData = ref([createRowData()]);
+  const tableData = ref([
+    {
+      rowKey: 'cache.kio-dbha-redistest.dba.db',
+      isLoading: false,
+      targetCluster: 'cache.kio-dbha-redistest.dba.db',
+      currentSepc: '16c_128g_600gb',
+      clusterId: 59,
+      bkCloudId: 0,
+      shardNum: 4,
+      groupNum: 2,
+      version: 'Redis-6',
+      clusterType: 'TwemproxyRedisInstance',
+      currentCapacity: {
+        used: 1,
+        total: 250,
+      },
+      spec: {
+        creator: 'admin',
+        updater: 'admin',
+        spec_id: 363,
+        spec_name: '16c_128g_600gb',
+        spec_cluster_type: 'TwemproxyRedisInstance',
+        spec_machine_type: 'tendiscache',
+        cpu: {
+          max: 32,
+          min: 16,
+        },
+        mem: {
+          max: 128,
+          min: 125,
+        },
+        device_class: ['S5.8XLARGE128'],
+        storage_spec: [
+          {
+            size: 600,
+            type: 'ALL',
+            mount_point: '/data',
+          },
+        ],
+        desc: '',
+        enable: true,
+        instance_num: 0,
+        qps: {},
+      },
+      machinePair: 2,
+      machineCount: 2,
+      targetShardNum: 0,
+      targetGroupNum: 0,
+    },
+  ]);
   const versionsMap = ref<Record<string, string[]>>({});
   const selectedClusters = shallowRef<{ [key: string]: Array<RedisModel> }>({ [ClusterTypes.REDIS]: [] });
 
@@ -147,6 +196,13 @@
       used: 1,
       total: data.cluster_capacity,
     },
+    spec: data.cluster_spec,
+    // machineType: data.machine_type,
+    machinePair: data.machine_pair_cnt,
+    machineNum: data.machine_pair_cnt, // TODO: ??
+    // shardNodeCount: data.shard_node_count,
+    targetShardNum: 0,
+    targetGroupNum: 0,
   });
 
   // 批量选择

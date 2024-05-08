@@ -29,38 +29,30 @@
     </td>
     <td style="padding: 0">
       <RenderText
-        :data="data.currentSepc"
+        :data="clusterTypeText"
         :is-loading="data.isLoading"
-        :placeholder="$t('选择集群后自动生成')" />
-    </td>
-    <td style="padding: 0">
-      <RenderText
-        :data="data.shardNum"
-        :is-loading="data.isLoading"
-        placeholder="--" />
-    </td>
-    <td style="padding: 0">
-      <RenderText
-        :data="data.groupNum"
-        :is-loading="data.isLoading"
-        placeholder="--" />
+        :placeholder="t('选择集群后自动生成')" />
     </td>
     <td style="padding: 0">
       <RenderCurrentCapacity
-        :data="data.currentCapacity"
-        :is-loading="data.isLoading" />
+        :data="data"
+        :is-loading="data.isLoading"
+        :placeholder="t('选择集群后自动生成')">
+      </RenderCurrentCapacity>
     </td>
     <td style="padding: 0">
       <RenderTargetCapacity
         ref="targetCapacityRef"
         :is-disabled="!data.targetCluster"
         :is-loading="data.isLoading"
-        :row-data="data" />
+        :row-data="data"
+        :v-model:is-original="isOriginal" />
     </td>
     <td style="padding: 0">
       <RenderSpecifyVersion
         ref="versionRef"
         :data="data.version"
+        :disabled="isOriginal"
         :is-loading="data.isLoading"
         :list="versionList" />
     </td>
@@ -78,8 +70,9 @@
 </template>
 <script lang="ts">
   import { ref } from 'vue';
+  import { useI18n } from 'vue-i18n';
 
-  import { RedisClusterTypes } from '@services/model/redis/redis';
+  import RedisModel, { RedisClusterTypes } from '@services/model/redis/redis';
 
   import OperateColumn from '@components/render-table/columns/operate-column/index.vue';
   import RenderText from '@components/render-table/columns/text-plain/index.vue';
@@ -115,6 +108,9 @@
     version?: string;
     clusterType?: RedisClusterTypes;
     switchMode?: OnlineSwitchType;
+    spec?: RedisModel['cluster_spec'];
+    machinePair: number;
+    machineCount: number;
   }
 
   export interface InfoItem {
@@ -142,6 +138,8 @@
     targetCluster: '',
     clusterId: 0,
     bkCloudId: 0,
+    machinePair: 0,
+    machineCount: 0,
   });
 </script>
 <script setup lang="ts">
@@ -169,10 +167,26 @@
 
   const emits = defineEmits<Emits>();
 
+  const { t } = useI18n();
+
   const clusterRef = ref();
   const versionRef = ref();
   const switchModeRef = ref();
   const targetCapacityRef = ref();
+  const isOriginal = ref(true);
+
+  const clusterTypeText = computed(() => {
+    // TODO 新增集群
+    const textMap: Record<string, string> = {
+      TwemproxyRedisInstance: 'TendisCache',
+      PredixyTendisplusCluster: 'Tendisplus',
+      TwemproxyTendisSSDInstance: 'TendisSSD',
+    };
+    if (props.data.clusterType) {
+      return textMap[props.data.clusterType];
+    }
+    return '';
+  });
 
   const versionList = computed(() => {
     if (Object.keys(props.versionsMap).length > 0 && props.data.clusterType) {

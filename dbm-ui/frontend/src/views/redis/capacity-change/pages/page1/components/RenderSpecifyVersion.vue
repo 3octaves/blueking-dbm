@@ -17,6 +17,7 @@
       <TableEditSelect
         ref="selectRef"
         v-model="localValue"
+        :disabled="disabled"
         :list="list"
         :placeholder="$t('请选择')"
         :rules="rules" />
@@ -30,6 +31,7 @@
   import TableEditSelect from '@views/redis/common/edit/Select.vue';
 
   interface Props {
+    disabled: boolean;
     data?: string;
     list?: {
       value: string;
