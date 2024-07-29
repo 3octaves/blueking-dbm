@@ -147,6 +147,7 @@ export interface MySQLInstanceCloneDetails {
     target: string;
     module: string;
     cluster_domain: string;
+    cluster_id: number;
   }[];
 }
 
