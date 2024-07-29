@@ -31,14 +31,21 @@
 
   const { t } = useI18n();
 
-  const dataList = computed(() => {
-    const { clusters, infos } = props.ticketDetails.details;
-    return infos.map(item => ({
-      immute_domain: clusters[item.cluster_id].immute_domain,
-      cluster_type_name: clusters[item.cluster_id].cluster_type_name,
-      ...item,
-    }));
-  });
+  const { clusters, infos } = props.ticketDetails.details;
+  const dataList: (RedisVersionUpgrade['infos'][number] & {
+    immute_domain: string,
+    cluster_type_name: string,
+  })[] = [];
+  infos.forEach(item => {
+    item.cluster_ids.forEach((id) => {
+      const clusterData = clusters[id];
+      dataList.push(Object.assign({
+        immute_domain: clusterData.immute_domain,
+        cluster_type_name: clusterData.cluster_type_name,
+        ...item,
+      }));
+    });
+  })
 
   const columns = [
     {
