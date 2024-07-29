@@ -34,5 +34,8 @@ export function generateMysqlRollbackCloneData(ticketData: TicketModel<MySQLRoll
     tables: item.tables,
     tablesIgnore: item.tables_ignore,
   }));
-  return Promise.resolve({ tableDataList });
+  return Promise.resolve({
+    tableDataList,
+    remark: ticketData.remark,
+  });
 }

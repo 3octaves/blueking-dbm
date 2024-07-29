@@ -54,6 +54,7 @@
     <OperateColumn
       :removeable="removeable"
       @add="handleAppend"
+      @clone="handleClone"
       @remove="handleRemove" />
   </tr>
 </template>
@@ -112,6 +113,7 @@
   interface Emits {
     (e: 'add', params: Array<IDataRow>): void;
     (e: 'remove'): void;
+    (e: 'clone', value: IDataRow): void;
     (e: 'clusterInputFinish', value: RedisModel): void;
   }
 
@@ -142,6 +144,21 @@
       return;
     }
     emits('remove');
+  };
+
+  const getRowData = () => [editRef.value!.getValue(), switchRef.value!.getValue()];
+
+  const handleClone = () => {
+    Promise.allSettled(getRowData()).then((rowData) => {
+      const [targetNum, switchMode] = rowData.map((item) => (item.status === 'fulfilled' ? item.value : item.reason));
+      emits('clone', {
+        ...props.data,
+        rowKey: random(),
+        isLoading: false,
+        targetNum: targetNum || '',
+        switchMode,
+      });
+    });
   };
 
   defineExpose<Exposes>({

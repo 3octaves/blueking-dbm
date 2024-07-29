@@ -36,7 +36,7 @@
   import TableEditSelect from '@views/redis/common/edit/Select.vue';
 
   interface Props {
-    data: number;
+    data?: number;
     selectList?: SelectItem[];
     isLoading?: boolean;
   }
@@ -50,6 +50,7 @@
   }
 
   const props = withDefaults(defineProps<Props>(), {
+    data: undefined,
     selectList: () => [],
     isLoading: false,
   });
@@ -71,7 +72,7 @@
   watch(
     () => props.data,
     () => {
-      localValue.value = props.data;
+      localValue.value = props.data ? props.data : '';
     },
     {
       immediate: true,
@@ -85,7 +86,10 @@
 
   defineExpose<Exposes>({
     getValue() {
-      return selectRef.value.getValue().then(() => localValue.value);
+      return selectRef.value
+        .getValue()
+        .then(() => localValue.value)
+        .catch(() => Promise.reject(localValue.value));
     },
   });
 </script>

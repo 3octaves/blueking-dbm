@@ -69,6 +69,7 @@
     <OperateColumn
       :removeable="removeable"
       @add="handleAppend"
+      @clone="handleClone"
       @remove="handleRemove" />
   </tr>
 </template>
@@ -136,6 +137,8 @@
     };
     targetShardNum?: number;
   }
+
+  export type IDataRowBatchKey = keyof Pick<IDataRow, 'dbVersion' | 'switchMode'>;
 
   export interface InfoItem {
     src_cluster: number;
@@ -208,6 +211,7 @@
   interface Emits {
     (e: 'add', params: Array<IDataRow>): void;
     (e: 'remove'): void;
+    (e: 'clone', value: IDataRow): void;
     (e: 'clusterInputFinish', value: RedisModel): void;
   }
 
@@ -244,6 +248,27 @@
       return;
     }
     emits('remove');
+  };
+
+  const getRowData = () => [
+    targetClusterTypeRef.value!.getValue(),
+    versionRef.value!.getValue(),
+    deployPlanRef.value!.getValue(),
+  ];
+
+  const handleClone = () => {
+    Promise.allSettled(getRowData()).then((rowData) => {
+      const [targetClusterType, version] = rowData.map((item) =>
+        item.status === 'fulfilled' ? item.value : item.reason,
+      );
+      emits('clone', {
+        ...props.data,
+        rowKey: random(),
+        isLoading: false,
+        dbVersion: version,
+        targetClusterType,
+      });
+    });
   };
 
   defineExpose<Exposes>({

@@ -160,7 +160,9 @@
     () => props.rowData.resource_spec?.backend_group.spec_id,
     (newSpecId) => {
       if (newSpecId) {
-        getResourceSpec({ spec_id: newSpecId }).then((specData) => {
+        getResourceSpec({
+          spec_id: newSpecId,
+        }).then((specData) => {
           const backend = props.rowData.resource_spec?.backend_group;
           handlePlanChange(newSpecId, {
             spec_id: newSpecId,

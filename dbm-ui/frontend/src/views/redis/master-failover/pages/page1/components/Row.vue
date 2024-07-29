@@ -49,6 +49,7 @@
     <OperateColumn
       :removeable="removeable"
       @add="handleAppend"
+      @clone="handleClone"
       @remove="handleRemove" />
   </tr>
 </template>
@@ -108,7 +109,8 @@
   interface Emits {
     (e: 'add', params: Array<IDataRow>): void;
     (e: 'remove'): void;
-    (e: 'onIpInputFinish', ipInfo: string, clusterId: number): void;
+    (e: 'clone', value: IDataRow): void;
+    (e: 'onIpInputFinish', value: string): void;
   }
 
   interface Exposes {
@@ -150,13 +152,26 @@
     emits('remove');
   };
 
+  const getRowData = () => [[hostRef.value!.getValue(true), instanceRef.value!.getValue(), slaveRef.value!.getValue()]];
+
+  const handleClone = () => {
+    Promise.allSettled(getRowData()).then((rowData) => {
+      const rowInfo = rowData.map((item) => (item.status === 'fulfilled' ? item.value : item.reason));
+      emits('clone', {
+        ...props.data,
+        rowKey: random(),
+        isLoading: false,
+      });
+    });
+  };
+
   defineExpose<Exposes>({
     getValue: async () => {
-      await Promise.all([hostRef.value!.getValue(true), instanceRef.value!.getValue(), slaveRef.value!.getValue()]);
-      const switchType = await switchModeRef.value!.getValue();
+      await Promise.all(getRowData());
+      // const switchType = await switchModeRef.value.getValue();
       return {
         cluster_ids: props.data.clusterIds,
-        online_switch_type: switchType,
+        // online_switch_type: switchType,
         pairs: [
           {
             redis_master: props.data.ip,

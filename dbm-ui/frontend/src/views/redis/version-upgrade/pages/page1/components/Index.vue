@@ -19,6 +19,7 @@
           :min-width="120"
           :width="450">
           <span>{{ t('目标集群') }}</span>
+          <span>{{ t('目标集群') }}</span>
           <template #append>
             <BkPopover
               :content="t('批量添加')"
@@ -41,6 +42,20 @@
           :min-width="150"
           :width="300">
           <span>{{ t('节点类型') }}</span>
+          <template #append>
+            <BatchEditColumn
+              v-model="batchEditShow.nodeType"
+              :data-list="selectList"
+              :title="t('节点类型')"
+              @change="(value) => handleBatchEditChange(value, 'nodeType')">
+              <span
+                v-bk-tooltips="t('统一设置：将该列统一设置为相同的值')"
+                class="batch-edit-btn"
+                @click="handleBatchEditShow('nodeType')">
+                <DbIcon type="bulk-edit" />
+              </span>
+            </BatchEditColumn>
+          </template>
         </RenderTableHeadColumn>
         <RenderTableHeadColumn
           :min-width="100"
@@ -87,22 +102,33 @@
 
   // import { getClusterVersions } from '@services/source/redisToolbox';
   // import BatchEditColumn from '@components/batch-edit-column/Index.vue';
+  // import { getClusterVersions } from '@services/source/redisToolbox';
+  import BatchEditColumn from '@components/batch-edit-column/Index.vue';
   import RenderTableHeadColumn from '@components/render-table/HeadColumn.vue';
   import RenderTable from '@components/render-table/Index.vue';
 
   // import type { IListItem } from '@views/redis/common/edit/Select.vue';
   // import type { IDataRowBatchKey } from './Row.vue';
-
   // interface Props {
   //   versionListParams: Pick<IDataRow, 'clusterType' | 'nodeType'>;
   // }
+  // import type { IListItem } from '@views/redis/common/edit/Select.vue';
+  import type { IDataRowBatchKey } from './Row.vue';
+
+  interface Props {
+    // versionListParams: Pick<IDataRow, 'clusterType' | 'nodeType'>;
+  }
 
   interface Emits {
     (e: 'showBatchSelector'): void;
+    (e: 'batchEdit', value: string | string[], filed: IDataRowBatchKey): void;
   }
 
   // defineProps<Props>();
 
+  // defineProps<Props>();
+
+  defineProps<Props>();
   const emits = defineEmits<Emits>();
 
   const { t } = useI18n();
@@ -113,10 +139,10 @@
   //     label: string;
   //   }[]
   // >([]);
-  // const batchEditShow = reactive({
-  //   nodeType: false,
-  //   targetVersion: false,
-  // });
+  const batchEditShow = reactive({
+    nodeType: false,
+    targetVersion: false,
+  });
 
   // const selectList = [
   //   {
@@ -148,8 +174,57 @@
   //   },
   // );
 
+  // const targetVersionList = ref<
+  //   {
+  //     value: string;
+  //     label: string;
+  //   }[]
+  // >([]);
+  // const batchEditShow = reactive({
+  //   nodeType: false,
+  //   targetVersion: false,
+  // });
+
+  const selectList = [
+    {
+      value: 'Proxy',
+      label: 'Proxy',
+    },
+    {
+      value: 'Backend',
+      label: 'Backend',
+    },
+  ];
+
+  // watch(
+  //   async () => props.versionListParams,
+  //   () => {
+  //     const { clusterType, nodeType } = props.versionListParams;
+  //     if (clusterType) {
+  //       getClusterVersions({
+  //         node_type: nodeType,
+  //         cluster_type: clusterType,
+  //       }).then((versionList) => {
+  //         targetVersionList.value = versionList.map((item) => ({
+  //           label: item,
+  //           value: item,
+  //           // disabled: versionList.includes(item),
+  //         }));
+  //       });
+  //     }
+  //   },
+  // );
+
   const handleShowBatchSelector = () => {
     emits('showBatchSelector');
+  };
+
+  const handleBatchEditShow = (key: IDataRowBatchKey) => {
+    batchEditShow[key] = !batchEditShow[key];
+  };
+
+  const handleBatchEditChange = (value: string | string[], filed: IDataRowBatchKey) => {
+    emits('batchEdit', value, filed);
   };
 </script>
 <style lang="less">

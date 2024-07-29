@@ -54,6 +54,7 @@
     <OperateColumn
       :removeable="removeable"
       @add="handleAppend"
+      @clone="handleClone"
       @remove="handleRemove" />
   </tr>
 </template>
@@ -63,8 +64,9 @@
   import OperateColumn from '@components/render-table/columns/operate-column/index.vue';
   import RenderSpec from '@components/render-table/columns/spec-display/Index.vue';
   import RenderText from '@components/render-table/columns/text-plain/index.vue';
-  import RenderCluster from '@views/redis/common/edit-field/RenderCluster.vue';
+
   import RenderHost from '@views/redis/common/edit-field/HostName.vue';
+  import RenderCluster from '@views/redis/common/edit-field/RenderCluster.vue';
   import type { SpecInfo } from '@views/redis/common/spec-panel/Index.vue';
 
   import { random } from '@utils';
@@ -119,6 +121,7 @@
   interface Emits {
     (e: 'add', params: Array<IDataRow>): void;
     (e: 'remove'): void;
+    (e: 'clone', value: IDataRow): void;
     (e: 'onIpInputFinish', value: string): void;
   }
 
@@ -149,6 +152,16 @@
       return;
     }
     emits('remove');
+  };
+
+  const handleClone = () => {
+    Promise.allSettled([hostRef.value.getValue()]).then((rowData) => {
+      emits('clone', {
+        ...props.data,
+        rowKey: random(),
+        isLoading: false,
+      });
+    });
   };
 
   defineExpose<Exposes>({
