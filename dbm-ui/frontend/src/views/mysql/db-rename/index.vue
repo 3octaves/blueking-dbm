@@ -214,7 +214,7 @@
           { t('源DB名') }
           <BatchEditColumn
             model-value={batchEditShow.from_database}
-            title={t('备份源')}
+            title={t('源DB名')}
             type='taginput'
             onChange={(value) => handleBatchEditChange(value, 'from_database')}>
             <span
@@ -244,7 +244,7 @@
           { t('新DB名') }
           <BatchEditColumn
             model-value={batchEditShow.to_database}
-            title={t('备份源')}
+            title={t('新DB名')}
             type='taginput'
             onChange={(value) => handleBatchEditChange(value, 'to_database')}>
             <span

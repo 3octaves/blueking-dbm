@@ -12,6 +12,12 @@
 -->
 
 <template>
+  <div class="ticket-details__info">
+    <div class="ticket-details__item">
+      <span class="ticket-details__item-label whole">{{ t('备注') }}：</span>
+      <span class="ticket-details__item-value">{{ ticketDetails.remark }}</span>
+    </div>
+  </div>
   <DbOriginalTable
     class="details-proxy-add__table"
     :columns="columns"
@@ -93,4 +99,5 @@
 
 <style lang="less" scoped>
   @import '@views/tickets/common/styles/DetailsTable.less';
+  @import '@views/tickets/common/styles/ticketDetails.less';
 </style>

@@ -24,6 +24,10 @@
     <div class="ticket-details__item">
       <span class="ticket-details__item-label">{{ t('自动修复') }}：</span>
       <span class="ticket-details__item-value">{{ isRepair }}</span>
+      <div class="ticket-details__item">
+        <span class="ticket-details__item-label">{{ t('备注') }}：</span>
+        <span class="ticket-details__item-value">{{ ticketDetails.remark }}</span>
+      </div>
     </div>
   </div>
   <DbOriginalTable

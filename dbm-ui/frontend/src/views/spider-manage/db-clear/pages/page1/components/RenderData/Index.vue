@@ -91,7 +91,7 @@
           <template #append>
             <BatchEditColumn
               v-model="batchEditShow.tablePatterns"
-              :title="t('忽略表名')"
+              :title="t('指定表名')"
               type="taginput"
               @change="(value) => handleBatchEditChange(value, 'tablePatterns')">
               <span

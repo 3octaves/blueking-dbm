@@ -73,7 +73,7 @@
             <BatchEditColumn
               v-model="batchEditShow.targetVersion"
               :data-list="targetVersionList"
-              :title="t('版本')"
+              :title="t('目标版本')"
               @change="(value) => handleBatchEditChange(value, 'targetVersion')">
               <span
                 v-bk-tooltips="t('统一设置：将该列统一设置为相同的值')"

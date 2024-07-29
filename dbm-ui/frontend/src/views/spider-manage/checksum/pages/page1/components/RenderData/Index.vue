@@ -64,7 +64,7 @@
           <template #append>
             <BatchEditColumn
               v-model="batchEditShow.dbPatterns"
-              :title="t('备份DB名')"
+              :title="t('校验DB名')"
               type="taginput"
               @change="(value) => handleBatchEditChange(value, 'dbPatterns')">
               <span
@@ -103,7 +103,7 @@
           <template #append>
             <BatchEditColumn
               v-model="batchEditShow.tablePatterns"
-              :title="t('备份表名')"
+              :title="t('校验表名')"
               type="taginput"
               @change="(value) => handleBatchEditChange(value, 'tablePatterns')">
               <span

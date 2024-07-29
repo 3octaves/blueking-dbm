@@ -52,7 +52,7 @@
           <template #append>
             <BatchEditColumn
               v-model="batchEditShow.databases"
-              :title="t('备份DB名')"
+              :title="t('构造 DB 名')"
               type="taginput"
               @change="(value) => handleBatchEditChange(value, 'databases')">
               <span
@@ -72,7 +72,7 @@
           <template #append>
             <BatchEditColumn
               v-model="batchEditShow.databasesIgnore"
-              :title="t('备份DB名')"
+              :title="t('忽略DB名')"
               type="taginput"
               @change="(value) => handleBatchEditChange(value, 'databasesIgnore')">
               <span
@@ -91,7 +91,7 @@
           <template #append>
             <BatchEditColumn
               v-model="batchEditShow.tables"
-              :title="t('备份DB名')"
+              :title="t('构造表名')"
               type="taginput"
               @change="(value) => handleBatchEditChange(value, 'tables')">
               <span
@@ -111,7 +111,7 @@
           <template #append>
             <BatchEditColumn
               v-model="batchEditShow.tablesIgnore"
-              :title="t('备份DB名')"
+              :title="t('忽略表名')"
               type="taginput"
               @change="(value) => handleBatchEditChange(value, 'tablesIgnore')">
               <span
