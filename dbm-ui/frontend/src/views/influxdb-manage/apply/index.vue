@@ -54,7 +54,7 @@
             query-key="influxdb" />
         </BkFormItem>
         <BkFormItem
-          :label="t('服务器选择')"
+          :label="t('主机选择方式')"
           property="details.ip_source"
           required>
           <BkRadioGroup v-model="formdata.details.ip_source">
@@ -62,7 +62,7 @@
               {{ t('自动从资源池匹配') }}
             </BkRadioButton>
             <BkRadioButton label="manual_input">
-              {{ t('业务空闲机') }}
+              {{ t('业务空闲机手动选择') }}
             </BkRadioButton>
           </BkRadioGroup>
         </BkFormItem>

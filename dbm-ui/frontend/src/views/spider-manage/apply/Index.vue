@@ -44,6 +44,8 @@
           <ModuleItem
             v-model="formdata.details.db_module_id"
             :biz-id="formdata.bk_biz_id" />
+          <IpSource v-model="formdata.details.ip_source" />
+          <Test />
           <BkFormItem
             :label="t('接入层Master')"
             required>
@@ -151,9 +153,11 @@
   import CloudItem from '@components/apply-items/CloudItem.vue';
   import ClusterAlias from '@components/apply-items/ClusterAlias.vue';
   import ClusterName from '@components/apply-items/ClusterName.vue';
+  import IpSource from '@components/apply-items/IpSource.vue';
   import RegionItem from '@components/apply-items/RegionItem.vue';
   import SpecSelector from '@components/apply-items/SpecSelector.vue';
 
+  import Test from './components/ip-resource-content/ResourceInput.vue';
   import ModuleItem from './components/ModuleItem.vue';
 
   const route = useRoute();
@@ -167,6 +171,7 @@
     remark: '',
     ticket_type: 'TENDBCLUSTER_APPLY',
     details: {
+      ip_source: 'resource_pool',
       bk_cloud_id: 0,
       db_app_abbr: '',
       cluster_name: '',

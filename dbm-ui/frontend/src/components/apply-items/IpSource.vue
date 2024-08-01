@@ -13,7 +13,7 @@
 
 <template>
   <BkFormItem
-    :label="t('服务器选择')"
+    :label="t('主机选择方式')"
     property="details.ip_source"
     required>
     <BkRadioGroup v-model="modelValue">
@@ -24,7 +24,7 @@
         {{ t('资源池手动选择') }}
       </BkRadioButton>
       <BkRadioButton label="manual_input">
-        {{ t('业务空闲机') }}
+        {{ t('业务空闲机手动选择') }}
       </BkRadioButton>
     </BkRadioGroup>
   </BkFormItem>
@@ -33,9 +33,9 @@
 <script setup lang="ts">
   import { useI18n } from 'vue-i18n';
 
-  defineProps<Props>();
+  // defineProps<Props>();
   const modelValue = defineModel<string>({
-    default: '',
+    default: 'resource_pool',
   });
 
   const { t } = useI18n();

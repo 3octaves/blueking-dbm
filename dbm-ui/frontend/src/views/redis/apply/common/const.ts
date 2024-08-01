@@ -28,7 +28,7 @@ export const redisIpSources = {
   },
   manual_input: {
     id: 'manual_input',
-    text: t('业务空闲机'),
+    text: t('业务空闲机手动选择'),
   },
 };
 export type RedisIpSources = keyof typeof redisIpSources;

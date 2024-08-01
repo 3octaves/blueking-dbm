@@ -195,7 +195,7 @@
               :ticket-type="dbType" />
           </BkFormItem>
           <BkFormItem
-            :label="t('服务器选择')"
+            :label="t('主机选择方式')"
             property="details.ip_source"
             required>
             <BkRadioGroup v-model="formdata.details.ip_source">
@@ -203,7 +203,7 @@
                 {{ t('自动从资源池匹配') }}
               </BkRadioButton>
               <BkRadioButton label="manual_input">
-                {{ t('业务空闲机') }}
+                {{ t('业务空闲机手动选择') }}
               </BkRadioButton>
             </BkRadioGroup>
           </BkFormItem>
@@ -387,7 +387,7 @@
 
   import { useApplyBase, useTicketCloneInfo } from '@hooks';
 
-  import { ClusterTypes, mysqlType,type MysqlTypeString, TicketTypes } from '@common/const';
+  import { ClusterTypes, mysqlType, type MysqlTypeString, TicketTypes } from '@common/const';
   import { OSTypes } from '@common/const';
   import { nameRegx } from '@common/regex';
 
@@ -473,7 +473,7 @@
         // nodes,
         remark,
         startMysqlPort,
-        singleSpecId
+        singleSpecId,
       } = cloneData;
 
       formdata.details.resource_spec.backend.affinity = affinity;
@@ -581,7 +581,10 @@
   });
   const hostNums = computed(() => {
     const { cluster_count: clusterCount, inst_num: instCount } = formdata.details;
-    if (clusterCount <= 0 || instCount <= 0) return 0;
+
+    if (clusterCount <= 0 || instCount <= 0) {
+      return 0;
+    }
     const nums = Math.ceil(clusterCount / instCount);
     return isSingleType ? nums : nums * 2;
   });
@@ -638,16 +641,16 @@
     proxy: (hostList: Array<any>) =>
       hostList.length !== hostNums.value
         ? t('xx共需n台', {
-          title: 'Proxy',
-          n: hostNums.value,
-        })
+            title: 'Proxy',
+            n: hostNums.value,
+          })
         : false,
     backend: (hostList: Array<any>) =>
       hostList.length !== hostNums.value
         ? t('xx共需n台', {
-          title: 'Master / Slave',
-          n: hostNums.value,
-        })
+            title: 'Master / Slave',
+            n: hostNums.value,
+          })
         : false,
   };
   const makeMapByHostId = (hostList: HostDetails[]) =>
@@ -869,8 +872,8 @@
     const moduleName = moduleInfo?.name ?? '';
     const moduleNameQuery = moduleName
       ? {
-        module_name: moduleName,
-      }
+          module_name: moduleName,
+        }
       : {};
     isBindModule.value = true;
     const url = router.resolve({

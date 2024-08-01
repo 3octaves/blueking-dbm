@@ -94,7 +94,7 @@
             v-model="state.formdata.details.proxy_pwd"
             property="details.proxy_pwd" />
           <BkFormItem
-            :label="t('服务器选择')"
+            :label="t('主机选择方式')"
             property="details.ip_source"
             required>
             <BkRadioGroup

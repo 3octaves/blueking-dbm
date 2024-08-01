@@ -115,7 +115,7 @@
             property="details.redis_pwd" />
           <BkFormItem
             v-if="!isAppend"
-            :label="t('服务器选择')"
+            :label="t('主机选择方式')"
             property="details.ip_source"
             required>
             <BkRadioGroup
