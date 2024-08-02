@@ -14,18 +14,54 @@
 <template>
   <tbody>
     <tr>
-      <td style="padding: 0;">
+      <td style="padding: 0">
         <RenderOriginalProxy
           ref="targetRef"
           :model-value="data.originProxyIp"
           @input-create="handleCreate"
           @input-finish="handleOriginProxyInputFinish" />
       </td>
-      <td style="padding: 0;">
+      <td style="padding: 0">
         <RenderTargetProxyIp
           ref="originRef"
           :cloud-id="data.originProxyIp?.bk_cloud_id ?? null"
           :disabled="!data.originProxyIp?.instance_address"
+          :model-value="data.targetProxyIp"
+          :target-ip="data.originProxyIp?.ip" />
+      </td>
+      <td style="padding: 0">
+        <RenderResourceInput
+          ref="originRef"
+          :cloud-info="{
+            id: data.originProxyIp?.bk_cloud_id,
+            name: '??',
+          }"
+          :disabled="!data.originProxyIp?.instance_address"
+          :host-num="1"
+          :model-value="data.targetProxyIp"
+          :target-ip="data.originProxyIp?.ip" />
+      </td>
+      <td style="padding: 0">
+        <RenderResourceInput
+          ref="originRef"
+          :cloud-info="{
+            id: data.originProxyIp?.bk_cloud_id,
+            name: '??',
+          }"
+          :disabled="!data.originProxyIp?.instance_address"
+          :host-num="1"
+          :model-value="data.targetProxyIp"
+          :target-ip="data.originProxyIp?.ip" />
+      </td>
+      <td style="padding: 0">
+        <RenderManualInput
+          ref="originRef"
+          :cloud-info="{
+            id: data.originProxyIp?.bk_cloud_id,
+            name: '??',
+          }"
+          :disabled="!data.originProxyIp?.instance_address"
+          :host-num="1"
           :model-value="data.targetProxyIp"
           :target-ip="data.originProxyIp?.ip" />
       </td>
@@ -39,7 +75,7 @@
           <div
             class="action-btn"
             :class="{
-              disabled: removeable
+              disabled: removeable,
             }"
             @click="handleRemove">
             <DbIcon type="minus-fill" />
@@ -50,57 +86,56 @@
   </tbody>
 </template>
 <script lang="ts">
-  import {  random } from '@utils';
+  import { random } from '@utils';
 
   export interface IProxyData {
-    cluster_id: number,
-    bk_host_id: number,
-    bk_cloud_id: number | null,
-    port: number,
-    ip: string,
-    instance_address: string
+    cluster_id: number;
+    bk_host_id: number;
+    bk_cloud_id: number | null;
+    port: number;
+    ip: string;
+    instance_address: string;
   }
 
   export interface IHostData {
-    bk_host_id: number,
-    bk_cloud_id: number,
-    ip: string,
+    bk_host_id: number;
+    bk_cloud_id: number;
+    ip: string;
   }
 
   export interface IDataRow {
     rowKey: string;
-    originProxyIp?: IProxyData,
-    targetProxyIp?: IHostData
+    originProxyIp?: IProxyData;
+    targetProxyIp?: IHostData;
   }
 
   // 创建表格数据
   export const createRowData = (data = {} as Partial<IDataRow>) => ({
     rowKey: random(),
-    originProxyIp: data.originProxyIp ?? {} as IDataRow['originProxyIp'],
-    targetProxyIp: data.targetProxyIp ?? {} as IDataRow['targetProxyIp'],
+    originProxyIp: data.originProxyIp ?? ({} as IDataRow['originProxyIp']),
+    targetProxyIp: data.targetProxyIp ?? ({} as IDataRow['targetProxyIp']),
   });
-
 </script>
 <script setup lang="ts">
-  import {
-    ref,
-  } from 'vue';
+  import { ref } from 'vue';
 
+  import RenderManualInput from './RenderManualInput.vue';
   import RenderOriginalProxy from './RenderOriginalProxy.vue';
+  import RenderResourceInput from './RenderResouceInput.vue';
   import RenderTargetProxyIp from './RenderTargetProxyIp.vue';
 
   interface Props {
-    data: IDataRow,
-    removeable: boolean,
+    data: IDataRow;
+    removeable: boolean;
   }
   interface Emits {
-    (e: 'add', params: Array<IDataRow>): void,
-    (e: 'remove'): void,
-    (e: 'originProxyInputFinish', value: IProxyData): void,
+    (e: 'add', params: Array<IDataRow>): void;
+    (e: 'remove'): void;
+    (e: 'originProxyInputFinish', value: IProxyData): void;
   }
 
-  interface Exposes{
-    getValue: () => Promise<any>
+  interface Exposes {
+    getValue: () => Promise<any>;
   }
 
   const props = defineProps<Props>();
@@ -115,16 +150,21 @@
   };
 
   const handleCreate = (list: Array<string>) => {
-    emits('add', list.map(instanceAddress => createRowData({
-      originProxyIp: {
-        cluster_id: 0,
-        bk_host_id: 0,
-        bk_cloud_id: null,
-        port: 0,
-        ip: '',
-        instance_address: instanceAddress,
-      },
-    })));
+    emits(
+      'add',
+      list.map((instanceAddress) =>
+        createRowData({
+          originProxyIp: {
+            cluster_id: 0,
+            bk_host_id: 0,
+            bk_cloud_id: null,
+            port: 0,
+            ip: '',
+            instance_address: instanceAddress,
+          },
+        }),
+      ),
+    );
   };
 
   const handleAppend = () => {
@@ -140,10 +180,7 @@
 
   defineExpose<Exposes>({
     getValue() {
-      return Promise.all([
-        targetRef.value.getValue(),
-        originRef.value.getValue(),
-      ]).then(([targetData, originData]) => ({
+      return Promise.all([targetRef.value.getValue(), originRef.value.getValue()]).then(([targetData, originData]) => ({
         ...targetData,
         ...originData,
       }));

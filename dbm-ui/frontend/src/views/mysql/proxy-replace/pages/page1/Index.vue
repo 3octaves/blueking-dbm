@@ -24,8 +24,10 @@
           {{ t('批量录入') }}
         </BkButton>
       </div>
+      <IpSource v-model="ipSource" />
       <RenderData
         class="mt16"
+        :ip-source="ipSource"
         @batch-select-cluster="handleShowBatchSelector">
         <RenderDataRow
           v-for="(item, index) in tableData"
@@ -96,34 +98,29 @@
     type InstanceSelectorValues,
     type PanelListType,
   } from '@components/instance-selector/Index.vue';
+  import IpSource from '@components/ip-source/Index.vue';
 
   import { messageError } from '@utils';
 
-  import BatchEntry, {
-    type IValue as IBatchEntryValue,
-  } from './components/BatchEntry.vue';
+  import BatchEntry, { type IValue as IBatchEntryValue } from './components/BatchEntry.vue';
   import RenderData from './components/RenderData/Index.vue';
-  import RenderDataRow, {
-    createRowData,
-    type IDataRow,
-    type IProxyData,
-  } from './components/RenderData/Row.vue';
+  import RenderDataRow, { createRowData, type IDataRow, type IProxyData } from './components/RenderData/Row.vue';
 
   interface InfoItem {
-    cluster_ids: string[],
+    cluster_ids: string[];
     origin_proxy: {
-      bk_biz_id: number,
-      bk_cloud_id: number,
-      bk_host_id: number,
-      ip: string,
-      port: number,
-    },
+      bk_biz_id: number;
+      bk_cloud_id: number;
+      bk_host_id: number;
+      ip: string;
+      port: number;
+    };
     target_proxy: {
-      bk_biz_id: number,
-      bk_cloud_id: number,
-      bk_host_id: number,
-      ip: string,
-    }
+      bk_biz_id: number;
+      bk_cloud_id: number;
+      bk_host_id: number;
+      ip: string;
+    };
   }
 
   // 检测列表是否为空
@@ -143,10 +140,7 @@
   useTicketCloneInfo({
     type: TicketTypes.MYSQL_PROXY_SWITCH,
     onSuccess(cloneData) {
-      const {
-        force,
-        tableDataList,
-      } = cloneData;
+      const { force, tableDataList } = cloneData;
       tableData.value = tableDataList;
       isSafe.value = force ? 1 : 0;
       window.changeConfirm = true;
@@ -156,8 +150,9 @@
   const rowRefs = ref();
   const isShowBatchProxySelector = ref(false);
   const isShowBatchEntry = ref(false);
-  const isSubmitting  = ref(false);
+  const isSubmitting = ref(false);
   const isSafe = ref(1);
+  const ipSource = ref('');
 
   const tableData = ref<Array<IDataRow>>([createRowData({})]);
   const selectedIntances = shallowRef<InstanceSelectorValues<TendbhaInstanceModel>>({ [ClusterTypes.TENDBHA]: [] });
@@ -248,8 +243,9 @@
     if (instanceAddress) {
       delete instanceMemo[instanceAddress];
       const clustersArr = selectedIntances.value[ClusterTypes.TENDBHA];
-      selectedIntances.value[ClusterTypes.TENDBHA] = clustersArr
-        .filter(item => item.instance_address !== instanceAddress);
+      selectedIntances.value[ClusterTypes.TENDBHA] = clustersArr.filter(
+        (item) => item.instance_address !== instanceAddress,
+      );
     }
     const dataList = [...tableData.value];
     dataList.splice(index, 1);
@@ -276,7 +272,7 @@
               infos.push(rowInfo);
             } else {
               // 集群ID去重合并
-              const targetInfo = infos.find(item => item.origin_proxy.ip === originProxyIp)!;
+              const targetInfo = infos.find((item) => item.origin_proxy.ip === originProxyIp)!;
               const newClusterIds = Array.from(new Set([...targetInfo.cluster_ids, ...rowInfo.cluster_ids]));
               targetInfo.cluster_ids = newClusterIds;
             }

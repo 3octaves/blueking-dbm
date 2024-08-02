@@ -25,8 +25,11 @@
         </template>
       </RenderTableHeadColumn>
       <RenderTableHeadColumn>
-        {{ $t('新Proxy主机') }}
+        {{ ipSource === 'resource_pool' ? $t('新 Proxy 主机数量') : $t('新Proxy主机') }}
       </RenderTableHeadColumn>
+      <RenderTableHeadColumn> 资源池主机(单) </RenderTableHeadColumn>
+      <RenderTableHeadColumn> 资源池主机 </RenderTableHeadColumn>
+      <RenderTableHeadColumn> 业务空闲机 </RenderTableHeadColumn>
       <RenderTableHeadColumn
         :required="false"
         :width="90">
@@ -42,10 +45,15 @@
   import RenderTableHeadColumn from '@views/mysql/common/render-table/HeadColumn.vue';
   import RenderTable from '@views/mysql/common/render-table/Index.vue';
 
+  interface Props {
+    ipSource: string;
+  }
+
   interface Emits {
     (e: 'batchSelectCluster'): void;
   }
 
+  defineProps<Props>();
   const emits = defineEmits<Emits>();
 
   const handleShowBatchSelectCluster = () => {
