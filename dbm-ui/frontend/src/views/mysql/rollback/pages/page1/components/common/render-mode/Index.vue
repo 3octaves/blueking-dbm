@@ -65,6 +65,7 @@
     clusterId: number;
     backupid?: string;
     backupSource?: string;
+    // backupType?: string;
     rollbackTime?: string;
   }
 
@@ -130,6 +131,22 @@
       immediate: true,
     },
   );
+
+  // watch(
+  //   () => props.backupType,
+  //   () => {
+  //     localBackupid.value = '';
+  //     localRollbackTime.value = '';
+
+  //     if (props.rollbackTime) {
+  //       localRollbackTime.value = props.rollbackTime;
+  //       localBackupType.value = 'REMOTE_AND_TIME';
+  //     }
+  //   },
+  //   {
+  //     immediate: true,
+  //   },
+  // );
 
   defineExpose<Exposes>({
     getValue() {

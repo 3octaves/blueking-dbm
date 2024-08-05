@@ -13,6 +13,7 @@
 
 <template>
   <tr>
+    <td style="padding: 0"></td>
     <td style="padding: 0">
       <RenderCluster
         ref="clusterRef"
