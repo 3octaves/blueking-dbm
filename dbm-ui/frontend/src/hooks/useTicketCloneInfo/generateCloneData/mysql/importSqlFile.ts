@@ -31,5 +31,6 @@ export function generateMysqlImportSqlFileCloneData(ticketData: TicketModel<MySQ
       ...item,
       rowKey: random(),
     })),
+    remark: ticketData.remark,
   });
 }

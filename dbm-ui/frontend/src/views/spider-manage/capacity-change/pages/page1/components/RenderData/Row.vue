@@ -164,9 +164,7 @@
 
   const handleClone = () => {
     Promise.allSettled(getRowData()).then((rowData) => {
-      const [clusterData, resourceSpecData, targetResourceSpecData] = rowData.map((item) =>
-        item.status === 'fulfilled' ? item.value : item.reason,
-      );
+      const rowInfo = rowData.map((item) => (item.status === 'fulfilled' ? item.value : item.reason));
       emits(
         'clone',
         createRowData({
@@ -175,7 +173,7 @@
             id: 0,
             name: localClusterData.value?.clusterSpec.spec_name ?? '',
           },
-          resource_spec: targetResourceSpecData.resource_spec,
+          resource_spec: rowInfo[2].resource_spec,
         }),
       );
     });
