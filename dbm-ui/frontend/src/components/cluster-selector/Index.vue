@@ -290,7 +290,7 @@
     },
     [ClusterTypes.MONGO_REPLICA_SET]: {
       id: ClusterTypes.MONGO_REPLICA_SET,
-      name: t('集群选择'),
+      name: t('副本集'),
       disabledRowConfig: [
         {
           handler: (data: T) => data.isOffline,
@@ -304,7 +304,7 @@
     },
     [ClusterTypes.MONGO_SHARED_CLUSTER]: {
       id: ClusterTypes.MONGO_SHARED_CLUSTER,
-      name: t('集群选择'),
+      name: t('分片集群'),
       disabledRowConfig: [
         {
           handler: (data: T) => data.isOffline,
@@ -333,6 +333,20 @@
     [ClusterTypes.SQLSERVER_HA]: {
       id: ClusterTypes.SQLSERVER_HA,
       name: t('集群选择'),
+      disabledRowConfig: [
+        {
+          handler: (data: T) => data.isOffline,
+          tip: t('集群已禁用'),
+        },
+      ],
+      multiple: true,
+      getResourceList: getHaClusterList,
+      tableContent: SqlserverHaTable,
+      resultContent: ResultPreview,
+    },
+    [ClusterTypes.TENDBSINGLE]: {
+      id: ClusterTypes.TENDBSINGLE,
+      name: t('单节点'),
       disabledRowConfig: [
         {
           handler: (data: T) => data.isOffline,
@@ -444,12 +458,15 @@
       activePanelObj.value = currentTab;
     }
     if (props.onlyOneType) {
-      selectedMap.value = Object.keys(selectedMap.value).reduce<Record<string, Record<string, any>>>((results, id) => {
-        Object.assign(results, {
-          [id]: {},
-        });
-        return results;
-      }, {});
+      selectedMap.value = Object.keys(selectedMap.value).reduce(
+        (results, id) => {
+          Object.assign(results, {
+            [id]: {},
+          });
+          return results;
+        },
+        {} as Record<string, Record<string, any>>,
+      );
     }
   };
 
