@@ -214,8 +214,8 @@
           { t('源DB名') }
           <BatchEditColumn
             model-value={batchEditShow.from_database}
-            title={t('备份源')}
-            type='taginput'
+            title={t('源DB名')}
+            type='input'
             onChange={(value) => handleBatchEditChange(value, 'from_database')}>
             <span
               v-bk-tooltips={t('统一设置：将该列统一设置为相同的值')}
@@ -244,8 +244,8 @@
           { t('新DB名') }
           <BatchEditColumn
             model-value={batchEditShow.to_database}
-            title={t('备份源')}
-            type='taginput'
+            title={t('新DB名')}
+            type='input'
             onChange={(value) => handleBatchEditChange(value, 'to_database')}>
             <span
               v-bk-tooltips={t('统一设置：将该列统一设置为相同的值')}

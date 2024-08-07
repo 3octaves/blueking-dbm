@@ -23,7 +23,7 @@
         ref="sepcRef"
         :cloud-id="data.cloudId"
         :cluster-type="data.clusterType"
-        :data="data.spec" />
+        :data="data.specId" />
     </td>
     <td style="padding: 0">
       <RenderTargetNumber
@@ -34,6 +34,7 @@
     </td>
     <OperateColumn
       :removeable="removeable"
+      show-clone
       @add="handleAppend"
       @clone="handleClone"
       @remove="handleRemove" />
@@ -59,6 +60,7 @@
     cloudId: number;
     bizId: number;
     spec?: SpecInfo;
+    specId?: number;
     targetNum?: string;
   }
 
@@ -126,12 +128,13 @@
 
   const handleClone = () => {
     Promise.allSettled(getRowData()).then((rowData) => {
-      const [specId, targetNum] = rowData.map((item) => (item.status === 'fulfilled' ? item.value : item.reason));
+      const [specData, targetNum] = rowData.map((item) => (item.status === 'fulfilled' ? item.value : item.reason));
       emits('clone', {
         ...props.data,
         rowKey: random(),
         isLoading: false,
         targetNum: targetNum.count,
+        specId: specData.spec_id,
       });
     });
   };

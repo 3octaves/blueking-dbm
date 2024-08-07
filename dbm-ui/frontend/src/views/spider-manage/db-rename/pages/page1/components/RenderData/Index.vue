@@ -34,7 +34,7 @@
           <template #append>
             <BatchEditColumn
               v-model="batchEditShow.fromDatabase"
-              :title="t('备份DB名')"
+              :title="t('源 DB 名')"
               type="input"
               @change="(value) => handleBatchEditChange(value, 'fromDatabase')">
               <span
@@ -53,7 +53,7 @@
           <template #append>
             <BatchEditColumn
               v-model="batchEditShow.toDatabase"
-              :title="t('备份DB名')"
+              :title="t('新 DB 名')"
               type="input"
               @change="(value) => handleBatchEditChange(value, 'toDatabase')">
               <span

@@ -66,7 +66,6 @@
 </template>
 
 <script setup lang="tsx">
-  import { InfoBox } from 'bkui-vue';
   import _ from 'lodash';
   import { useI18n } from 'vue-i18n';
   import { useRouter } from 'vue-router';
@@ -174,10 +173,11 @@
       masterCount,
       slaveCount,
       mntCount: item.spider_mnt.length,
-      spec: {
-        ...item.spider_master[0].spec_config,
-        count: 0,
-      },
+      // spec: {
+      // ...item.spider_master[0].spec_config,
+      // count: 0,
+      // },
+      specId: item.spider_master[0].spec_config.id,
       targetNum: '',
       spiderMasterList: item.spider_master,
       spiderSlaveList: item.spider_slave,
@@ -271,7 +271,6 @@
         mntCount: rowData.mntCount,
         spiderMasterList: rowData.spiderMasterList,
         spiderSlaveList: rowData.spiderSlaveList,
-        spec: rowData.spec,
         clusterType: rowData.clusterType,
       }),
     );

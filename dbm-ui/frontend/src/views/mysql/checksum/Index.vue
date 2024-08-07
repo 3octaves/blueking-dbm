@@ -323,7 +323,7 @@
       {
         validator: (values: string[]) => values.length > 0,
         message: t('请选择'),
-        trigger: 'blur',
+        trigger: 'change',
       },
     ],
   };
@@ -597,6 +597,7 @@
       spec_config: {
         id: 0,
       },
+      version: ''
     };
   }
 

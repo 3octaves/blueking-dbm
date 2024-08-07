@@ -35,7 +35,7 @@
   }
 
   interface Emits {
-    (e: 'change', value: string): void;;
+    (e: 'change', value: string): void;
   }
 
   interface Exposes {

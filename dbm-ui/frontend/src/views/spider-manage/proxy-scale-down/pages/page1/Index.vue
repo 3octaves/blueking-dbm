@@ -86,8 +86,7 @@
   import { getSpiderList } from '@services/source/spider';
   import { createTicket } from '@services/source/ticket';
 
-  import { useTicketCloneInfo } from '@hooks';
-
+  // import { useTicketCloneInfo } from '@hooks';
   import { useGlobalBizs } from '@stores';
 
   import { ClusterTypes, TicketTypes } from '@common/const';
@@ -105,15 +104,15 @@
   const { currentBizId } = useGlobalBizs();
 
   // 单据克隆
-  useTicketCloneInfo({
-    type: TicketTypes.TENDBCLUSTER_SPIDER_REDUCE_NODES,
-    onSuccess(cloneData) {
-      tableData.value = cloneData.tableDataList;
-      isIgnoreBusinessAccess.value = cloneData.isSafe;
-      remark.value = cloneData.remark;
-      window.changeConfirm = true;
-    },
-  });
+  // useTicketCloneInfo({
+  //   type: TicketTypes.TENDBCLUSTER_SPIDER_REDUCE_NODES,
+  //   onSuccess(cloneData) {
+  //     tableData.value = cloneData.tableDataList;
+  //     isIgnoreBusinessAccess.value = cloneData.isSafe;
+  //     remark.value = cloneData.remark;
+  //     window.changeConfirm = true;
+  //   },
+  // });
 
   const rowRefs = ref();
   const isShowClusterSelector = ref(false);

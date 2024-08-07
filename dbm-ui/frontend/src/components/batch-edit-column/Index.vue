@@ -9,53 +9,59 @@
     <template #content>
       <div class="batch-edit-column-select">
         <div class="main-title">{{ t('统一设置') }}{{ title }}</div>
-        <div
-          class="title-spot edit-title"
-          style="font-weight: normal">
-          {{ title }} <span class="required" />
+        <slot
+          v-if="slots.content"
+          name="content" />
+        <div v-else>
+          <div
+            class="title-spot edit-title"
+            style="font-weight: normal">
+            {{ title }} <span class="required" />
+          </div>
+          <BkSelect
+            v-if="type === 'select'"
+            :clearable="false"
+            :disabled="disabled"
+            filterable
+            :list="dataList"
+            :model-value="localValue"
+            @change="handleChange" />
+          <BkInput
+            v-else-if="type === 'textarea'"
+            :model-value="localValue as string"
+            :placeholder="placeholder"
+            :rows="5"
+            type="textarea"
+            @change="handleChange" />
+          <BkInput
+            v-else-if="type === 'input'"
+            :disabled="disabled"
+            :model-value="localValue as string"
+            @change="handleChange" />
+          <BkInput
+            v-else-if="type === 'number-input'"
+            :disabled="disabled"
+            :model-value="localValue as string"
+            type="number"
+            @change="handleChange" />
+          <BkTagInput
+            v-else-if="type === 'taginput'"
+            allow-auto-match
+            allow-create
+            :disabled="disabled"
+            has-delete-icon
+            :model-value="localValue as string[]"
+            @change="handleChange" />
+          <BkDatePicker
+            v-else-if="type === 'datetime'"
+            :clearable="false"
+            :disabled="disabled"
+            :disabled-date="disableFn"
+            :model-value="localValue as string"
+            type="datetime"
+            @change="handleChange">
+          </BkDatePicker>
         </div>
-        <BkSelect
-          v-if="type === 'select'"
-          :clearable="false"
-          :disabled="disabled"
-          filterable
-          :list="dataList"
-          :model-value="localValue"
-          @change="handleChange" />
-        <BkInput
-          v-else-if="type === 'textarea'"
-          :model-value="localValue as string"
-          :placeholder="placeholder"
-          :rows="5"
-          type="textarea"
-          @change="handleChange" />
-        <BkInput
-          v-else-if="type === 'input'"
-          :disabled="disabled"
-          :model-value="localValue as string"
-          @change="handleChange" />
-        <BkInput
-          v-else-if="type === 'number-input'"
-          :disabled="disabled"
-          :model-value="localValue as string"
-          type="number"
-          @change="handleChange" />
-        <BkTagInput
-          v-else-if="type === 'taginput'"
-          allow-create
-          :disabled="disabled"
-          has-delete-icon
-          :model-value="localValue as string[]"
-          @change="handleChange" />
-        <BkDatePicker
-          v-else-if="type === 'datetime'"
-          :clearable="false"
-          :disabled="disabled"
-          :disabled-date="disableFn"
-          :model-value="localValue as string"
-          type="datetime"
-          @change="handleChange">
-        </BkDatePicker>
       </div>
     </template>
   </BkPopConfirm>
@@ -92,7 +98,7 @@
   const isShow = defineModel<boolean>({
     default: false,
   });
-  // const slots = useSlots();
+  const slots = useSlots();
 
   const { t } = useI18n();
 

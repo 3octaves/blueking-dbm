@@ -24,15 +24,12 @@ export async function generateSpiderProxyScaleDownCloneData(ticketData: TicketMo
   const clusterListResult = await getSpiderList({
     cluster_ids: infos.map((item) => item.cluster_id),
   });
-  const clusterListMap = clusterListResult.results.reduce(
-    (obj, item) => {
-      Object.assign(obj, {
-        [item.id]: item,
-      });
-      return obj;
-    },
-    {} as Record<number, SpiderModel>,
-  );
+  const clusterListMap = clusterListResult.results.reduce<Record<number, SpiderModel>>((obj, item) => {
+    Object.assign(obj, {
+      [item.id]: item,
+    });
+    return obj;
+  }, {});
 
   const tableDataList = infos.map((item) => {
     const clusterItem = clusterListMap[item.cluster_id];
@@ -43,7 +40,7 @@ export async function generateSpiderProxyScaleDownCloneData(ticketData: TicketMo
     return {
       rowKey: random(),
       isLoading: false,
-      cluster: clusterItem.cluster_name,
+      cluster: clusterItem.master_domain,
       clusterId: item.cluster_id,
       bkCloudId: clusterItem.bk_cloud_id,
       nodeType: item.reduce_spider_role,

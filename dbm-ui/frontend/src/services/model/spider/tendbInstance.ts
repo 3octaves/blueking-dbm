@@ -23,6 +23,7 @@ export default class TendbInstance {
   cluster_name: string;
   create_at: string;
   db_module_id: number;
+  db_module_name: string;
   id: number;
   instance_address: string;
   ip: string;
@@ -55,6 +56,7 @@ export default class TendbInstance {
     this.cluster_type = payload.cluster_type;
     this.create_at = payload.create_at;
     this.db_module_id = payload.db_module_id;
+    this.db_module_name = payload.db_module_name;
     this.id = payload.id;
     this.instance_address = payload.instance_address;
     this.ip = payload.ip;

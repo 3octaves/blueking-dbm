@@ -59,6 +59,7 @@
     </td> -->
     <OperateColumn
       :removeable="removeable"
+      show-clone
       @add="handleAppend"
       @clone="handleClone"
       @remove="handleRemove" />
@@ -163,7 +164,7 @@
   };
 
   const handleClone = () => {
-    Promise.allSettled([hostRef.value.getValue()]).then((rowData) => {
+    Promise.allSettled([hostRef.value!.getValue()]).then((rowData) => {
       emits('clone', {
         ...props.data,
         rowKey: random(),

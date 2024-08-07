@@ -63,7 +63,7 @@ import {
   generateSpiderMasterSlaveSwapCloneData,
   generateSpiderPrivilegeCloneClientCloneData,
   generateSpiderPrivilegeCloneInstCloneData,
-  generateSpiderProxyScaleDownCloneData,
+  // generateSpiderProxyScaleDownCloneData,
   generateSpiderProxyScaleUpCloneData,
   generateSpiderProxySlaveApplyCloneData,
   // generateSpiderRollbackCloneData,
@@ -122,7 +122,7 @@ export const generateCloneDataHandlerMap = {
   [TicketTypes.REDIS_VERSION_UPDATE_ONLINE]: generateRedisRedisVersionUpgradeCloneData, // Redis 版本升级
   [TicketTypes.TENDBCLUSTER_APPLY]: generateSpiderApplyCloneData, // spider 集群部署
   [TicketTypes.TENDBCLUSTER_SPIDER_ADD_NODES]: generateSpiderProxyScaleUpCloneData, // Spider扩容接入层
-  [TicketTypes.TENDBCLUSTER_SPIDER_REDUCE_NODES]: generateSpiderProxyScaleDownCloneData, // Spider缩容接入层
+  // [TicketTypes.TENDBCLUSTER_SPIDER_REDUCE_NODES]: generateSpiderProxyScaleDownCloneData, // Spider缩容接入层
   [TicketTypes.TENDBCLUSTER_SPIDER_SLAVE_APPLY]: generateSpiderProxySlaveApplyCloneData, // Spider 部署只读接入层
   [TicketTypes.TENDBCLUSTER_SPIDER_MNT_APPLY]: generateSpiderAddMntDataCloneData, // Spider 添加运维节点
   [TicketTypes.TENDBCLUSTER_MASTER_SLAVE_SWITCH]: generateSpiderMasterSlaveSwapCloneData, // Spider remote 主从切换
@@ -131,7 +131,6 @@ export const generateCloneDataHandlerMap = {
   [TicketTypes.TENDBCLUSTER_DB_TABLE_BACKUP]: generateSpiderDbTableBackupCloneData, // Spider TenDBCluster 库表备份
   [TicketTypes.TENDBCLUSTER_FULL_BACKUP]: generateSpiderDbBackupCloneData, // Spider TenDBCluster 全备单据
   [TicketTypes.TENDBCLUSTER_NODE_REBALANCE]: generateSpiderCapacityChangeCloneData, // Spider 集群remote节点扩缩容
-  // [TicketTypes.TENDBCLUSTER_ROLLBACK_CLUSTER]: generateSpiderRollbackCloneData, // Spider 定点回档
   [TicketTypes.TENDBCLUSTER_FLASHBACK]: generateSpiderFlashbackCloneData, // Spider 闪回
   [TicketTypes.TENDBCLUSTER_TRUNCATE_DATABASE]: generateSpiderDbClearCloneData, // Spider tendbcluster 清档
   [TicketTypes.TENDBCLUSTER_CHECKSUM]: generateSpiderChecksumCloneData, // Spider checksum
