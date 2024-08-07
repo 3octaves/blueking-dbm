@@ -48,6 +48,7 @@ export async function generateRedisProxyScaleUpCloneData(ticketData: TicketModel
       },
       rowModelData: clusterListMap[item.cluster_id],
       cluster_type_name: clusterListMap[item.cluster_id].cluster_type_name,
+      selectedSpecId: item.resource_spec.proxy.spec_id,
     })),
     remark: ticketData.remark,
   };

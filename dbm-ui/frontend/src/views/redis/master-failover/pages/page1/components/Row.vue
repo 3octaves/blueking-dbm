@@ -48,6 +48,7 @@
     </td>
     <OperateColumn
       :removeable="removeable"
+      show-clone
       @add="handleAppend"
       @clone="handleClone"
       @remove="handleRemove" />
@@ -153,13 +154,11 @@
   };
 
   const getRowData = () => [
-    [
-      hostRef.value!.getValue(true),
-      // clusterRef.value.getValue(),
-      instanceRef.value!.getValue(),
-      slaveRef.value!.getValue(),
-      // switchModeRef.value.getValue(),
-    ],
+    hostRef.value!.getValue(true),
+    // clusterRef.value.getValue(),
+    instanceRef.value!.getValue(),
+    slaveRef.value!.getValue(),
+    switchModeRef.value!.getValue(),
   ];
 
   const handleClone = () => {
@@ -169,18 +168,18 @@
         ...props.data,
         rowKey: random(),
         isLoading: false,
-        switchMode: rowInfo[4],
+        switchMode: rowInfo[3],
       });
     });
   };
 
   defineExpose<Exposes>({
     getValue: async () => {
-      await Promise.all(getRowData());
-      const switchType = await switchModeRef.value!.getValue();
+      const rowInfo = await Promise.all(getRowData());
+      // const switchType = await switchModeRef.value!.getValue();
       return {
         cluster_ids: props.data.clusterIds,
-        online_switch_type: switchType,
+        online_switch_type: rowInfo[3],
         pairs: [
           {
             redis_master: props.data.ip,

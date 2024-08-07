@@ -37,7 +37,8 @@
         ref="sepcRef"
         :data="data.rowModelData"
         :is-loading="data.isLoading"
-        :select-list="specList" />
+        :select-list="specList"
+        :selected-spec-id="data.selectedSpecId" />
     </td>
     <td style="padding: 0">
       <RenderTargetNumber
@@ -49,6 +50,7 @@
     </td>
     <OperateColumn
       :removeable="removeable"
+      show-clone
       @add="handleAppend"
       @clone="handleClone"
       @remove="handleRemove" />
@@ -85,6 +87,7 @@
     targetNum?: string;
     clusterType?: string;
     rowModelData?: RedisModel;
+    selectedSpecId?: number;
   }
 
   export interface MoreDataItem {
@@ -234,6 +237,7 @@
         rowKey: random(),
         isLoading: false,
         targetNum: rowInfo[1] || '',
+        selectedSpecId: rowInfo[0],
       });
     });
   };

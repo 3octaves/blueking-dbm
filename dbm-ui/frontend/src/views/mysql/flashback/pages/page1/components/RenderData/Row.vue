@@ -23,13 +23,13 @@
     <td style="padding: 0">
       <RenderStartTime
         ref="startTimeRef"
-        :model-value="data.startTime" />
+        v-model="localStartTime" />
     </td>
     <td style="padding: 0">
       <RenderEndTime
         ref="endTimeRef"
-        :model-value="data.endTime"
-        :start-time="data.startTime" />
+        v-model="localEndTime"
+        :start-time="localStartTime" />
     </td>
     <td style="padding: 0">
       <RenderDbName
@@ -59,6 +59,7 @@
     </td>
     <OperateColumn
       :removeable="removeable"
+      show-clone
       @add="handleAppend"
       @clone="handleClone"
       @remove="handleRemove" />
@@ -134,6 +135,8 @@
   const tablesIgnoreRef = ref();
 
   const localClusterId = ref(0);
+  const localStartTime = ref<string>();
+  const localEndTime = ref<string>();
 
   watch(
     () => props.data,
@@ -146,6 +149,15 @@
       immediate: true,
     },
   );
+
+  watchEffect(() => {
+    localStartTime.value = props.data.startTime;
+  });
+
+  watchEffect(() => {
+    localEndTime.value = props.data.endTime;
+  });
+
   const handleClusterIdChange = (id: number) => {
     localClusterId.value = id;
   };

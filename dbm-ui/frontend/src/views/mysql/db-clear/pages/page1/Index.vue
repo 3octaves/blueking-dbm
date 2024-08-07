@@ -28,7 +28,7 @@
       </div>
       <RenderData
         class="mt16"
-        @batch-edit-truncate-type="handleBatchEditTruncateType"
+        @batch-edit="handleBatchEditColumn"
         @batch-select-cluster="handleShowBatchSelector">
         <RenderDataRow
           v-for="(item, index) in tableData"
@@ -37,6 +37,7 @@
           :data="item"
           :removeable="tableData.length < 2"
           @add="(payload: Array<IDataRow>) => handleAppend(index, payload)"
+          @clone="(payload: IDataRow) => handleClone(index, payload)"
           @remove="handleRemove(index)" />
       </RenderData>
       <div class="page-action-box">
@@ -49,6 +50,7 @@
           </BkCheckbox>
         </div>
       </div>
+      <TicketRemark v-model="remark" />
       <BatchInput
         v-model:is-show="isShowBatchInput"
         @change="handleBatchInput" />
@@ -97,12 +99,13 @@
   import { ClusterTypes, TicketTypes } from '@common/const';
 
   import ClusterSelector from '@components/cluster-selector/Index.vue';
+  import TicketRemark from '@components/ticket-remark/Index.vue';
 
   import { messageError } from '@utils';
 
   import BatchInput, { type InputItem } from './components/BatchInput.vue';
   import RenderData from './components/RenderData/Index.vue';
-  import RenderDataRow, { createRowData, type IDataRow } from './components/RenderData/Row.vue';
+  import RenderDataRow, { createRowData, type IDataRow, type IDataRowBatchKey } from './components/RenderData/Row.vue';
 
   const { t } = useI18n();
   const router = useRouter();
@@ -115,6 +118,7 @@
       const { isSafeStatus, tableDataList } = cloneData;
       tableData.value = tableDataList;
       isSafe.value = isSafeStatus;
+      remark.value = cloneData.remark;
       window.changeConfirm = true;
     },
   });
@@ -136,6 +140,7 @@
   const isSubmitting = ref(false);
   const isShowBatchInput = ref(false);
   const tableData = ref<Array<IDataRow>>([createRowData({})]);
+  const remark = ref('');
 
   const selectedClusters = shallowRef<{ [key: string]: Array<TendbhaModel> }>({
     [ClusterTypes.TENDBHA]: [],
@@ -207,17 +212,6 @@
     isShowBatchSelector.value = true;
   };
 
-  const handleBatchEditTruncateType = (value: string) => {
-    if (!value) {
-      return;
-    }
-    tableData.value.forEach((row) => {
-      Object.assign(row, {
-        truncateDataType: value,
-      });
-    });
-  };
-
   // 批量选择
   const handelClusterChange = (selected: { [key: string]: Array<TendbhaModel> }) => {
     selectedClusters.value = selected;
@@ -245,6 +239,17 @@
     window.changeConfirm = true;
   };
 
+  const handleBatchEditColumn = (value: string | string[], filed: IDataRowBatchKey) => {
+    if (!value || checkListEmpty(tableData.value)) {
+      return;
+    }
+    tableData.value.forEach((row) => {
+      Object.assign(row, {
+        [filed]: value,
+      });
+    });
+  };
+
   // 追加一个集群
   const handleAppend = (index: number, appendList: Array<IDataRow>) => {
     const dataList = [...tableData.value];
@@ -266,6 +271,16 @@
     }
   };
 
+  // 复制行数据
+  const handleClone = (index: number, sourceData: IDataRow) => {
+    const dataList = [...tableData.value];
+    dataList.splice(index + 1, 0, sourceData);
+    tableData.value = dataList;
+    setTimeout(() => {
+      rowRefs.value[rowRefs.value.length - 1].getValue();
+    });
+  };
+
   const handleSubmit = () => {
     isSubmitting.value = true;
     Promise.all(rowRefs.value.map((item: { getValue: () => Promise<any> }) => item.getValue()))
@@ -281,7 +296,7 @@
             clusterTypes[0] === ClusterTypes.TENDBHA
               ? TicketTypes.MYSQL_HA_TRUNCATE_DATA
               : TicketTypes.MYSQL_SINGLE_TRUNCATE_DATA,
-          remark: '',
+          remark: remark.value,
           details: {
             infos: data.map((item) =>
               Object.assign(item, {
@@ -310,6 +325,7 @@
 
   const handleReset = () => {
     tableData.value = [createRowData()];
+    remark.value = '';
     selectedClusters.value[ClusterTypes.TENDBHA] = [];
     selectedClusters.value[ClusterTypes.TENDBSINGLE] = [];
     domainMemo = {};

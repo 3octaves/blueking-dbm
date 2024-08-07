@@ -47,6 +47,7 @@
             @change="handleChange" />
           <BkTagInput
             v-else-if="type === 'taginput'"
+            allow-auto-match
             allow-create
             :disabled="disabled"
             has-delete-icon
@@ -106,11 +107,29 @@
 
   const disabled = computed(() => props.disableFn());
 
+  watch(
+    () => props.dataList,
+    () => {
+      localValue.value = '';
+    },
+  );
+
   const handleChange = (value: UnwrapRef<typeof localValue>) => {
     localValue.value = value;
   };
 
   const handleConfirm = () => {
+    if (props.type === 'taginput') {
+      // 组件内为200ms后失焦处理失焦的回调，这里将任务添加至失焦回调后，以获取最新值
+      setTimeout(() => {
+        handleConfirmChange();
+      }, 210);
+    } else {
+      handleConfirmChange();
+    }
+  };
+
+  const handleConfirmChange = () => {
     emits('change', localValue.value);
     isShow.value = false;
   };

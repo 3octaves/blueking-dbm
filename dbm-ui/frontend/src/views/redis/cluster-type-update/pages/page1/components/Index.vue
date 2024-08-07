@@ -139,6 +139,7 @@
       label: string;
     }[];
   }
+
   interface Emits {
     (e: 'showMasterBatchSelector'): void;
     (e: 'batchEdit', value: string | string[], filed: IDataRowBatchKey): void;

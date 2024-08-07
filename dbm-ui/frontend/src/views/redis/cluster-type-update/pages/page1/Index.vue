@@ -20,6 +20,7 @@
         :title="t('集群类型变更：通过部署新集群来实现原集群的类型变更，可以指定新的版本')" />
       <RenderData
         class="mt16"
+        :version-list="versionList"
         @batch-edit="handleBatchEditColumn"
         @show-master-batch-selector="handleShowMasterBatchSelector">
         <RenderDataRow
@@ -111,10 +112,13 @@
 </template>
 
 <script setup lang="ts">
+  import type { ComponentProps } from 'vue-component-type-helpers';
   import { useI18n } from 'vue-i18n';
+  import { useRequest } from 'vue-request';
   import { useRouter } from 'vue-router';
 
   import { RepairAndVerifyFrequencyModes, RepairAndVerifyModes } from '@services/model/redis/redis-dst-history-job';
+  import { listPackages } from '@services/source/package';
   import { getRedisList } from '@services/source/redis';
   import { createTicket } from '@services/source/ticket';
 
@@ -127,7 +131,11 @@
   import ClusterSelector, { type TabItem } from '@components/cluster-selector/Index.vue';
   import TicketRemark from '@components/ticket-remark/Index.vue';
 
-  import { repairAndVerifyFrequencyList, repairAndVerifyTypeList } from '@views/redis/common/const';
+  import {
+    clusterTypeMachineMap,
+    repairAndVerifyFrequencyList,
+    repairAndVerifyTypeList,
+  } from '@views/redis/common/const';
 
   import RenderData from './components/Index.vue';
   import RenderDataRow, {
@@ -157,43 +165,14 @@
     },
   });
 
-  const rowRefs = ref();
-  const isShowClusterSelector = ref(false);
-  const isSubmitting = ref(false);
-  const repairAndVerifyType = ref(RepairAndVerifyModes.DATA_CHECK_AND_REPAIR);
-  const repairAndVerifyFrequency = ref(RepairAndVerifyFrequencyModes.ONCE_AFTER_REPLICATION);
-  const tableData = ref([createRowData()]);
-  const remark = ref('');
-
-  const selectedClusters = shallowRef<{ [key: string]: Array<RedisModel> }>({ [ClusterTypes.REDIS]: [] });
-
-  const totalNum = computed(() => tableData.value.filter((item) => Boolean(item.srcCluster)).length);
-  const inputedClusters = computed(() => tableData.value.map((item) => item.srcCluster));
-
-  // const patchEditVersionList = computed(() => {
-  //   const tableDataList = tableData.value
-  //   if (tableDataList.length > 0) {
-  //     const clusterTypeList = []
-  //     for(let i = 0; i < tableDataList.length; i++) {
-  //       const dataItem = tableDataList[i]
-  //       if (!dataItem.clusterType) {
-  //         continue
-  //       }
-  //       clusterTypeList.push(dataItem.clusterType)
-  //       if (clusterTypeList.length > 1) {
-  //         return []
-  //       }
-  //     }
-  //     if (clusterTypeList.length === 1) {
-  //       return clusterTypesMap.value[clusterTypeList[0]].map(versionItem => ({
-  //         value: versionItem,
-  //         label: versionItem,
-  //       }))
-  //     }
-  //     return []
-  //   }
-  //   return []
-  // })
+  // 检测列表是否为空
+  const checkListEmpty = (list: Array<IDataRow>) => {
+    if (list.length > 1) {
+      return false;
+    }
+    const [firstRow] = list;
+    return !firstRow.srcCluster;
+  };
 
   // 集群域名是否已存在表格的映射表
   let domainMemo = {} as Record<string, boolean>;
@@ -213,14 +192,49 @@
     },
   } as unknown as Record<string, TabItem>;
 
-  // 检测列表是否为空
-  const checkListEmpty = (list: Array<IDataRow>) => {
-    if (list.length > 1) {
-      return false;
+  const rowRefs = ref();
+  const isShowClusterSelector = ref(false);
+  const isSubmitting = ref(false);
+  const repairAndVerifyType = ref(RepairAndVerifyModes.DATA_CHECK_AND_REPAIR);
+  const repairAndVerifyFrequency = ref(RepairAndVerifyFrequencyModes.ONCE_AFTER_REPLICATION);
+  const tableData = ref([createRowData()]);
+  const remark = ref('');
+
+  const selectedClusters = shallowRef<{ [key: string]: Array<RedisModel> }>({ [ClusterTypes.REDIS]: [] });
+  const versionList = shallowRef<ComponentProps<typeof RenderData>['versionList']>([]);
+
+  const totalNum = computed(() => tableData.value.filter((item) => Boolean(item.srcCluster)).length);
+  const inputedClusters = computed(() => tableData.value.map((item) => item.srcCluster));
+
+  const versionCluserType = computed(() => {
+    const tableDataList = tableData.value;
+    if (checkListEmpty(tableDataList)) {
+      return null;
     }
-    const [firstRow] = list;
-    return !firstRow.srcCluster;
-  };
+    const { clusterType } = tableDataList[0];
+    return tableDataList.slice(1).every((dataItem) => dataItem.clusterType === clusterType) ? clusterType : null;
+  });
+
+  const { run: fetchListPackages } = useRequest(listPackages, {
+    manual: true,
+    onSuccess(listResult) {
+      versionList.value = listResult.map((value) => ({
+        value,
+        label: value,
+      }));
+    },
+  });
+
+  watch(versionCluserType, () => {
+    if (versionCluserType.value) {
+      fetchListPackages({
+        db_type: 'redis',
+        query_key: clusterTypeMachineMap[versionCluserType.value] ?? 'redis',
+      });
+    } else {
+      versionList.value = [];
+    }
+  });
 
   // Master 批量选择
   const handleShowMasterBatchSelector = () => {

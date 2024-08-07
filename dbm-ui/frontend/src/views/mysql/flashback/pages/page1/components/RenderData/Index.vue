@@ -51,7 +51,7 @@
       <template #append>
         <BatchEditColumn
           v-model="batchEditShow.endTime"
-          :disable-fn="disabledStartTime"
+          :disable-fn="disabledEndTime"
           :title="t('截止时间')"
           type="datetime"
           @change="(value) => handleBatchEditChange(value, 'endTime')">

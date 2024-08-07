@@ -77,22 +77,27 @@
     },
   ];
 
-  watch(
-    () => props.modelValue,
-    () => {
-      if (props.modelValue) {
-        localValue.value = props.modelValue.ip;
-      }
-    },
-    {
-      immediate: true,
-    },
-  );
+  // watch(
+  //   () => props.modelValue,
+  //   () => {
+  //     if (props.modelValue) {
+  //       localValue.value = props.modelValue.ip;
+  //     }
+  //   },
+  //   {
+  //     immediate: true,
+  //   },
+  // );
 
   watch(
     () => props.clusterList,
     () => {
-      localValue.value = '';
+      if (props.modelValue) {
+        localValue.value = genHostKey(props.modelValue);
+      } else {
+        localValue.value = '';
+      }
+
       slaveHostSelectList.value = [];
       allSlaveHostList = [];
 
