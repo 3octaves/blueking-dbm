@@ -12,7 +12,6 @@
         <slot
           v-if="slots.content"
           name="content" />
-
         <div v-else>
           <div
             class="title-spot edit-title"
@@ -47,6 +46,7 @@
             @change="handleChange" />
           <BkTagInput
             v-else-if="type === 'taginput'"
+            allow-auto-match
             allow-create
             :disabled="disabled"
             has-delete-icon
@@ -105,6 +105,13 @@
   const localValue = ref<string | string[]>(props.type === 'taginput' ? [] : '');
 
   const disabled = computed(() => props.disableFn());
+
+  watch(
+    () => props.dataList,
+    () => {
+      localValue.value = '';
+    },
+  );
 
   const handleChange = (value: UnwrapRef<typeof localValue>) => {
     localValue.value = value;

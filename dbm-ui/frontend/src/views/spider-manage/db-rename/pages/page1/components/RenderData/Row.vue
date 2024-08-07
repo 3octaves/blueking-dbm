@@ -40,6 +40,7 @@
       </td>
       <OperateColumn
         :removeable="removeable"
+        show-clone
         @add="handleAppend"
         @clone="handleClone"
         @remove="handleRemove" />
@@ -148,7 +149,7 @@
 
   const handleClone = () => {
     Promise.allSettled(getRowData()).then((rowData) => {
-      const [clusterData, backupLocalData, dbPatternsData] = rowData.map((item) =>
+      const [clusterData, fromDatabaseData, toDatabaseData] = rowData.map((item) =>
         item.status === 'fulfilled' ? item.value : item.reason,
       );
       emits(
@@ -158,8 +159,8 @@
             id: clusterData.cluster_id,
             domain: '',
           },
-          fromDatabase: backupLocalData.from_database,
-          toDatabase: dbPatternsData.to_database,
+          fromDatabase: fromDatabaseData.from_database,
+          toDatabase: toDatabaseData.to_database,
         }),
       );
     });
@@ -167,10 +168,10 @@
 
   defineExpose<Exposes>({
     getValue() {
-      return Promise.all(getRowData()).then(([clusterData, backupLocalData, dbPatternsData]) => ({
+      return Promise.all(getRowData()).then(([clusterData, fromDatabaseData, toDatabaseData]) => ({
         ...clusterData,
-        ...backupLocalData,
-        ...dbPatternsData,
+        ...fromDatabaseData,
+        ...toDatabaseData,
       }));
     },
   });

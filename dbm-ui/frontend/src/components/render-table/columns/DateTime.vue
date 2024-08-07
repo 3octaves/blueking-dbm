@@ -82,7 +82,7 @@
   const attrs = useAttrs();
   const slots = useSlots();
 
-  const localValue = ref();
+  const localValue = ref<Props['modelValue']>();
 
   const { message: errorMessage, validator } = useValidtor(props.rules);
 
@@ -90,6 +90,9 @@
     () => props.modelValue,
     () => {
       localValue.value = props.modelValue;
+    },
+    {
+      immediate: true,
     },
   );
 

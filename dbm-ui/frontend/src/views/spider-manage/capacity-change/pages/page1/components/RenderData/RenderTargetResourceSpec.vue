@@ -222,6 +222,8 @@
                 spec_id: localSpec.value.spec_id,
                 count: localSpec.value.machine_pair,
                 affinity: '',
+                futureCapacity: localSpec.value.cluster_capacity,
+                specName: localSpec.value.spec_name,
               },
             },
           };

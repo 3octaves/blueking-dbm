@@ -224,7 +224,7 @@
       {
         validator: (value: string) => !!value,
         message: t('请选择'),
-        trigger: 'blur',
+        trigger: 'change',
       },
     ],
   };
