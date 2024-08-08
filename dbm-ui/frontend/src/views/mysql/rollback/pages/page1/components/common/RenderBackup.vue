@@ -79,9 +79,16 @@
 
   defineExpose<Exposes>({
     getValue() {
-      return editSelectRef.value!.getValue().then(() => ({
-        backup_source: localValue.value,
-      }));
+      return editSelectRef
+        .value!.getValue()
+        .then(() => ({
+          backup_source: localValue.value,
+        }))
+        .catch(() =>
+          Promise.reject({
+            backup_source: localValue.value,
+          }),
+        );
     },
   });
 </script>

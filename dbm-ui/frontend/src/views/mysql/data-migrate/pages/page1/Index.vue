@@ -28,9 +28,11 @@
           :data="item"
           :removeable="tableData.length < 2"
           @add="(payload: Array<IDataRow>) => handleAppend(index, payload)"
+          @clone="(payload: IDataRow) => handleClone(index, payload)"
           @cluster-input-finish="(domain: string) => handleChangeCluster(index, domain)"
           @remove="() => handleRemove(index)" />
       </RenderData>
+      <TicketRemark v-model="remark" />
     </div>
     <template #action>
       <BkButton
@@ -74,6 +76,7 @@
   import { ClusterTypes, TicketTypes } from '@common/const';
 
   import ClusterSelector from '@components/cluster-selector/Index.vue';
+  import TicketRemark from '@components/ticket-remark/Index.vue';
 
   import RenderData from './components/Index.vue';
   import RenderDataRow, { createRowData, type IDataRow, type InfoItem } from './components/Row.vue';
@@ -97,6 +100,7 @@
   const isShowBatchSelector = ref(false);
   const isSubmitting = ref(false);
   const tableData = ref<Array<IDataRow>>([createRowData()]);
+  const remark = ref('');
 
   const selectedClusters = shallowRef<Record<string, TendbhaModel[]>>({
     [ClusterTypes.TENDBHA]: [],
@@ -198,6 +202,16 @@
     }
   };
 
+  // 复制行数据
+  const handleClone = (index: number, sourceData: IDataRow) => {
+    const dataList = [...tableData.value];
+    dataList.splice(index + 1, 0, sourceData);
+    tableData.value = dataList;
+    setTimeout(() => {
+      rowRefs.value[rowRefs.value.length - 1].getValue();
+    });
+  };
+
   const handleSubmit = async () => {
     const infos = await Promise.all(
       rowRefs.value.map((item: { getValue: () => Promise<InfoItem> }) => item.getValue()),
@@ -206,6 +220,7 @@
     const params = {
       bk_biz_id: currentBizId,
       ticket_type: TicketTypes.MYSQL_DATA_MIGRATE,
+      remark: remark.value,
       details: {
         infos,
       },

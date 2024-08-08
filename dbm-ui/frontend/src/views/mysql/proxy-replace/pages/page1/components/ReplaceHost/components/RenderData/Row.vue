@@ -172,6 +172,7 @@
         ...targetData,
         ...relatedInstancesData,
         ...originData,
+        ...targetData,
       }));
     },
   });

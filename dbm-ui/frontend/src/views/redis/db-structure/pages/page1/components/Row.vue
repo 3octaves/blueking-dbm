@@ -56,15 +56,18 @@
     <OperateColumn
       :removeable="removeable"
       @add="handleAppend"
+      @clone="handleClone"
       @remove="handleRemove" />
   </tr>
 </template>
 <script lang="ts">
   import { useI18n } from 'vue-i18n';
+
   import RedisModel from '@services/model/redis/redis';
-  import RenderText from '@components/render-table/columns/text-plain/index.vue';
+
   import OperateColumn from '@components/render-table/columns/operate-column/index.vue';
   import RenderSpec from '@components/render-table/columns/spec-display/Index.vue';
+  import RenderText from '@components/render-table/columns/text-plain/index.vue';
 
   import RenderTargetCluster from '@views/redis/common/edit-field/ClusterName.vue';
   import type { SpecInfo } from '@views/redis/common/spec-panel/Index.vue';
@@ -88,6 +91,8 @@
     hostNum?: string;
     targetDateTime?: string;
   }
+
+  export type IDataRowBatchKey = keyof Pick<IDataRow, 'hostNum' | 'targetDateTime'>;
 
   export interface InfoItem {
     cluster_id: number;
@@ -123,6 +128,7 @@
   interface Emits {
     (e: 'add', params: Array<IDataRow>): void;
     (e: 'remove'): void;
+    (e: 'clone', value: IDataRow): void;
     (e: 'clusterInputFinish', value: RedisModel): void;
   }
 
@@ -161,6 +167,27 @@
       return;
     }
     emits('remove');
+  };
+
+  const getRowData = (): [Promise<string[]>, Promise<string>, Promise<string>] => [
+    instanceRef.value!.getValue(),
+    hostNumRef.value!.getValue(),
+    timeRef.value!.getValue(),
+  ];
+
+  const handleClone = () => {
+    Promise.allSettled(getRowData()).then((rowData) => {
+      const [instances, hostNum, targetDateTime] = rowData.map((item) =>
+        item.status === 'fulfilled' ? item.value : item.reason,
+      );
+      emits('clone', {
+        ...props.data,
+        rowKey: random(),
+        isLoading: false,
+        hostNum,
+        targetDateTime,
+      });
+    });
   };
 
   defineExpose<Exposes>({
