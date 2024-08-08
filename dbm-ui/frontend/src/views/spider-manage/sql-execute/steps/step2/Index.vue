@@ -112,12 +112,12 @@
         </BKTableColumn>
         <BKTableColumn :label="t('失败原因')">
           <template #default="{ data }">
-            <div style="font-size: 12px; font-weight: bold; color: #ea3636; line-height: 22px">
+            <div style="font-size: 12px; font-weight: bold; line-height: 22px; color: #ea3636">
               {{ data.file_name }}
             </div>
             <MultLineText
               :line="3"
-              style="color: #63656e; line-height: 20px; margin-top: 4px">
+              style="margin-top: 4px; line-height: 20px; color: #63656e">
               {{ data.err_msg }}
             </MultLineText>
           </template>
@@ -243,7 +243,6 @@
       details: {
         root_id: rootId,
       },
-      remark: '',
       ticket_type: TicketTypes.TENDBCLUSTER_IMPORT_SQLFILE,
     })
       .then((data) => {
