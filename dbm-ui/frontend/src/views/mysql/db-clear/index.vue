@@ -858,46 +858,45 @@
     });
   }
 
-  function handleSubmit() {
-    isSubmitting.value = true;
-    toolboxTableRef.value.validate()
-      .then(() => {
-        const clusterTypes = _.uniq(tableData.value.map(item => item.cluster_type));
-        // 限制只能提同一种类型的集群，否则提示
-        if (clusterTypes.length > 1) {
-          messageError('只允许提交一种集群类型');
-          return Promise.reject();
-        }
+  async function handleSubmit() {
+    try {
+      isSubmitting.value = true;
+      await toolboxTableRef.value.validate()
+      const clusterTypes = _.uniq(tableData.value.map(item => item.cluster_type));
+      // 限制只能提同一种类型的集群，否则提示
+      if (clusterTypes.length > 1) {
+        messageError('只允许提交一种集群类型');
+        return
+      }
 
-        const formatList = (values: string[]) => values.map(val => val.trim()).filter(val => val);
-        const params = {
-          ticket_type: clusterTypes[0] === ClusterTypes.TENDBHA
-            ? TicketTypes.MYSQL_HA_TRUNCATE_DATA : TicketTypes.MYSQL_SINGLE_TRUNCATE_DATA,
-          bk_biz_id: globalBizsStore.currentBizId,
-          details: {
-            infos: tableData.value.map(item => ({
-              cluster_id: item.cluster_id,
-              truncate_data_type: item.truncate_data_type,
-              db_patterns: formatList(item.db_patterns),
-              ignore_dbs: formatList(item.ignore_dbs),
-              // drop_database 类型默认传 *
-              table_patterns: item.truncate_data_type === 'drop_database' ? ['*'] : formatList(item.table_patterns),
-              ignore_tables: formatList(item.ignore_tables),
-              force: Boolean(isForce.value),
-            })),
-          },
-        };
+      const formatList = (values: string[]) => values.map(val => val.trim()).filter(val => val);
+      const params = {
+        ticket_type: clusterTypes[0] === ClusterTypes.TENDBHA
+          ? TicketTypes.MYSQL_HA_TRUNCATE_DATA : TicketTypes.MYSQL_SINGLE_TRUNCATE_DATA,
+        bk_biz_id: globalBizsStore.currentBizId,
+        details: {
+          infos: tableData.value.map(item => ({
+            cluster_id: item.cluster_id,
+            truncate_data_type: item.truncate_data_type,
+            db_patterns: formatList(item.db_patterns),
+            ignore_dbs: formatList(item.ignore_dbs),
+            // drop_database 类型默认传 *
+            table_patterns: item.truncate_data_type === 'drop_database' ? ['*'] : formatList(item.table_patterns),
+            ignore_tables: formatList(item.ignore_tables),
+            force: Boolean(isForce.value),
+          })),
+        },
+      };
 
-        return createTicket(params)
-          .then((res) => {
-            ticketId.value = res.id;
-            tableData.value = [getTableItem()];
-            window.changeConfirm = false;
-          })
-        ;
-      }).finally(() => {
-        isSubmitting.value = false;
-      });
+      await createTicket(params)
+        .then((res) => {
+          ticketId.value = res.id;
+          tableData.value = [getTableItem()];
+          window.changeConfirm = false;
+        })
+    } finally {
+      isSubmitting.value = false;
+    }
   }
 
   function handleCloseSuccess() {

@@ -453,10 +453,11 @@
     }
   };
 
-  const handleSubmit = () => {
-    isSubmitting.value = true;
-    toolboxTableRef.value.validate()
-      .then(() => precheckPermissionClone({
+  const handleSubmit = async () => {
+    try {
+      isSubmitting.value = true;
+      await toolboxTableRef.value.validate()
+      const precheckResult = await precheckPermissionClone({
         bizId: globalBizsStore.currentBizId,
         clone_type: 'client',
         clone_cluster_type: 'mysql',
@@ -468,31 +469,30 @@
             bk_cloud_id: sourceInfos.cloudId,
             module: hostTopoMap.get(sourceInfos.ip)?.topo?.[0] || '',
           };
-        }),
+        })
+      })
+      if (!precheckResult.pre_check) {
+        messageError(precheckResult.message);
+        return
+      }
+      await createTicket({
+        ticket_type: TicketTypes.MYSQL_CLIENT_CLONE_RULES,
+        bk_biz_id: globalBizsStore.currentBizId,
+        details: {
+          ...precheckResult,
+          clone_type: 'client',
+        },
       })
         .then((res) => {
-          if (res.pre_check) {
-            return createTicket({
-              ticket_type: TicketTypes.MYSQL_CLIENT_CLONE_RULES,
-              bk_biz_id: globalBizsStore.currentBizId,
-              details: {
-                ...res,
-                clone_type: 'client',
-              },
-            })
-              .then((res) => {
-                ticketId.value = res.id;
-                tableData.value = [getTableItem()];
-                nextTick(() => {
-                  window.changeConfirm = false;
-                });
-              })
-          }
-          messageError(res.message);
-        }))
-      .finally(() => {
-        isSubmitting.value = false;
-      })
+          ticketId.value = res.id;
+          tableData.value = [getTableItem()];
+          nextTick(() => {
+            window.changeConfirm = false;
+          });
+        })
+    } finally {
+      isSubmitting.value = false;
+    }
   };
 
   const handleCloseSuccess = () => {

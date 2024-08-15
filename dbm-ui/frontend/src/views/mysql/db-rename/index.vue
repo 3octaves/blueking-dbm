@@ -581,44 +581,42 @@
     });
   }
 
-  function handleSubmit() {
-    isSubmitting.value = true;
-    toolboxTableRef.value.validate()
-      .then(() => {
-        const clusterTypes = _.uniq(tableData.value.map(item => item.cluster_type));
-        // 限制只能提同一种类型的集群，否则提示
-        if (clusterTypes.length > 1) {
-          messageError('只允许提交一种集群类型');
-          return Promise.reject();
-        }
+  async function handleSubmit() {
+    try {
+      isSubmitting.value = true;
+      await toolboxTableRef.value.validate()
 
+      const clusterTypes = _.uniq(tableData.value.map(item => item.cluster_type));
+      // 限制只能提同一种类型的集群，否则提示
+      if (clusterTypes.length > 1) {
+        messageError('只允许提交一种集群类型');
+      }
 
-        const params = {
-          ticket_type: clusterTypes[0] === ClusterTypes.TENDBHA
-            ? TicketTypes.MYSQL_HA_RENAME_DATABASE : TicketTypes.MYSQL_SINGLE_RENAME_DATABASE,
-          bk_biz_id: globalBizsStore.currentBizId,
-          details: {
-            infos: tableData.value.map(item => ({
-              cluster_id: item.cluster_id,
-              from_database: item.from_database,
-              to_database: item.to_database,
-              force: isForce.value,
-            })),
-          },
-        };
+      const params = {
+        ticket_type: clusterTypes[0] === ClusterTypes.TENDBHA
+          ? TicketTypes.MYSQL_HA_RENAME_DATABASE : TicketTypes.MYSQL_SINGLE_RENAME_DATABASE,
+        bk_biz_id: globalBizsStore.currentBizId,
+        details: {
+          infos: tableData.value.map(item => ({
+            cluster_id: item.cluster_id,
+            from_database: item.from_database,
+            to_database: item.to_database,
+            force: isForce.value,
+          })),
+        },
+      };
 
-        return createTicket(params)
-          .then((res) => {
-            ticketId.value = res.id;
-            tableData.value = [getTableItem()];
-            nextTick(() => {
-              window.changeConfirm = false;
-            });
-          })
-        ;
-      }).finally(() => {
-        isSubmitting.value = false;
-      });
+      return createTicket(params)
+        .then((res) => {
+          ticketId.value = res.id;
+          tableData.value = [getTableItem()];
+          nextTick(() => {
+            window.changeConfirm = false;
+          });
+        })
+    } finally {
+      isSubmitting.value = false;
+    }
   }
 
   function handleCloseSuccess() {

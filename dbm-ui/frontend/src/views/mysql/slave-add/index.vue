@@ -505,43 +505,42 @@
     });
   };
 
-  const handleSubmit = () => {
-    isSubmitting.value = true;
-    toolboxTableRef.value.validate()
-      .then(() => {
+  const handleSubmit = async () => {
+    try {
+      isSubmitting.value = true;
+      await toolboxTableRef.value.validate()
+      const params = {
+        ticket_type: TicketTypes.MYSQL_ADD_SLAVE,
+        bk_biz_id: globalBizsStore.currentBizId,
+        details: {
+          infos: tableData.value.map((item) => {
+            const hostInfo = getHostInfo(item.cluster_domain, item.new_slave_ip);
 
-        const params = {
-          ticket_type: TicketTypes.MYSQL_ADD_SLAVE,
-          bk_biz_id: globalBizsStore.currentBizId,
-          details: {
-            infos: tableData.value.map((item) => {
-              const hostInfo = getHostInfo(item.cluster_domain, item.new_slave_ip);
+            return {
+              new_slave: {
+                bk_biz_id: hostInfo?.biz?.id,
+                bk_cloud_id: hostInfo?.cloud_id,
+                bk_host_id: hostInfo?.host_id,
+                ip: item.new_slave_ip,
+              },
+              cluster_ids: [item.cluster_id].concat(item.checked_related.map(item => item.id)),
+            };
+          }),
+          backup_source: backupSource.value,
+        },
+      };
 
-              return {
-                new_slave: {
-                  bk_biz_id: hostInfo?.biz?.id,
-                  bk_cloud_id: hostInfo?.cloud_id,
-                  bk_host_id: hostInfo?.host_id,
-                  ip: item.new_slave_ip,
-                },
-                cluster_ids: [item.cluster_id].concat(item.checked_related.map(item => item.id)),
-              };
-            }),
-            backup_source: backupSource.value,
-          },
-        };
-
-        return createTicket(params)
-          .then((res) => {
-            ticketId.value = res.id;
-            tableData.value = [getTableItem()];
-            nextTick(() => {
-              window.changeConfirm = false;
-            });
+      await createTicket(params)
+        .then((res) => {
+          ticketId.value = res.id;
+          tableData.value = [getTableItem()];
+          nextTick(() => {
+            window.changeConfirm = false;
           });
-      }).finally(() => {
-        isSubmitting.value = false;
-      });
+        });
+    } finally {
+      isSubmitting.value = false;
+    }
   };
 
   const handleCloseSuccess = () => {

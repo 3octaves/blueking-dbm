@@ -464,10 +464,11 @@
     }
   }
 
-  function handleSubmit() {
-    isSubmitting.value = true;
-    toolboxTableRef.value.validate()
-      .then(() => precheckPermissionClone({
+  async function handleSubmit() {
+    try {
+      isSubmitting.value = true;
+      await toolboxTableRef.value.validate()
+      const preCheckResult = await precheckPermissionClone({
         bizId: globalBizsStore.currentBizId,
         clone_type: 'instance',
         clone_cluster_type: 'mysql',
@@ -479,32 +480,30 @@
             cluster_domain: instanceMap.get(item.source)?.master_domain,
             bk_cloud_id: instanceMap.get(item.source)?.bk_cloud_id,
           };
-        }),
+        })
+      })
+      if (!preCheckResult.pre_check) {
+        messageError(preCheckResult.message);
+        return
+      }
+      await createTicket({
+        ticket_type: TicketTypes.MYSQL_INSTANCE_CLONE_RULES,
+        bk_biz_id: globalBizsStore.currentBizId,
+        details: {
+          ...preCheckResult,
+          clone_type: 'instance',
+        },
       })
         .then((res) => {
-          if (res.pre_check) {
-            return createTicket({
-              ticket_type: TicketTypes.MYSQL_INSTANCE_CLONE_RULES,
-              bk_biz_id: globalBizsStore.currentBizId,
-              details: {
-                ...res,
-                clone_type: 'instance',
-              },
-            })
-              .then((res) => {
-                ticketId.value = res.id;
-                tableData.value = [getTableItem()];
-                nextTick(() => {
-                  window.changeConfirm = false;
-                });
-              })
-          }
-          messageError(res.message);
+          ticketId.value = res.id;
+          tableData.value = [getTableItem()];
+          nextTick(() => {
+            window.changeConfirm = false;
+          });
         })
-      )
-      .finally(() => {
-        isSubmitting.value = false;
-      });
+    } finally {
+      isSubmitting.value = false;
+    }
   }
 
   function handleCloseSuccess() {
