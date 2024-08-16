@@ -1004,50 +1004,50 @@
     });
   }
 
-  function handleSubmit() {
-    isSubmitting.value = true;
-    Promise.all([checksumFormRef.value.validate(), toolboxTableRef.value.validate()])
-      .then(() => {
-        const formatList = (values: string[]) => values.map(val => val.trim()).filter(val => val);
-        const formatInstance = (inst: ResourceItemInstInfo) => ({
-          bk_biz_id: inst.bk_biz_id,
-          bk_cloud_id: inst.bk_cloud_id,
-          bk_host_id: inst.bk_host_id,
-          ip: inst.ip,
-          port: inst.port,
-        });
-        const params = {
-          ticket_type: TicketTypes.MYSQL_CHECKSUM,
-          bk_biz_id: globalBizsStore.currentBizId,
-          details: {
-            ...formdata,
-            timing: formatDateToUTC(format(new Date(formdata.timing), 'yyyy-MM-dd HH:mm:ss')),
-            infos: tableData.value.map(item => ({
-              cluster_id: item.cluster_id,
-              master: formatInstance(item.masterInstance),
-              slaves: item.slaveList
-                .filter(inst => item.slaves.includes(inst.instance))
-                .map(inst => formatInstance(inst)),
-              db_patterns: formatList(item.db_patterns),
-              ignore_dbs: formatList(item.ignore_dbs),
-              table_patterns: formatList(item.table_patterns),
-              ignore_tables: formatList(item.ignore_tables),
-            })),
-          },
-        };
-        return createTicket(params)
-          .then((res) => {
-            ticketId.value = res.id;
-            tableData.value = [getTableItem()];
-            formdata.data_repair.is_repair = true;
-            formdata.timing = getCurrentDate();
-            formdata.runtime_hour = 48;
-            window.changeConfirm = false;
-          })
-      })
-      .finally(() => {
-        isSubmitting.value = false;
+  async function handleSubmit() {
+    try {
+      isSubmitting.value = true;
+      await Promise.all([checksumFormRef.value.validate(), toolboxTableRef.value.validate()])
+      const formatList = (values: string[]) => values.map(val => val.trim()).filter(val => val);
+      const formatInstance = (inst: ResourceItemInstInfo) => ({
+        bk_biz_id: inst.bk_biz_id,
+        bk_cloud_id: inst.bk_cloud_id,
+        bk_host_id: inst.bk_host_id,
+        ip: inst.ip,
+        port: inst.port,
       });
+      const params = {
+        ticket_type: TicketTypes.MYSQL_CHECKSUM,
+        bk_biz_id: globalBizsStore.currentBizId,
+        details: {
+          ...formdata,
+          timing: formatDateToUTC(format(new Date(formdata.timing), 'yyyy-MM-dd HH:mm:ss')),
+          infos: tableData.value.map(item => ({
+            cluster_id: item.cluster_id,
+            master: formatInstance(item.masterInstance),
+            slaves: item.slaveList
+              .filter(inst => item.slaves.includes(inst.instance))
+              .map(inst => formatInstance(inst)),
+            db_patterns: formatList(item.db_patterns),
+            ignore_dbs: formatList(item.ignore_dbs),
+            table_patterns: formatList(item.table_patterns),
+            ignore_tables: formatList(item.ignore_tables),
+          })),
+        },
+      };
+      await createTicket(params)
+        .then((res) => {
+          ticketId.value = res.id;
+          tableData.value = [getTableItem()];
+          formdata.data_repair.is_repair = true;
+          formdata.timing = getCurrentDate();
+          formdata.runtime_hour = 48;
+          window.changeConfirm = false;
+        })
+
+    } finally {
+      isSubmitting.value = false;
+    }
   }
 
   function handleCloseSuccess() {
