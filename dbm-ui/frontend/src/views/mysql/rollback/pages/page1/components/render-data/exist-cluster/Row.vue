@@ -71,6 +71,7 @@
     <OperateColumn
       :removeable="removeable"
       @add="handleAppend"
+      @clone="handleClone"
       @remove="handleRemove" />
   </tr>
 </template>
@@ -97,6 +98,7 @@
   interface Emits {
     (e: 'add', params: Array<IDataRow>): void;
     (e: 'remove'): void;
+    (e: 'clone', value: IDataRow): void;
   }
 
   interface Exposes {
@@ -155,6 +157,8 @@
     }
     emits('remove');
   };
+
+  const handleClone = () => {};
 
   watch(
     () => props.data,

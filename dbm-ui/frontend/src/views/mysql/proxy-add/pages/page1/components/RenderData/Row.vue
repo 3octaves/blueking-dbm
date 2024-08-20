@@ -32,6 +32,7 @@
     <OperateColumn
       :removeable="removeable"
       @add="handleAppend"
+      @clone="handleClone"
       @remove="handleRemove" />
   </tr>
 </template>
@@ -79,6 +80,7 @@
   interface Emits {
     (e: 'add', params: Array<IDataRow>): void;
     (e: 'remove'): void;
+    (e: 'clone', value: IDataRow): void;
   }
 
   interface Exposes {
@@ -134,6 +136,21 @@
       return;
     }
     emits('remove');
+  };
+
+  const getRowData = () => [clusterRef.value.getValue(), proxyRef.value.getValue()];
+
+  const handleClone = () => {
+    Promise.allSettled(getRowData()).then((rowData) => {
+      const rowInfo = rowData.map((item) => (item.status === 'fulfilled' ? item.value : item.reason));
+      emits(
+        'clone',
+        createRowData({
+          clusterData: props.data.clusterData,
+          proxyIp: rowInfo[1].new_proxy,
+        }),
+      );
+    });
   };
 
   defineExpose<Exposes>({

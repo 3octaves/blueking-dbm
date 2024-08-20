@@ -20,6 +20,7 @@
         :title="t('集群分片变更：通过部署新集群来实现增加或减少原集群的分片数，可以指定新的版本')" />
       <RenderData
         class="mt16"
+        @batch-edit="handleBatchEditColumn"
         @show-master-batch-selector="handleShowMasterBatchSelector">
         <RenderDataRow
           v-for="(item, index) in tableData"
@@ -29,6 +30,7 @@
           :inputed-clusters="inputedClusters"
           :removeable="tableData.length < 2"
           @add="(payload: Array<IDataRow>) => handleAppend(index, payload)"
+          @clone="(payload: IDataRow) => handleClone(index, payload)"
           @cluster-input-finish="(domainObj: RedisModel) => handleChangeCluster(index, domainObj)"
           @remove="handleRemove(index)" />
       </RenderData>
@@ -76,6 +78,7 @@
             :label="item.label"
             :value="item.value" />
         </BkSelect>
+        <TicketRemark v-model="remark" />
       </template>
     </div>
     <template #action>
@@ -122,11 +125,17 @@
   import { ClusterTypes, TicketTypes } from '@common/const';
 
   import ClusterSelector, { type TabItem } from '@components/cluster-selector/Index.vue';
+  import TicketRemark from '@components/ticket-remark/Index.vue';
 
   import { repairAndVerifyFrequencyList, repairAndVerifyTypeList } from '@views/redis/common/const';
 
   import RenderData from './components/Index.vue';
-  import RenderDataRow, { createRowData, type IDataRow, type InfoItem } from './components/Row.vue';
+  import RenderDataRow, {
+    createRowData,
+    type IDataRow,
+    type IDataRowBatchKey,
+    type InfoItem,
+  } from './components/Row.vue';
 
   type RedisModel = ServiceReturnType<typeof getRedisList>['results'][number];
 
@@ -139,10 +148,10 @@
     type: TicketTypes.REDIS_CLUSTER_SHARD_NUM_UPDATE,
     onSuccess(cloneData) {
       const { tableList, type, frequency } = cloneData;
-
       tableData.value = tableList;
       repairAndVerifyType.value = type;
       repairAndVerifyFrequency.value = frequency;
+      remark.value = cloneData.remark;
       window.changeConfirm = true;
     },
   });
@@ -153,9 +162,35 @@
   const repairAndVerifyType = ref(RepairAndVerifyModes.DATA_CHECK_AND_REPAIR);
   const repairAndVerifyFrequency = ref(RepairAndVerifyFrequencyModes.ONCE_AFTER_REPLICATION);
   const tableData = ref([createRowData()]);
+  const remark = ref('');
   const selectedClusters = shallowRef<{ [key: string]: Array<RedisModel> }>({ [ClusterTypes.REDIS]: [] });
   const totalNum = computed(() => tableData.value.filter((item) => Boolean(item.srcCluster)).length);
   const inputedClusters = computed(() => tableData.value.map((item) => item.srcCluster));
+
+  // const patchEditVersionList = computed(() => {
+  //   const tableDataList = tableData.value
+  //   if (tableDataList.length > 0) {
+  //     const clusterTypeList = []
+  //     for(let i = 0; i < tableDataList.length; i++) {
+  //       const dataItem = tableDataList[i]
+  //       if (!dataItem.clusterType) {
+  //         continue
+  //       }
+  //       clusterTypeList.push(dataItem.clusterType)
+  //       if (clusterTypeList.length > 1) {
+  //         return []
+  //       }
+  //     }
+  //     if (clusterTypeList.length === 1) {
+  //       return clusterTypesMap.value[clusterTypeList[0]].map(versionItem => ({
+  //         value: versionItem,
+  //         label: versionItem,
+  //       }))
+  //     }
+  //     return []
+  //   }
+  //   return []
+  // })
 
   // 集群域名是否已存在表格的映射表
   let domainMemo: Record<string, boolean> = {};
@@ -251,6 +286,17 @@
     selectedClusters.value[ClusterTypes.REDIS].push(domainObj);
   };
 
+  const handleBatchEditColumn = (value: string | string[], filed: IDataRowBatchKey) => {
+    if (!value || checkListEmpty(tableData.value)) {
+      return;
+    }
+    tableData.value.forEach((row) => {
+      Object.assign(row, {
+        [filed]: value,
+      });
+    });
+  };
+
   // 追加一个集群
   const handleAppend = (index: number, appendList: Array<IDataRow>) => {
     tableData.value.splice(index + 1, 0, ...appendList);
@@ -265,6 +311,16 @@
     selectedClusters.value[ClusterTypes.REDIS] = clustersArr.filter((item) => item.master_domain !== srcCluster);
   };
 
+  // 复制行数据
+  const handleClone = (index: number, sourceData: IDataRow) => {
+    const dataList = [...tableData.value];
+    dataList.splice(index + 1, 0, sourceData);
+    tableData.value = dataList;
+    setTimeout(() => {
+      rowRefs.value[rowRefs.value.length - 1].getValue();
+    });
+  };
+
   // 点击提交按钮
   const handleSubmit = async () => {
     try {
@@ -275,6 +331,7 @@
       const params = {
         bk_biz_id: currentBizId,
         ticket_type: TicketTypes.REDIS_CLUSTER_SHARD_NUM_UPDATE,
+        remark: remark.value,
         details: {
           ip_source: 'resource_pool',
           data_check_repair_setting: {
@@ -308,6 +365,7 @@
   // 重置
   const handleReset = () => {
     tableData.value = [createRowData()];
+    remark.value = '';
     selectedClusters.value[ClusterTypes.REDIS] = [];
     domainMemo = {};
     window.changeConfirm = false;

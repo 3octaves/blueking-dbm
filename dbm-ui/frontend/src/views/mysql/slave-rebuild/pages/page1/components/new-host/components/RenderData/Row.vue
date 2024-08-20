@@ -32,6 +32,7 @@
     <OperateColumn
       :removeable="removeable"
       @add="handleAppend"
+      @clone="handleClone"
       @remove="handleRemove" />
   </tr>
 </template>
@@ -62,7 +63,7 @@
       bkCloudId: number;
       bkHostId: number;
       ip: string;
-      port: number;
+      // port: number;
     };
   }
 
@@ -82,6 +83,7 @@
   interface Emits {
     (e: 'add', params: Array<IDataRow>): void;
     (e: 'remove'): void;
+    (e: 'clone', value: IDataRow): void;
   }
 
   interface Exposes {
@@ -123,15 +125,34 @@
     emits('remove');
   };
 
+  const getRowData = () => [slaveRef.value!.getValue(), clusterRef.value!.getValue(), newSlaveRef.value!.getValue()];
+  const handleClone = () => {
+    Promise.allSettled(getRowData()).then((rowData) => {
+      const rowInfo = rowData.map((item) => (item.status === 'fulfilled' ? item.value : item.reason));
+      const newSlaveData = rowInfo[2];
+      emits(
+        'clone',
+        createRowData({
+          oldSlave: localOldSlave.value,
+          clusterId: rowInfo[0]?.old_slave.cluster_id,
+          newSlave: newSlaveData
+            ? {
+                bkBizId: newSlaveData.new_slave.bk_biz_id,
+                bkCloudId: newSlaveData.new_slave.bk_cloud_id,
+                bkHostId: newSlaveData.new_slave.bk_host_id,
+                ip: newSlaveData.new_slave.ip,
+              }
+            : undefined,
+        }),
+      );
+    });
+  };
+
   defineExpose<Exposes>({
     getValue() {
-      return Promise.all([
-        slaveRef.value!.getValue(),
-        clusterRef.value!.getValue(),
-        newSlaveRef.value!.getValue(),
-      ]).then(([sourceData, moduleData, newSlaveData]) => ({
+      return Promise.all(getRowData()).then(([sourceData, clusterData, newSlaveData]) => ({
         ...sourceData,
-        ...moduleData,
+        ...clusterData,
         ...newSlaveData,
       }));
     },

@@ -42,9 +42,12 @@
 
   interface Props {
     modelValue?: IDataRow['clusterData'];
+    modelValue?: IDataRow['clusterData'];
   }
 
   interface Emits {
+    (e: 'inputClusterFinish', value: string): void;
+    (e: 'inputCreate', value: Array<string>): void;
     (e: 'inputClusterFinish', value: string): void;
     (e: 'inputCreate', value: Array<string>): void;
   }
@@ -167,9 +170,16 @@
 
   defineExpose<Exposes>({
     getValue() {
-      return editRef.value.getValue().then(() => ({
-        cluster_id: localClusterId.value,
-      }));
+      return editRef.value
+        .getValue()
+        .then(() => ({
+          cluster_id: localClusterId.value,
+        }))
+        .catch(() =>
+          Promise.reject({
+            cluster_id: localClusterId.value,
+          }),
+        );
     },
   });
 </script>

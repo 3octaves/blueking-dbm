@@ -60,6 +60,7 @@
     <OperateColumn
       :removeable="removeable"
       @add="handleAppend"
+      @clone="handleClone"
       @remove="handleRemove" />
   </tr>
 </template>
@@ -128,6 +129,7 @@
   interface Emits {
     (e: 'add', params: Array<IDataRow>): void;
     (e: 'remove'): void;
+    (e: 'clone', value: IDataRow): void;
     (e: 'onIpInputFinish', value: string): void;
   }
 
@@ -158,6 +160,16 @@
       return;
     }
     emits('remove');
+  };
+
+  const handleClone = () => {
+    Promise.allSettled([hostRef.value.getValue()]).then((rowData) => {
+      emits('clone', {
+        ...props.data,
+        rowKey: random(),
+        isLoading: false,
+      });
+    });
   };
 
   defineExpose<Exposes>({
