@@ -62,6 +62,7 @@
     <OperateColumn
       :removeable="removeable"
       @add="handleAppend"
+      @clone="handleClone"
       @remove="handleRemove" />
   </tr>
 </template>
@@ -83,6 +84,8 @@
     databasesIgnore?: string[];
     tablesIgnore?: string[];
   }
+
+  export type IDataRowBatchKey = keyof Omit<IDataRow, 'rowKey' | 'clusterData'>;
 
   // 创建表格数据
   export const createRowData = (data = {} as Partial<IDataRow>) => ({
@@ -114,6 +117,7 @@
   interface Emits {
     (e: 'add', params: Array<IDataRow>): void;
     (e: 'remove'): void;
+    (e: 'clone', value: IDataRow): void;
   }
 
   interface Exposes {
@@ -185,6 +189,7 @@
       }
     },
     {
+      deep: true,
       immediate: true,
     },
   );
@@ -218,17 +223,48 @@
     emits('remove');
   };
 
+  const getRowData = () => [
+    clusterRef.value.getValue(),
+    startTimeRef.value.getValue(),
+    endTimeRef.value.getValue(),
+    databasesRef.value.getValue('databases'),
+    tablesRef.value.getValue('tables'),
+    databasesIgnoreRef.value.getValue('databases_ignore'),
+    tablesIgnoreRef.value.getValue('tables_ignore'),
+  ];
+
+  const handleClone = () => {
+    Promise.allSettled(getRowData()).then((rowData) => {
+      const [
+        clusterData,
+        startTimeData,
+        endTimeData,
+        databasesData,
+        tablesData,
+        databasesIgnoreData,
+        tablesIgnoreData,
+      ] = rowData.map((item) => (item.status === 'fulfilled' ? item.value : item.reason));
+      emits(
+        'clone',
+        createRowData({
+          clusterData: {
+            id: clusterData.cluster_id,
+            domain: '',
+          },
+          startTime: startTimeData.start_time,
+          endTime: endTimeData.end_time,
+          databases: databasesData.databases,
+          tables: tablesData.tables,
+          databasesIgnore: databasesIgnoreData.databases_ignore,
+          tablesIgnore: tablesIgnoreData.tables_ignore,
+        }),
+      );
+    });
+  };
+
   defineExpose<Exposes>({
     getValue() {
-      return Promise.all([
-        clusterRef.value.getValue(),
-        startTimeRef.value.getValue(),
-        endTimeRef.value.getValue(),
-        databasesRef.value.getValue('databases'),
-        tablesRef.value.getValue('tables'),
-        databasesIgnoreRef.value.getValue('databases_ignore'),
-        tablesIgnoreRef.value.getValue('tables_ignore'),
-      ]).then(
+      return Promise.all(getRowData()).then(
         ([
           clusterData,
           startTimeData,

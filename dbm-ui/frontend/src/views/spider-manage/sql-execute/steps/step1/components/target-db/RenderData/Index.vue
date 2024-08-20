@@ -23,8 +23,9 @@
       {{ t('忽略的DB') }}
     </RenderTableHeadColumn>
     <RenderTableHeadColumn
+      fixed="right"
       :required="false"
-      :width="90">
+      :width="100">
       {{ t('操作') }}
     </RenderTableHeadColumn>
     <template #data>

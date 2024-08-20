@@ -24,7 +24,7 @@
     </RenderTableHeadColumn>
     <RenderTableHeadColumn
       :required="false"
-      :width="90">
+      :width="100">
       {{ t('操作') }}
     </RenderTableHeadColumn>
     <template #data>

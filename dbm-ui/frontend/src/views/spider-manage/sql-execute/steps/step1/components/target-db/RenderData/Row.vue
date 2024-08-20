@@ -29,6 +29,7 @@
     <OperateColumn
       :removeable="removeable"
       @add="handleAppend"
+      @clone="handleClone"
       @remove="handleRemove" />
   </tr>
 </template>
@@ -62,6 +63,7 @@
   interface Emits {
     (e: 'add', params: IDataRow): void;
     (e: 'remove'): void;
+    (e: 'clone', value: IDataRow): void;
     (e: 'change', value: IDataRow): void;
   }
 
@@ -106,9 +108,24 @@
     emits('remove');
   };
 
+  const getRowData = () => [dbnamesRef.value.getValue(), ignoreDbnamesRef.value.getValue()];
+
+  const handleClone = () => {
+    Promise.allSettled(getRowData()).then((rowData) => {
+      emits(
+        'clone',
+        createRowData({
+          rowKey: random(),
+          dbnames: dbnames.value,
+          ignore_dbnames: ignoreDbnames.value,
+        }),
+      );
+    });
+  };
+
   defineExpose<Exposes>({
     getValue() {
-      return Promise.all([dbnamesRef.value.getValue(), ignoreDbnamesRef.value.getValue()]).then(() => ({
+      return Promise.all(getRowData()).then(() => ({
         rowKey: props.data.rowKey,
         dbnames: dbnames.value,
         ignore_dbnames: ignoreDbnames.value,

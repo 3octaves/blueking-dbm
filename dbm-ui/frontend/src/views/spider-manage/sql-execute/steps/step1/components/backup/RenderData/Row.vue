@@ -35,7 +35,9 @@
     </td>
     <OperateColumn
       :removeable="removeable"
+      show-clone
       @add="handleAppend"
+      @clone="handleClone"
       @remove="handleRemove" />
   </tr>
 </template>
@@ -73,6 +75,7 @@
   interface Emits {
     (e: 'add', params: IDataRow): void;
     (e: 'remove'): void;
+    (e: 'clone', value: IDataRow): void;
     (e: 'change', value: IDataRow): void;
   }
 
@@ -125,13 +128,29 @@
     emits('remove');
   };
 
+  const getRowData = () => [
+    dbPatternsRef.value.getValue('db_patterns'),
+    backupOnRef.value.getValue('backup_on'),
+    tablePatternsRef.value.getValue('table_patterns'),
+  ];
+
+  const handleClone = () => {
+    Promise.allSettled(getRowData()).then((rowData) => {
+      const [dbPatternsData, backupOnData, tablePatternsData] = rowData.map((item) =>
+        item.status === 'fulfilled' ? item.value : item.reason,
+      );
+      emits('clone', {
+        rowKey: random(),
+        db_patterns: dbPatternsData.db_patterns,
+        backup_on: backupOnData.backup_on,
+        table_patterns: tablePatternsData.table_patterns,
+      });
+    });
+  };
+
   defineExpose<Exposes>({
     getValue() {
-      return Promise.all([
-        dbPatternsRef.value.getValue('db_patterns'),
-        backupOnRef.value.getValue('backup_on'),
-        tablePatternsRef.value.getValue('table_patterns'),
-      ]);
+      return Promise.all(getRowData());
     },
   });
 </script>
