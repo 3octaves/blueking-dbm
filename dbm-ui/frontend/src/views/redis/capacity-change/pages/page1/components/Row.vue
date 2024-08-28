@@ -70,6 +70,7 @@
     </td>
     <OperateColumn
       :removeable="removeable"
+      :show-clone="false"
       @add="handleAppend"
       @remove="handleRemove" />
   </tr>
