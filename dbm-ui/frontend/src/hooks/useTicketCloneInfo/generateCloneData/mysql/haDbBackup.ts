@@ -17,15 +17,16 @@ import { random } from '@utils';
 
 // Mysql 全库备份
 export function generateMysqlDbBackupCloneData(ticketData: TicketModel<MySQLFullBackupDetails>) {
-  const { clusters, infos} = ticketData.details;
-  const tableDataList = infos.clusters.map(item => ({
+  const { clusters, infos } = ticketData.details;
+  const tableDataList = infos.clusters.map((item) => ({
     rowKey: random(),
     clusterData: {
       id: item.cluster_id,
       domain: clusters[item.cluster_id].immute_domain,
+      type: clusters[item.cluster_id].cluster_type,
     },
-    backupLocal: item.backup_local
-  }))
+    backupLocal: item.backup_local,
+  }));
   return Promise.resolve({
     tableDataList,
     backupType: infos.backup_type,

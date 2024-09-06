@@ -105,6 +105,7 @@
     clusterData: {
       id: number;
       domain: string;
+      type: string;
     };
     startTime: string;
     endTime: string;
@@ -228,13 +229,16 @@
       cluster_filters: clusterFilters,
       bk_biz_id: currentBizId,
     })
-      .then((data: Array<{ master_domain: string; id: number }>) => {
-        const realDataMap = data.reduce(
-          (result, item) => ({
-            ...result,
-            [item.master_domain]: item.id,
-          }),
-          {} as Record<string, number>,
+      .then((data: Array<{ master_domain: string; id: number; cluster_type: string }>) => {
+        const realDataMap = data.reduce<Record<string, { id: number; cluster_type: string }>>(
+          (result, item) =>
+            Object.assign(result, {
+              [item.master_domain]: {
+                id: item.id,
+                cluster_type: item.cluster_type,
+              },
+            }),
+          {},
         );
 
         const resultList: Array<IValue> = [];
@@ -257,8 +261,9 @@
 
             resultList.push({
               clusterData: {
-                id: realDataMap[item.domain],
+                id: realDataMap[item.domain].id,
                 domain: item.domain,
+                type: realDataMap[item.domain].cluster_type,
               },
               startTime: roolbackTime,
               endTime,
