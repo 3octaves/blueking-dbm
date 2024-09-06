@@ -286,7 +286,6 @@
     [TicketTypes.INFLUXDB_REPLACE]: InfluxdbReplace,
     [TicketTypes.KAFKA_APPLY]: DetailsKafka,
     [TicketTypes.MYSQL_PROXY_SWITCH]: MySQLProxySwitch,
-    [TicketTypes.MYSQL_HA_DB_TABLE_BACKUP]: MySQLTableBackup,
     [TicketTypes.MYSQL_MIGRATE_CLUSTER]: MySQLMigrateCluster,
     [TicketTypes.MYSQL_PROXY_ADD]: MySQLProxyAdd,
     [TicketTypes.MYSQL_MASTER_FAIL_OVER]: MySQLMasterFailOver,
@@ -294,7 +293,6 @@
     [TicketTypes.MYSQL_ROLLBACK_CLUSTER]: MySQLRollback,
     [TicketTypes.MYSQL_RESTORE_SLAVE]: MySQLRestoreSlave,
     [TicketTypes.MYSQL_RESTORE_LOCAL_SLAVE]: MySQLRestoreLocalSlave,
-    [TicketTypes.MYSQL_HA_FULL_BACKUP]: MySQLFullBackup,
     [TicketTypes.MYSQL_CHECKSUM]: MySQLChecksum,
     [TicketTypes.MYSQL_ADD_SLAVE]: MySQLAddSlave,
     [TicketTypes.MYSQL_DATA_MIGRATE]: MySQLDataMigrate,
@@ -470,6 +468,18 @@
     // mysql 部署
     if (mysqlApplyTypes.includes(ticketType)) {
       return DetailsMySQL;
+    }
+    // mysql 全库备份
+    if ([TicketTypes.MYSQL_HA_FULL_BACKUP, TicketTypes.MYSQL_SINGLE_FULL_BACKUP].includes(ticketType)) {
+      return MySQLFullBackup;
+    }
+    // mysql 库表备份
+    if ([TicketTypes.MYSQL_HA_DB_TABLE_BACKUP, TicketTypes.MYSQL_SINGLE_DB_TABLE_BACKUP].includes(ticketType)) {
+      return MySQLTableBackup;
+    }
+    // mysql 闪回
+    if ([TicketTypes.MYSQL_FLASHBACK, TicketTypes.MYSQL_SINGLE_FLASHBACK].includes(ticketType)) {
+      return MySQLFlashback;
     }
     if (ticketType in SingleDemandMap) {
       return SingleDemandMap[ticketType as keyof typeof SingleDemandMap];

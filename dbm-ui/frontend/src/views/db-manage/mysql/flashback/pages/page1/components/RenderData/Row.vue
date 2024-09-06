@@ -72,6 +72,7 @@
     clusterData?: {
       id: number;
       domain: string;
+      type: string;
     };
     startTime?: string;
     endTime?: string;

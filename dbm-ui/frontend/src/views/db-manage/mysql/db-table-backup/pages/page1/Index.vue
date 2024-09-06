@@ -38,7 +38,7 @@
       </RenderData>
       <ClusterSelector
         v-model:is-show="isShowBatchSelector"
-        :cluster-types="[ClusterTypes.TENDBHA]"
+        :cluster-types="[ClusterTypes.TENDBHA, ClusterTypes.TENDBSINGLE]"
         :selected="selectedClusters"
         @change="handelClusterChange" />
       <BatchEntry
@@ -116,13 +116,27 @@
     },
   });
 
+  // 单据克隆
+  useTicketCloneInfo({
+    type: TicketTypes.MYSQL_SINGLE_DB_TABLE_BACKUP,
+    onSuccess(cloneData) {
+      tableData.value = cloneData.tableDataList;
+      window.changeConfirm = true;
+    },
+  });
+
   const rowRefs = ref();
   const isShowBatchSelector = ref(false);
   const isShowBatchEntry = ref(false);
   const isSubmitting = ref(false);
 
   const tableData = shallowRef<Array<IDataRow>>([createRowData({})]);
-  const selectedClusters = shallowRef<{ [key: string]: Array<TendbhaModel> }>({ [ClusterTypes.TENDBHA]: [] });
+  const selectedClusters = shallowRef<{ [key: string]: Array<TendbhaModel> }>({
+    [ClusterTypes.TENDBHA]: [],
+    [ClusterTypes.TENDBSINGLE]: [],
+  });
+
+  const clusterTypes = computed(() => tableData.value.map((item) => item.clusterData?.type as string));
 
   // 集群域名是否已存在表格的映射表
   let domainMemo: Record<string, boolean> = {};
@@ -155,6 +169,7 @@
           clusterData: {
             id: clusterData.id,
             domain: clusterData.master_domain,
+            type: clusterData.cluster_type,
           },
         });
         results.push(row);
@@ -196,7 +211,10 @@
       isSubmitting.value = true;
       const infos = await Promise.all(rowRefs.value.map((item: { getValue: () => Promise<any> }) => item.getValue()));
       await createTicket({
-        ticket_type: 'MYSQL_HA_DB_TABLE_BACKUP',
+        ticket_type:
+          clusterTypes.value[0] === ClusterTypes.TENDBHA
+            ? TicketTypes.MYSQL_HA_DB_TABLE_BACKUP
+            : TicketTypes.MYSQL_SINGLE_DB_TABLE_BACKUP,
         remark: '',
         details: {
           infos,
@@ -222,6 +240,7 @@
   const handleReset = () => {
     tableData.value = [createRowData()];
     selectedClusters.value[ClusterTypes.TENDBHA] = [];
+    selectedClusters.value[ClusterTypes.TENDBSINGLE] = [];
     domainMemo = {};
     window.changeConfirm = false;
   };

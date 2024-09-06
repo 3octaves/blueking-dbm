@@ -71,7 +71,7 @@
       </DbForm>
       <ClusterSelector
         v-model:is-show="isShowBatchSelector"
-        :cluster-types="[ClusterTypes.TENDBHA]"
+        :cluster-types="[ClusterTypes.TENDBHA, ClusterTypes.TENDBSINGLE]"
         :selected="selectedClusters"
         @change="handelClusterChange" />
     </div>
@@ -136,6 +136,18 @@
     },
   });
 
+  // 单据克隆
+  useTicketCloneInfo({
+    type: TicketTypes.MYSQL_SINGLE_FULL_BACKUP,
+    onSuccess(cloneData) {
+      const { backupType, tableDataList, fileTag } = cloneData;
+      tableData.value = tableDataList;
+      formData.backup_type = backupType;
+      formData.file_tag = fileTag;
+      window.changeConfirm = true;
+    },
+  });
+
   const formRef = ref();
   const rowRefs = ref();
   const isShowBatchSelector = ref(false);
@@ -143,7 +155,12 @@
   const formData = reactive(createDefaultData());
 
   const tableData = ref<Array<IDataRow>>([createRowData({})]);
-  const selectedClusters = shallowRef<{ [key: string]: Array<TendbhaModel> }>({ [ClusterTypes.TENDBHA]: [] });
+  const selectedClusters = shallowRef<{ [key: string]: Array<TendbhaModel> }>({
+    [ClusterTypes.TENDBHA]: [],
+    [ClusterTypes.TENDBSINGLE]: [],
+  });
+
+  const clusterTypes = computed(() => tableData.value.map((item) => item.clusterData?.type as string));
 
   // 集群域名是否已存在表格的映射表
   let domainMemo: Record<string, boolean> = {};
@@ -183,6 +200,7 @@
           clusterData: {
             id: clusterData.id,
             domain: clusterData.master_domain,
+            type: clusterData.cluster_type,
           },
         });
         results.push(row);
@@ -231,7 +249,10 @@
 
       await createTicket({
         bk_biz_id: currentBizId,
-        ticket_type: 'MYSQL_HA_FULL_BACKUP',
+        ticket_type:
+          clusterTypes.value[0] === ClusterTypes.TENDBHA
+            ? TicketTypes.MYSQL_HA_FULL_BACKUP
+            : TicketTypes.MYSQL_SINGLE_FULL_BACKUP,
         remark: '',
         details: {
           infos: {
@@ -260,6 +281,7 @@
     tableData.value = [createRowData()];
     Object.assign(formData, createDefaultData());
     selectedClusters.value[ClusterTypes.TENDBHA] = [];
+    selectedClusters.value[ClusterTypes.TENDBSINGLE] = [];
     domainMemo = {};
     window.changeConfirm = false;
   };

@@ -42,6 +42,7 @@
     clusterData?: {
       id: number;
       domain: string;
+      type: string;
     };
     backupLocal: string;
   }
@@ -85,6 +86,7 @@
         clusterData: {
           id: 0,
           domain,
+          type: '',
         },
       }),
     );

@@ -62,6 +62,7 @@
     clusterData?: {
       id: number;
       domain: string;
+      type: string;
     };
     // backupOn: string,
     dbPatterns?: string[];

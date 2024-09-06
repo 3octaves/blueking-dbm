@@ -75,10 +75,13 @@ export const generateCloneDataHandlerMap = {
   [TicketTypes.MYSQL_HA_APPLY]: generateMysqlHaApplyCloneData, // MySQL 高可用部署
   [TicketTypes.MYSQL_SINGLE_APPLY]: generateMysqlSingleApplyCloneData, // MySQL 单节点部署
   [TicketTypes.MYSQL_HA_DB_TABLE_BACKUP]: generateMysqlDbTableBackupCloneData, // Mysql 库表备份
+  [TicketTypes.MYSQL_SINGLE_DB_TABLE_BACKUP]: generateMysqlDbTableBackupCloneData, // Mysql 库表备份
   [TicketTypes.MYSQL_HA_RENAME_DATABASE]: generateMysqlDbRenameCloneData, // MySQL 高可用DB重命名
   [TicketTypes.MYSQL_SINGLE_RENAME_DATABASE]: generateMysqlDbRenameCloneData, // MySQL 单节点DB重命名
-  [TicketTypes.MYSQL_HA_FULL_BACKUP]: generateMysqlDbBackupCloneData, // Mysql 全库备份
-  [TicketTypes.MYSQL_FLASHBACK]: generateMysqlFlashbackCloneData, // MySQL 闪回
+  [TicketTypes.MYSQL_HA_FULL_BACKUP]: generateMysqlDbBackupCloneData, // Mysql 主从全库备份
+  [TicketTypes.MYSQL_SINGLE_FULL_BACKUP]: generateMysqlDbBackupCloneData, // Mysql 单节点全库备份
+  [TicketTypes.MYSQL_FLASHBACK]: generateMysqlFlashbackCloneData, // MySQL 主从闪回
+  [TicketTypes.MYSQL_SINGLE_FLASHBACK]: generateMysqlFlashbackCloneData, // MySQL 单节点闪回
   [TicketTypes.MYSQL_RESTORE_LOCAL_SLAVE]: generateMysqlRestoreLocalSlaveCloneData, // MySQL 重建从库-原地重建
   [TicketTypes.MYSQL_RESTORE_SLAVE]: generateMysqlRestoreSlaveCloneData, // MySQL 重建从库-原地重建
   [TicketTypes.MYSQL_ADD_SLAVE]: generateMysqlSlaveAddCloneData, // MySQL 添加从库
