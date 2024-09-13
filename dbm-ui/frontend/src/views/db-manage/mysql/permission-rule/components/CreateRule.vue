@@ -78,7 +78,7 @@
                 v-model="state.formdata.privilege.dml"
                 class="rule-form-checkbox-group">
                 <BkCheckbox
-                  v-for="dmlItem of dbOperations.dml"
+                  v-for="dmlItem of MysqlDbOperations.dml"
                   :key="dmlItem"
                   v-bk-tooltips="{
                     content: t('你已选择所有权限'),
@@ -109,7 +109,7 @@
                 v-model="state.formdata.privilege.ddl"
                 class="rule-form-checkbox-group">
                 <BkCheckbox
-                  v-for="ddlItem of dbOperations.ddl"
+                  v-for="ddlItem of MysqlDbOperations.ddl"
                   :key="ddlItem"
                   v-bk-tooltips="{
                     content: t('你已选择所有权限'),
@@ -119,7 +119,7 @@
                   :label="ddlItem">
                   {{ ddlItem }}
                   <span
-                    v-if="ddlSensitiveWords.includes(ddlItem)"
+                    v-if="MysqlDdlSensitiveWords.includes(ddlItem)"
                     class="sensitive-tip">
                     {{ t('敏感') }}
                   </span>
@@ -147,7 +147,7 @@
                 v-model="state.formdata.privilege.glob"
                 class="rule-form-checkbox-group">
                 <BkCheckbox
-                  v-for="globItem of dbOperations.glob"
+                  v-for="globItem of MysqlDbOperations.glob"
                   :key="globItem"
                   v-bk-tooltips="{
                     content: t('你已选择所有权限'),
@@ -201,13 +201,11 @@
   import { createAccountRule, getPermissionRules, modifyAccountRule, preCheckAddAccountRule, queryAccountRules } from '@services/source/permission';
   import type { AccountRule, PermissionRuleAccount } from '@services/types/permission';
 
-  import { AccountTypes } from '@common/const';
+  import { AccountTypes, MysqlDbOperations, MysqlDdlSensitiveWords } from '@common/const';
 
   import { messageSuccess } from '@utils'
 
-  import { dbOperations, ddlSensitiveWords } from '../common/const';
-
-  type AuthItemKey = keyof typeof dbOperations;
+  type AuthItemKey = keyof typeof MysqlDbOperations;
 
   interface Props {
     accountId?: number;
@@ -321,7 +319,7 @@
       if (isEdit.value) {
         state.formdata.access_db = props.ruleObj!.access_db;
         editModeDisabledPrivileges.value = props.ruleObj!.privilege.split(',');
-        const dbOperationsMap = Object.entries(dbOperations).reduce((resultMap, [key, values]) => {
+        const dbOperationsMap = Object.entries(MysqlDbOperations).reduce((resultMap, [key, values]) => {
           values.forEach(value => {
             Object.assign(resultMap, { [value]: key})
           });
@@ -342,14 +340,14 @@
   });
 
   // 获取权限设置全选框状态
-  const getAllCheckedboxValue = (key: AuthItemKey) => state.formdata.privilege[key].length === dbOperations[key].length;
+  const getAllCheckedboxValue = (key: AuthItemKey) => state.formdata.privilege[key].length === MysqlDbOperations[key].length;
   const getAllCheckedboxIndeterminate = (key: AuthItemKey) => (
     state.formdata.privilege[key].length > 0
-    && state.formdata.privilege[key].length !== dbOperations[key].length
+    && state.formdata.privilege[key].length !== MysqlDbOperations[key].length
   );
   const handleSelectedAll = (key: AuthItemKey, value: boolean) => {
     if (value) {
-      state.formdata.privilege[key] = [...dbOperations[key]];
+      state.formdata.privilege[key] = [...MysqlDbOperations[key]];
       return;
     }
 

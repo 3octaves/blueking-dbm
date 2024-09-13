@@ -12,15 +12,6 @@
  */
 
 /**
- * 操作类型
- */
-export const dbOperations = {
-  dml: ['select', 'insert', 'update', 'delete'],
-  ddl: ['execute'],
-  glob: ['file', 'reload', 'process', 'show databases'],
-};
-
-/**
  * 密码策略
  */
 export enum PASSWORD_POLICY {

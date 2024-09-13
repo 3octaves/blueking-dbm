@@ -74,7 +74,8 @@
   import {
     AccountTypes,
     ClusterTypes,
-    TicketTypes,
+    TendbClusterDbOperations,
+    TicketTypes
   } from '@common/const';
 
   import PermissionCatch from '@components/apply-permission/Catch.vue'
@@ -84,7 +85,6 @@
 
   import { getSearchSelectorParams } from '@utils';
 
-  import { dbOperations } from './common/consts';
   import AccountInfoDialog from './components/AccountInfoDialog.vue';
   import AddAccountDialog from './components/AddAccountDialog.vue';
   import CreateRule from './components/CreateRule.vue';
@@ -174,9 +174,9 @@
       multiple: true,
       logical: '&',
       children: [
-        ...dbOperations.dml.map(id => ({ id: id.toLowerCase(), name: id })),
-        ...dbOperations.ddl.map(id => ({ id: id.toLowerCase(), name: id })),
-        ...dbOperations.glob.map(id => ({ id, name: id })),
+        ...TendbClusterDbOperations.dml.map(id => ({ id: id.toLowerCase(), name: id })),
+        ...TendbClusterDbOperations.ddl.map(id => ({ id: id.toLowerCase(), name: id })),
+        ...TendbClusterDbOperations.glob.map(id => ({ id, name: id })),
       ],
     },
   ];

@@ -79,7 +79,7 @@
                 v-model="formdata.privilege.dml"
                 class="checkbox-group">
                 <BkCheckbox
-                  v-for="option of dbOperations.dml"
+                  v-for="option of TendbClusterDbOperations.dml"
                   :key="option"
                   v-bk-tooltips="{
                     content: t('你已选择所有权限'),
@@ -112,7 +112,7 @@
                 v-model="formdata.privilege.ddl"
                 class="checkbox-group">
                 <BkCheckbox
-                  v-for="option of dbOperations.ddl"
+                  v-for="option of TendbClusterDbOperations.ddl"
                   :key="option"
                   v-bk-tooltips="{
                     content: t('你已选择所有权限'),
@@ -145,7 +145,7 @@
                 v-model="formdata.privilege.glob"
                 class="checkbox-group">
                 <BkCheckbox
-                  v-for="option of dbOperations.glob"
+                  v-for="option of TendbClusterDbOperations.glob"
                   :key="option"
                   v-bk-tooltips="{
                     content: t('你已选择所有权限'),
@@ -223,13 +223,11 @@
 
   import { useBeforeClose } from '@hooks';
 
-  import { AccountTypes } from '@common/const';
+  import { AccountTypes, TendbClusterDbOperations } from '@common/const';
 
   import { messageSuccess } from '@utils';
 
-  import { dbOperations } from '../common/consts';
-
-  type AuthItemKey = keyof typeof dbOperations;
+  type AuthItemKey = keyof typeof TendbClusterDbOperations;
 
 
   interface Props {
@@ -358,7 +356,7 @@
       if (isEdit.value) {
         formdata.value.access_db = props.ruleObj!.access_db;
         editModeDisabledPrivileges.value = props.ruleObj!.privilege.split(',');
-        const dbOperationsMap = Object.entries(dbOperations).reduce((resultMap, [key, values]) => {
+        const dbOperationsMap = Object.entries(TendbClusterDbOperations).reduce((resultMap, [key, values]) => {
           values.forEach(value => {
             Object.assign(resultMap, { [value]: key });
           });
@@ -394,16 +392,16 @@
       });
   };
 
-  const getAllCheckedboxValue = (key: AuthItemKey) => formdata.value.privilege[key].length === dbOperations[key].length;
+  const getAllCheckedboxValue = (key: AuthItemKey) => formdata.value.privilege[key].length === TendbClusterDbOperations[key].length;
 
   const getAllCheckedboxIndeterminate = (key: AuthItemKey) => (
     formdata.value.privilege[key].length > 0
-    && formdata.value.privilege[key].length !== dbOperations[key].length
+    && formdata.value.privilege[key].length !== TendbClusterDbOperations[key].length
   );
 
   const handleSelectedAll = (key: AuthItemKey, value: boolean) => {
     if (value) {
-      formdata.value.privilege[key] = [...dbOperations[key]];
+      formdata.value.privilege[key] = [...TendbClusterDbOperations[key]];
       return;
     }
 

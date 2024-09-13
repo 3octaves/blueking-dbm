@@ -10,12 +10,15 @@
  * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for
  * the specific language governing permissions and limitations under the License.
  */
+
 import type { RouteRecordRaw } from 'vue-router';
 
 import FunctionControllModel, {
   type ExtractedControllerDataKeys,
   type MySQLFunctions,
 } from '@services/model/function-controller/functionController';
+
+import { AccountTypes } from '@common/const';
 
 import { checkDbConsole } from '@utils';
 
@@ -282,6 +285,15 @@ const permissionManageRoutes = [
   //   },
   //   component: () => import('@views/db-manage/tendb-cluster/permission-list/Index.vue'),
   // },
+  {
+    name: 'SpiderPermissionRetrieve',
+    path: 'permission-retrieve',
+    meta: {
+      navName: t('权限查询'),
+      accountType: AccountTypes.TENDBCLUSTER,
+    },
+    component: () => import('@views/permission-retrieve/Index.vue'),
+  },
   {
     path: 'whitelist',
     name: 'spiderWhitelist',

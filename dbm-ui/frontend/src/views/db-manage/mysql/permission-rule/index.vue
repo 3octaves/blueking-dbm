@@ -128,7 +128,8 @@
   import {
     AccountTypes,
     ClusterTypes,
-    TicketTypes,
+    MysqlDbOperations,
+    TicketTypes
   } from '@common/const';
 
   import PermissionCatch from '@components/apply-permission/Catch.vue'
@@ -138,7 +139,6 @@
 
   import { getSearchSelectorParams } from '@utils';
 
-  import { dbOperations } from './common/const';
   import AccountDialog from './components/AccountDialog.vue';
   import CreateRuleSlider from './components/CreateRule.vue';
 
@@ -188,9 +188,9 @@
       multiple: true,
       logical: '&',
       children: [
-        ...dbOperations.dml.map(id => ({ id: id.toLowerCase(), name: id })),
-        ...dbOperations.ddl.map(id => ({ id: id.toLowerCase(), name: id })),
-        ...dbOperations.glob.map(id => ({ id, name: id })),
+        ...MysqlDbOperations.dml.map(id => ({ id: id.toLowerCase(), name: id })),
+        ...MysqlDbOperations.ddl.map(id => ({ id: id.toLowerCase(), name: id })),
+        ...MysqlDbOperations.glob.map(id => ({ id, name: id })),
       ],
     },
   ];

@@ -28,7 +28,7 @@
       :is-anomalies="isAnomalies"
       :is-searching="searchValue.length > 0"
       :max-height="528"
-      :pagination="pagination.count < 10 ? false : pagination"
+      :pagination="pagination"
       remote-pagination
       :row-class="getRowClass"
       row-style="cursor: pointer"

@@ -13,6 +13,7 @@
 
 import TendbhaModel from '@services/model/mysql/tendbha';
 import TendbhaInstanceModel from '@services/model/mysql/tendbha-instance';
+import TendbHaMachineModel from '@services/model/mysql/tendbHaMachine';
 
 import http from '../http';
 import type { ListBase, ResourceTopo } from '../types';
@@ -151,4 +152,26 @@ export function exportTendbhaClusterToExcel(params: { cluster_ids?: number[] }) 
  */
 export function exportTendbhaInstanceToExcel(params: { bk_host_ids?: number[] }) {
   return http.post<string>(`${getRootPath()}/export_instance/`, params, { responseType: 'blob' });
+}
+
+/**
+ * 查询主机列表
+ */
+export function getTendbHaMachineList(params: {
+  limit?: number;
+  offset?: number;
+  bk_host_id?: number;
+  ip?: string;
+  machine_type?: string;
+  bk_os_name?: string;
+  bk_cloud_id?: number;
+  bk_agent_id?: string;
+  instance_role?: string;
+  spider_role?: string;
+  creator?: string;
+}) {
+  return http.get<ListBase<TendbHaMachineModel[]>>(`${getRootPath()}/list_machines/`, params).then((data) => ({
+    ...data,
+    results: data.results.map((item) => new TendbHaMachineModel(item)),
+  }));
 }
