@@ -27,19 +27,26 @@
   </div>
 </template>
 <script setup lang="ts">
+  import type { Instance, SingleTarget } from 'tippy.js';
   import { nextTick, onBeforeUpdate, onMounted, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
+
+  import { dbTippy } from '@common/tippy';
 
   interface Props {
     line: number;
     expandable?: boolean;
+    showTooltips?: boolean;
   }
 
   const props = withDefaults(defineProps<Props>(), {
     expandable: true,
+    showTooltips: false,
   });
 
   const { t } = useI18n();
+
+  let tippyInst: Instance;
 
   const rootRef = ref<HTMLElement>();
   const placeholderRef = ref<HTMLElement>();
@@ -54,7 +61,9 @@
     nextTick(() => {
       const { height: placeholderHeight } = placeholderRef.value!.getBoundingClientRect();
 
-      isShowExpand.value = rootHeight < placeholderHeight;
+      if (props.expandable) {
+        isShowExpand.value = rootHeight < placeholderHeight;
+      }
     });
   };
   let rootHeight = 0;
@@ -65,13 +74,36 @@
     isMore.value = !isMore.value;
   };
 
+  const createTippyInst = () => {
+    if (props.showTooltips) {
+      const { width } = rootRef.value!.getBoundingClientRect();
+      tippyInst = dbTippy(rootRef.value as SingleTarget, {
+        content: placeholderRef.value,
+        appendTo: () => document.body,
+        maxWidth: width,
+        arrow: true,
+        zIndex: 999999,
+      });
+    }
+  };
+
+  const destroyTippyInst = () => {
+    if (tippyInst) {
+      tippyInst.hide();
+      tippyInst.unmount();
+      tippyInst.destroy();
+    }
+  };
+
   onMounted(() => {
     rootHeight = rootRef.value!.getBoundingClientRect().height;
     calcShowExpand();
+    createTippyInst();
   });
 
   onBeforeUpdate(() => {
     calcShowExpand();
+    destroyTippyInst();
   });
 </script>
 <style lang="less">

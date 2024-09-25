@@ -3,6 +3,7 @@ export * from './clusterInsStatus';
 export * from './clusterTypeInfos';
 export * from './clusterTypes';
 export * from './confLevels';
+export * from './dbOperations';
 export * from './dbSysExclude';
 export * from './dbTypeInfos';
 export * from './dbTypes';

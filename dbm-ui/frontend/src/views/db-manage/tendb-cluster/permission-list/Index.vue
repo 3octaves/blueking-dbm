@@ -55,11 +55,9 @@
 
   import { getPermissionRules } from '@services/source/permission';
 
-  import { AccountTypes, ClusterTypes } from '@common/const';
+  import { AccountTypes, ClusterTypes, TendbClusterDbOperations } from '@common/const';
 
   import ClusterAuthorize from '@views/db-manage/common/cluster-authorize/ClusterAuthorize.vue';
-
-  import { dbOperations } from '../permission/common/consts';
 
   import ExcelAuthorize from './components/ExcelAuthorize.vue';
 
@@ -131,9 +129,9 @@
       id: 'privilege',
       multiple: true,
       children: [
-        ...dbOperations.dml.map((id) => ({ id: id.toLowerCase(), name: id })),
-        ...dbOperations.ddl.map((id) => ({ id: id.toLowerCase(), name: id })),
-        ...dbOperations.glob.map((id) => ({ id, name: id })),
+        ...TendbClusterDbOperations.dml.map((id) => ({ id: id.toLowerCase(), name: id })),
+        ...TendbClusterDbOperations.ddl.map((id) => ({ id: id.toLowerCase(), name: id })),
+        ...TendbClusterDbOperations.glob.map((id) => ({ id, name: id })),
       ],
     },
   ];
