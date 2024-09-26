@@ -27,6 +27,7 @@
   import TableTagInput from '@components/render-table/columns/db-table-name/Index.vue';
 
   interface Props {
+    data?: string[];
     required?: boolean;
     single?: boolean;
     rules?: {
@@ -44,6 +45,7 @@
   }
 
   const props = withDefaults(defineProps<Props>(), {
+    data: () => [],
     required: true,
     single: false,
     rules: undefined,
@@ -54,7 +56,7 @@
   const { t } = useI18n();
 
   const tagRef = ref();
-  const localValue = ref<string[]>([]);
+  const localValue = ref<string[]>(props.data);
 
   const rules = computed(() => {
     if (props.rules && props.rules.length > 0) {

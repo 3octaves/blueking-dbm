@@ -35,54 +35,19 @@
 <script setup lang="tsx">
   import { useI18n } from 'vue-i18n';
 
-  import type { TicketDetails } from '@services/types/ticket';
+  import TicketModel, { type Mongo } from '@services/model/ticket/ticket';
 
-  interface DbTableBackupDetails {
-    clusters: {
-      [clusterId: string]: {
-        alias: string;
-        bk_biz_id: number;
-        bk_cloud_id: number;
-        cluster_type: string;
-        cluster_type_name: string;
-        creator: string;
-        db_module_id: number;
-        disaster_tolerance_level: string;
-        id: number;
-        immute_domain: string;
-        major_version: string;
-        name: string;
-        phase: string;
-        region: string;
-        status: string;
-        tag: {
-          bk_biz_id?: number;
-          name?: string;
-          type?: string;
-        }[];
-        time_zone: string;
-        updater: string;
-      };
-    };
-    file_tag: string;
-    backup_type?: string;
-    infos: {
-      cluster_ids: number[];
-      backup_host: string;
-      ns_filter: {
-        db_patterns: string[];
-        ignore_dbs: string[];
-        ignore_tables: string[];
-        table_patterns: string[];
-      };
-    }[];
-  }
+  import { TicketTypes } from '@common/const';
 
   interface Props {
-    ticketDetails: TicketDetails<DbTableBackupDetails>
+    ticketDetails: TicketModel<Mongo.TableBackup>
   }
 
   const props = defineProps<Props>();
+
+  defineOptions({
+    name: TicketTypes.MONGODB_FULL_BACKUP,
+  });
 
   const { t } = useI18n();
 

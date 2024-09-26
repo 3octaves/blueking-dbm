@@ -83,6 +83,8 @@
   import { getMongoList } from '@services/source/mongodb';
   import { createTicket } from '@services/source/ticket';
 
+  import { useTicketCloneInfo } from '@hooks';
+
   import { useGlobalBizs } from '@stores';
 
   import { ClusterTypes, TicketTypes } from '@common/const';
@@ -104,6 +106,17 @@
   const router = useRouter();
   const { t } = useI18n();
   const { currentBizId } = useGlobalBizs();
+
+  // 单据克隆
+  useTicketCloneInfo({
+    type: TicketTypes.MONGODB_ADD_SHARD_NODES,
+    onSuccess(cloneData) {
+      tableData.value = cloneData.tableDataList;
+      isIgnoreBusinessAccess.value = !cloneData.isSafe;
+      // remark.value = cloneData.remark;
+      window.changeConfirm = true;
+    },
+  });
 
   const isIgnoreBusinessAccess = ref(false);
   const rowRefs = ref();

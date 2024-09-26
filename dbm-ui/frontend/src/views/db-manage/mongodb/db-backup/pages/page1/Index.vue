@@ -32,7 +32,7 @@
       </RenderData>
       <DbForm
         ref="formRef"
-        class="db-backup-form"
+        class="toolbox-form db-backup-form"
         form-type="vertical"
         :model="formData"
         style="margin-top: 16px">
@@ -63,6 +63,14 @@
               {{ t('否') }}
             </BkRadio>
           </BkRadioGroup>
+        </BkFormItem>
+        <BkFormItem :label="t('备注')">
+          <BkInput
+            v-model="formData.remark"
+            :maxlength="100"
+            :placeholder="t('请提供更多有用信息申请信息_以获得更快审批')"
+            style="width: 700px"
+            type="textarea" />
         </BkFormItem>
       </DbForm>
     </div>
@@ -103,6 +111,8 @@
   import { getMongoList } from '@services/source/mongodb';
   import { createTicket } from '@services/source/ticket';
 
+  import { useTicketCloneInfo } from '@hooks';
+
   import { useGlobalBizs } from '@stores';
 
   import { ClusterTypes, TicketTypes } from '@common/const';
@@ -115,11 +125,24 @@
   const createDefaultData = () => ({
     file_tag: 'normal_backup',
     oplog: '0',
+    remark: '',
   });
 
   const { t } = useI18n();
   const router = useRouter();
   const { currentBizId } = useGlobalBizs();
+
+  // 单据克隆
+  useTicketCloneInfo({
+    type: TicketTypes.MONGODB_FULL_BACKUP,
+    onSuccess(cloneData) {
+      tableData.value = cloneData.tableDataList;
+      formData.file_tag = cloneData.fileTag;
+      formData.oplog = cloneData.oplog ? '1' : '0';
+      formData.remark = cloneData.remark;
+      window.changeConfirm = true;
+    },
+  });
 
   const formRef = ref();
   const rowRefs = ref();

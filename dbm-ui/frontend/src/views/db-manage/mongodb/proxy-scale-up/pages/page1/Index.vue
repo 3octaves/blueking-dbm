@@ -74,6 +74,8 @@
   import { getMongoList } from '@services/source/mongodb';
   import { createTicket } from '@services/source/ticket';
 
+  import { useTicketCloneInfo } from '@hooks';
+
   import { useGlobalBizs } from '@stores';
 
   import { ClusterTypes, TicketTypes } from '@common/const';
@@ -88,6 +90,15 @@
   const { currentBizId } = useGlobalBizs();
   const { t } = useI18n();
   const router = useRouter();
+
+  // 单据克隆
+  useTicketCloneInfo({
+    type: TicketTypes.MONGODB_ADD_MONGOS,
+    onSuccess(cloneData) {
+      tableData.value = cloneData.tableDataList;
+      window.changeConfirm = true;
+    },
+  });
 
   const rowRefs = ref();
   const isShowMasterInstanceSelector = ref(false);

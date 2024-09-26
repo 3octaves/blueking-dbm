@@ -23,47 +23,13 @@
   import { useI18n } from 'vue-i18n';
   import { useRequest } from 'vue-request';
 
+  import TicketModel, { type Mongo } from '@services/model/ticket/ticket';
   import { getMongoList } from '@services/source/mongodb';
-  import type { TicketDetails } from '@services/types/ticket';
 
-  interface ProxyScaleDownDetails {
-    clusters: {
-      [key: string]: {
-        alias: string;
-        bk_biz_id: number;
-        bk_cloud_id: number;
-        cluster_type: string;
-        cluster_type_name: string;
-        creator: string;
-        disaster_tolerance_level: string;
-        db_module_id: number;
-        id: number;
-        immute_domain: string;
-        major_version: string;
-        name: string;
-        phase: string;
-        region: string;
-        status: string;
-        tag: string[];
-        time_zone: string;
-        updater: string;
-      };
-    };
-    infos: {
-      cluster_id: number;
-      reduce_count: number;
-      reduce_nodes: {
-        ip: string;
-        bk_host_id: number;
-        bk_cloud_id: number;
-      }[];
-      role: string;
-    }[];
-    is_safe: boolean;
-  }
+  import { TicketTypes } from '@common/const';
 
   interface Props {
-    ticketDetails: TicketDetails<ProxyScaleDownDetails>;
+    ticketDetails: TicketModel<Mongo.ProxyScaleDown>;
   }
 
   interface RowData {
@@ -74,6 +40,10 @@
   }
 
   const props = defineProps<Props>();
+
+  defineOptions({
+    name: TicketTypes.MONGODB_SCALE_UPDOWN,
+  });
 
   const { t } = useI18n();
 

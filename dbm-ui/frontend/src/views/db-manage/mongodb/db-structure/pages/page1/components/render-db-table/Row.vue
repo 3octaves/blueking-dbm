@@ -14,19 +14,25 @@
 <template>
   <tr>
     <td style="padding: 0">
-      <RenderDbName ref="dbPatternsRef" />
+      <RenderDbName
+        ref="dbPatternsRef"
+        :data="data.databases" />
     </td>
     <td style="padding: 0">
       <RenderDbName
         ref="ignoreDbsRef"
+        :data="data.databasesIgnore"
         :required="false" />
     </td>
     <td style="padding: 0">
-      <RenderTableName ref="tablePatternsRef" />
+      <RenderTableName
+        ref="tablePatternsRef"
+        :data="data.tables" />
     </td>
     <td style="padding: 0">
       <RenderTableName
         ref="ignoreTablesRef"
+        :data="data.tablesIgnore"
         :required="false" />
     </td>
   </tr>
@@ -36,26 +42,36 @@
 
   export interface IDataRow {
     rowKey: string;
-    clusterName: string;
-    databases?: string[];
-    databasesIgnore?: string[];
-    tables?: string[];
-    tablesIgnore?: string[];
+    // clusterName: string;
+    databases: string[];
+    databasesIgnore: string[];
+    tables: string[];
+    tablesIgnore: string[];
   }
 
   // 创建表格数据
-  export const createRowData = () => ({
+  export const createRowData = (data?: Omit<IDataRow, 'rowKey'>) => ({
     rowKey: random(),
-    clusterName: '',
+    // clusterName: '',
+    databases: data?.databases ?? [],
+    databasesIgnore: data?.databasesIgnore ?? [],
+    tables: data?.tables ?? [],
+    tablesIgnore: data?.tablesIgnore ?? [],
   });
 </script>
 <script setup lang="ts">
   import RenderDbName from '@views/db-manage/mongodb/components/edit-field/DbName.vue';
   import RenderTableName from '@views/db-manage/mongodb/components/edit-field/TableName.vue';
 
+  interface Props {
+    data: IDataRow;
+  }
+
   interface Exposes {
     getValue: () => Promise<any>;
   }
+
+  defineProps<Props>();
 
   const dbPatternsRef = ref<InstanceType<typeof RenderDbName>>();
   const ignoreDbsRef = ref<InstanceType<typeof RenderDbName>>();

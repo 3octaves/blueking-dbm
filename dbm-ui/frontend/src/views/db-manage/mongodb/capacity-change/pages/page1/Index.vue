@@ -31,6 +31,19 @@
           @cluster-input-finish="(domain: string) => handleChangeCluster(index, domain)"
           @remove="handleRemove(index)" />
       </RenderData>
+      <DbForm
+        class="toolbox-form mt-24"
+        form-type="vertical"
+        :model="formData">
+        <BkFormItem :label="t('备注')">
+          <BkInput
+            v-model="formData.remark"
+            :maxlength="100"
+            :placeholder="t('请提供更多有用信息申请信息_以获得更快审批')"
+            style="width: 700px"
+            type="textarea" />
+        </BkFormItem>
+      </DbForm>
     </div>
     <template #action>
       <BkButton
@@ -80,6 +93,10 @@
   import RenderData from './components/Index.vue';
   import RenderDataRow, { createRowData, type IDataRow, type InfoItem } from './components/Row.vue';
 
+  const createDefaultData = () => ({
+    remark: '',
+  });
+
   const router = useRouter();
   const { currentBizId } = useGlobalBizs();
   const { t } = useI18n();
@@ -88,6 +105,8 @@
   const isShowSelector = ref(false);
   const isSubmitting = ref(false);
   const tableData = ref([createRowData()]);
+
+  const formData = reactive(createDefaultData());
 
   const selectedClusters = shallowRef<{ [key: string]: Array<MongodbModel> }>({
     [ClusterTypes.MONGO_SHARED_CLUSTER]: [],
@@ -212,6 +231,7 @@
     const params = {
       bk_biz_id: currentBizId,
       ticket_type: TicketTypes.MONGODB_SCALE_UPDOWN,
+      remark: formData.remark,
       details: {
         ip_source: 'resource_pool',
         infos,

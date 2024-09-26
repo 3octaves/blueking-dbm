@@ -25,25 +25,35 @@
         :cluster-type="clusterType" />
     </td>
     <td style="padding: 0">
-      <RenderDropType ref="dropTypeRef" />
+      <RenderDropType
+        ref="dropTypeRef"
+        :data="data.dropType" />
     </td>
     <td style="padding: 0">
-      <RenderDropIndex ref="dropIndexRef" />
+      <RenderDropIndex
+        ref="dropIndexRef"
+        :data="data.dropIndex" />
     </td>
     <td style="padding: 0">
-      <RenderDbName ref="dbPatternsRef" />
+      <RenderDbName
+        ref="dbPatternsRef"
+        :data="data.dbPatterns" />
     </td>
     <td style="padding: 0">
       <RenderDbName
         ref="ignoreDbsRef"
+        :data="data.ignoreDbs"
         :required="false" />
     </td>
     <td style="padding: 0">
-      <RenderTableName ref="tablePatternsRef" />
+      <RenderTableName
+        ref="tablePatternsRef"
+        :data="data.tablePatterns" />
     </td>
     <td style="padding: 0">
       <RenderTableName
         ref="ignoreTablesRef"
+        :data="data.ignoreTables"
         :required="false" />
     </td>
     <OperateColumn
@@ -60,6 +70,8 @@
     clusterName: string;
     clusterId: number;
     clusterType: string;
+    dropType?: string;
+    dropIndex?: boolean;
     dbPatterns?: string[];
     tablePatterns?: string[];
     ignoreDbs?: string[];

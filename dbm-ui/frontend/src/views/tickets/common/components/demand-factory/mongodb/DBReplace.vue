@@ -20,75 +20,19 @@
 <script setup lang="tsx">
   import { useI18n } from 'vue-i18n';
 
-  import type { TicketDetails } from '@services/types/ticket';
+  import TicketModel, { type Mongo } from '@services/model/ticket/ticket';
 
-  interface DbReplaceDetails {
-    clusters: {
-      [clusterId: number]: {
-        alias: string;
-        bk_biz_id: number;
-        bk_cloud_id: number;
-        cluster_type: string;
-        cluster_type_name: string;
-        creator: string;
-        db_module_id: number;
-        disaster_tolerance_level: string;
-        id: number;
-        immute_domain: string;
-        major_version: string;
-        name: string;
-        phase: string;
-        region: string;
-        status: string;
-        tag: any[];
-        time_zone: string;
-        updater: string;
-      };
-    };
-    infos: {
-      cluster_id: number;
-      mongos: {
-        ip: string;
-        spec_id: number;
-      }[];
-      mongodb: {
-        ip: string;
-        spec_id: number;
-      }[];
-      mongo_config: {
-        ip: string;
-        spec_id: number;
-      }[];
-    }[];
-    ip_source: string;
-    specs: {
-      [key: string]: {
-        cpu: {
-          max: number;
-          min: number;
-        };
-        device_class: string[];
-        id: number;
-        mem: {
-          max: number;
-          min: number;
-        };
-        name: string;
-        qps: Record<string, unknown>;
-        storage_spec: {
-          mount_point: string;
-          size: number;
-          type: string;
-        }[];
-      };
-    };
-  }
+  import { TicketTypes } from '@common/const';
 
   interface Props {
-    ticketDetails: TicketDetails<DbReplaceDetails>;
+    ticketDetails: TicketModel<Mongo.DbReplace>;
   }
 
   const props = defineProps<Props>();
+
+  defineOptions({
+    name: TicketTypes.MONGODB_CUTOFF,
+  });
 
   const { t } = useI18n();
 

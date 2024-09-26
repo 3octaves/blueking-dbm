@@ -20,22 +20,20 @@
 <script setup lang="tsx">
   import { useI18n } from 'vue-i18n';
 
-  import type { TicketDetails } from '@services/types/ticket';
+  import type { ScaleUpDown } from '@services/model/ticket/details/mongo';
+  import TicketModel, { type Mongo } from '@services/model/ticket/ticket';
 
-  type Infos = {
-    cluster_id: number,
-    shard_machine_group: number,
-    shard_node_count: number,
-  }
+  import { TicketTypes } from '@common/const';
 
   interface Props {
-    ticketDetails: TicketDetails<{
-      infos: Infos[]
-      ip_source: string,
-    }>
+    ticketDetails: TicketModel<Mongo.ScaleUpDown>
   }
 
   defineProps<Props>();
+
+  defineOptions({
+    name: TicketTypes.MONGODB_SCALE_UPDOWN,
+  });
 
   const { t } = useI18n();
 
@@ -43,17 +41,17 @@
     {
       label: t('集群ID'),
       field: 'cluster_id',
-      render: ({ data }: { data: Infos }) => <span>{data.cluster_id || '--'}</span>,
+      render: ({ data }: { data: ScaleUpDown['infos'][number] }) => <span>{data.cluster_id || '--'}</span>,
     },
     {
       label: t('所需机组数'),
       field: 'shard_machine_group',
-      render: ({ data }: { data: Infos }) => <span>{data.shard_machine_group || '--'}</span>,
+      render: ({ data }: { data: ScaleUpDown['infos'][number] }) => <span>{data.shard_machine_group || '--'}</span>,
     },
     {
       label: t('每个Shard节点数'),
       field: 'shard_node_count',
-      render: ({ data }: { data: Infos }) => <span>{data.shard_node_count || '--'}</span>,
+      render: ({ data }: { data: ScaleUpDown['infos'][number] }) => <span>{data.shard_node_count || '--'}</span>,
     },
   ];
 </script>

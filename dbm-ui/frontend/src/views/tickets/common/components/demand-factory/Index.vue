@@ -41,22 +41,6 @@
   import DefaultDetails from './Default.vue';
   import InfluxdbOperations from './influxdb/Operations.vue';
   import InfluxdbReplace from './influxdb/Replace.vue';
-  import MongoAuthrizeRules from './mongodb/AuthorizeRules.vue';
-  import MongoCapacityChange from './mongodb/CapacityChange.vue';
-  import MongoDbBackup from './mongodb/DbBackup.vue';
-  import MongoDbClear from './mongodb/DbClear.vue';
-  import MongoDBReplace from './mongodb/DBReplace.vue';
-  import MongoDbStruct from './mongodb/DbStruct.vue';
-  import MongoDbTableBackup from './mongodb/DbTableBackup.vue';
-  import MongoDetailsClusterOperation from './mongodb/DetailsClusterOperation.vue';
-  import DetailsMongoDBReplicaSet from './mongodb/DetailsMongoDBReplicaSet.vue';
-  import DetailsMongoDBSharedCluster from './mongodb/DetailsMongoDBSharedCluster.vue';
-  import MongoProxyScaleDown from './mongodb/ProxyScaleDown.vue';
-  import MongoProxyScaleUp from './mongodb/ProxyScaleUp.vue';
-  import MongoScriptExecute from './mongodb/script-execute/Index.vue';
-  import MongoShardScaleDown from './mongodb/ShardScaleDown.vue';
-  import MongoShardScaleUp from './mongodb/ShardScaleUp.vue';
-  import MongoTemporaryDestrot from './mongodb/TemporaryDestrot.vue';
   import MySQLAuthorizeRule from './mysql/authorize-rule/Index.vue';
   import MySQLChecksum from './mysql/Checksum.vue';
   import MySQLClone from './mysql/Clone.vue';
@@ -137,6 +121,10 @@
   const props = defineProps<Props>();
 
   const sqlserverDetailModule = import.meta.glob<{ default: () => RouteRecordRaw[] }>('./sqlserver/*.vue', {
+    eager: true,
+  });
+
+  const mongoDetailModule = import.meta.glob<{ default: () => RouteRecordRaw[] }>('./mongo/*.vue', {
     eager: true,
   });
 
@@ -255,13 +243,13 @@
     TicketTypes.REDIS_PLUGIN_DELETE_CLB,
   ];
 
-  const mongoClusterOprationTypes = [
-    TicketTypes.MONGODB_ENABLE,
-    TicketTypes.MONGODB_DISABLE,
-    TicketTypes.MONGODB_DESTROY,
-  ];
+  // const mongoClusterOprationTypes = [
+  //   TicketTypes.MONGODB_ENABLE,
+  //   TicketTypes.MONGODB_DISABLE,
+  //   TicketTypes.MONGODB_DESTROY,
+  // ];
 
-  const mongoAuthorizeRulesTypes = [TicketTypes.MONGODB_AUTHORIZE, TicketTypes.MONGODB_EXCEL_AUTHORIZE];
+  // const mongoAuthorizeRulesTypes = [TicketTypes.MONGODB_AUTHORIZE, TicketTypes.MONGODB_EXCEL_AUTHORIZE];
 
   // const sqlserverAuthorizeRulesTypes = [
   //   TicketTypes.SQLSERVER_AUTHORIZE_RULES,
@@ -339,20 +327,6 @@
     [TicketTypes.TENDBCLUSTER_TRUNCATE_DATABASE]: SpiderTruncateDatabase,
     [TicketTypes.RIAK_CLUSTER_APPLY]: DetailRiak,
     [TicketTypes.RIAK_CLUSTER_REBOOT]: RiakReboot,
-    [TicketTypes.MONGODB_SHARD_APPLY]: DetailsMongoDBSharedCluster,
-    [TicketTypes.MONGODB_REPLICASET_APPLY]: DetailsMongoDBReplicaSet,
-    [TicketTypes.MONGODB_EXEC_SCRIPT_APPLY]: MongoScriptExecute,
-    [TicketTypes.MONGODB_ADD_SHARD_NODES]: MongoShardScaleUp,
-    [TicketTypes.MONGODB_REDUCE_SHARD_NODES]: MongoShardScaleDown,
-    [TicketTypes.MONGODB_REDUCE_MONGOS]: MongoProxyScaleDown,
-    [TicketTypes.MONGODB_BACKUP]: MongoDbTableBackup,
-    [TicketTypes.MONGODB_FULL_BACKUP]: MongoDbBackup,
-    [TicketTypes.MONGODB_REMOVE_NS]: MongoDbClear,
-    [TicketTypes.MONGODB_RESTORE]: MongoDbStruct,
-    [TicketTypes.MONGODB_CUTOFF]: MongoDBReplace,
-    [TicketTypes.MONGODB_SCALE_UPDOWN]: MongoCapacityChange,
-    [TicketTypes.MONGODB_ADD_MONGOS]: MongoProxyScaleUp,
-    [TicketTypes.MONGODB_TEMPORARY_DESTROY]: MongoTemporaryDestrot,
     [TicketTypes.TENDBCLUSTER_MIGRATE_CLUSTER]: SpiderMigrateCluster,
     [TicketTypes.REDIS_INS_APPLY]: DetailsRedisHa,
     [TicketTypes.MYSQL_PROXY_UPGRADE]: MySQLVerisonProxyUpgrade,
@@ -364,10 +338,8 @@
   const detailsComp = computed(() => {
     const ticketType = props.data.ticket_type;
 
-    const renderModule = _.find(
-      Object.values(sqlserverDetailModule),
-      (moduleItem) => moduleItem.default.name === ticketType,
-    );
+    const moduleMap = Object.assign({}, sqlserverDetailModule, mongoDetailModule);
+    const renderModule = _.find(Object.values(moduleMap), (moduleItem) => moduleItem.default.name === ticketType);
 
     if (renderModule) {
       return renderModule.default;
@@ -435,14 +407,14 @@
     if (dumperNodeStatusUpdateType.includes(ticketType)) {
       return DumperNodeStatusUpdate;
     }
-    // mongo 启停删
-    if (mongoClusterOprationTypes.includes(ticketType)) {
-      return MongoDetailsClusterOperation;
-    }
-    // mongo 授权
-    if (mongoAuthorizeRulesTypes.includes(ticketType)) {
-      return MongoAuthrizeRules;
-    }
+    // // mongo 启停删
+    // if (mongoClusterOprationTypes.includes(ticketType)) {
+    //   return MongoDetailsClusterOperation;
+    // }
+    // // mongo 授权
+    // if (mongoAuthorizeRulesTypes.includes(ticketType)) {
+    //   return MongoAuthrizeRules;
+    // }
     // // SQLServer 申请
     // if (sqlserverApplyTiketType.includes(ticketType)) {
     //   return SqlserverDetails;

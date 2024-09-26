@@ -31,6 +31,19 @@
           @host-input-finish="(ip: string) => handleChangeHostIp(index, ip)"
           @remove="handleRemove(index)" />
       </RenderData>
+      <DbForm
+        class="toolbox-form mt-24"
+        form-type="vertical"
+        :model="formData">
+        <BkFormItem :label="t('备注')">
+          <BkInput
+            v-model="formData.remark"
+            :maxlength="100"
+            :placeholder="t('请提供更多有用信息申请信息_以获得更快审批')"
+            style="width: 700px"
+            type="textarea" />
+        </BkFormItem>
+      </DbForm>
     </div>
     <template #action>
       <BkButton
@@ -69,6 +82,8 @@
   import { getMongoInstancesList } from '@services/source/mongodb';
   import { createTicket } from '@services/source/ticket';
 
+  import { useTicketCloneInfo } from '@hooks';
+
   import { useGlobalBizs } from '@stores';
 
   import { TicketTypes } from '@common/const';
@@ -78,14 +93,32 @@
   import RenderData from './components/Index.vue';
   import RenderDataRow, { createRowData, type IDataRow } from './components/Row.vue';
 
+  const createDefaultData = () => ({
+    remark: '',
+  });
+
   const { currentBizId } = useGlobalBizs();
   const { t } = useI18n();
   const router = useRouter();
+
+  // 单据克隆
+  useTicketCloneInfo({
+    type: TicketTypes.MONGODB_CUTOFF,
+    onSuccess(cloneData) {
+      const { tableDataList } = cloneData;
+      tableData.value = tableDataList;
+      // remark.value = cloneData.remark;
+      window.changeConfirm = true;
+    },
+  });
+
   const rowRefs = ref();
   const isShowMasterInstanceSelector = ref(false);
   const isSubmitting = ref(false);
-
   const tableData = ref([createRowData()]);
+
+  const formData = reactive(createDefaultData());
+
   const selected = shallowRef({ mongoCluster: [] } as InstanceSelectorValues<MongodbInstanceModel>);
 
   const totalNum = computed(() => tableData.value.filter((item) => Boolean(item.ip)).length);
@@ -237,6 +270,7 @@
     const params = {
       bk_biz_id: currentBizId,
       ticket_type: TicketTypes.MONGODB_CUTOFF,
+      remark: formData.remark,
       details: {
         ip_source: 'resource_pool',
         infos,

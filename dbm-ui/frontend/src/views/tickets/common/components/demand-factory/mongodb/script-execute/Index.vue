@@ -78,53 +78,26 @@
   import type { TablePropTypes } from 'bkui-vue/lib/table/props';
   import { useI18n } from 'vue-i18n';
 
-  import type { TicketDetails } from '@services/types/ticket';
+  import TicketModel, { type Mongo } from '@services/model/ticket/ticket';
 
   import { useDefaultPagination } from '@hooks';
+
+  import { TicketTypes } from '@common/const';
 
   import DBCollapseTable from '@components/db-collapse-table/DBCollapseTable.vue';
 
   import RenderFileContent from './components/RenderFileContent.vue';
   import RenderFileList from './components/SqlFileList.vue';
 
-  interface MongoScriptExecuteDetails {
-    clusters: Record<string, {
-      id: number;
-      tag: {
-        name: string;
-        type: string;
-        bk_biz_id: number;
-      }[];
-      name: string;
-      alias: string;
-      phase: string;
-      region: string;
-      status: string;
-      creator: string;
-      updater: string;
-      bk_biz_id: number;
-      time_zone: string;
-      bk_cloud_id: number;
-      cluster_type: string;
-      db_module_id: number;
-      immute_domain: string;
-      major_version: string;
-      cluster_type_name: string;
-      disaster_tolerance_level: string;
-    }>;
-    cluster_ids: number[];
-    mode: string;
-    scripts: {
-      name: string,
-      content: string,
-    }[];
-  }
-
   interface Props {
-    ticketDetails: TicketDetails<MongoScriptExecuteDetails>
+    ticketDetails: TicketModel<Mongo.ScriptExecute>
   }
 
   const props = defineProps<Props>();
+
+  defineOptions({
+    name: TicketTypes.MONGODB_EXEC_SCRIPT_APPLY,
+  });
 
   const { t } = useI18n();
 
@@ -137,7 +110,7 @@
   const clusterState = reactive({
     clusterType: '',
     tableProps: {
-      data: [] as MongoScriptExecuteDetails['clusters'][keyof MongoScriptExecuteDetails['clusters']][],
+      data: [] as ScriptExecute['clusters'][keyof ScriptExecute['clusters']][],
       pagination: useDefaultPagination(),
       columns: [
         {

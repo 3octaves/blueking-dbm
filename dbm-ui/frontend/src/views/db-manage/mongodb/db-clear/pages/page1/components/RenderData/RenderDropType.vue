@@ -24,9 +24,15 @@
 
   import TableEditSelect from '@components/render-table/columns/select/index.vue';
 
+  interface Props {
+    data?: string;
+  }
+
   interface Exposes {
     getValue: () => Promise<Record<string, string>>;
   }
+
+  const props = defineProps<Props>();
 
   const { t } = useI18n();
 
@@ -42,7 +48,7 @@
   ];
 
   const editSelectRef = ref<InstanceType<typeof TableEditSelect>>();
-  const localValue = ref('drop_collection');
+  const localValue = ref(props.data || 'drop_collection');
 
   const handleChange = (value: string) => {
     localValue.value = value;
