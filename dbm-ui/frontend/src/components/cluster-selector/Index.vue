@@ -305,7 +305,7 @@
     },
     [ClusterTypes.MONGO_REPLICA_SET]: {
       id: ClusterTypes.MONGO_REPLICA_SET,
-      name: t('集群选择'),
+      name: t('副本集'),
       disabledRowConfig: [
         {
           handler: (data: T) => data.isOffline,
@@ -319,7 +319,7 @@
     },
     [ClusterTypes.MONGO_SHARED_CLUSTER]: {
       id: ClusterTypes.MONGO_SHARED_CLUSTER,
-      name: t('集群选择'),
+      name: t('分片集群'),
       disabledRowConfig: [
         {
           handler: (data: T) => data.isOffline,
