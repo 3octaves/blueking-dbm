@@ -50,6 +50,7 @@
           :is-remote-pagination="activePanelObj?.tableConfig?.isRemotePagination"
           :last-values="lastValues"
           :manual-config="activePanelObj?.manualConfig"
+          :multiple="activePanelObj?.tableConfig?.multiple"
           :role-filter-list="activePanelObj?.tableConfig?.roleFilterList"
           :status-filter="activePanelObj?.tableConfig?.statusFilter"
           :table-setting="tableSettings"
@@ -123,6 +124,7 @@
     }[];
     spec_config?: TendbclusterMachineModel['spec_config'];
     role: string;
+    shard?: string;
   }
 
   export type InstanceSelectorValues<T> = Record<string, T[]>;
@@ -272,19 +274,19 @@
   type RedisModel = ServiceReturnType<typeof getRedisClusterList>[number];
   type RedisHostModel = ServiceReturnType<typeof getRedisMachineList>['results'][number];
 
-  interface Props {
+  type Props = {
     clusterTypes: (ClusterTypes | 'TendbClusterHost' | 'RedisHost' | 'mongoCluster')[];
     tabListConfig?: Record<string, PanelListType>;
     selected?: InstanceSelectorValues<T>;
     unqiuePanelValue?: boolean;
     unqiuePanelTips?: string;
     hideManualInput?: boolean;
-  }
+  };
 
-  interface Emits {
+  type Emits = {
     (e: 'change', value: NonNullable<Props['selected']>): void;
     (e: 'cancel'): void;
-  }
+  };
 
   const props = withDefaults(defineProps<Props>(), {
     tabListConfig: undefined,
