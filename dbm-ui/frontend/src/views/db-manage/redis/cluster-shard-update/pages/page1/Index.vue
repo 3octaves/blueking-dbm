@@ -117,6 +117,7 @@
   import { useRequest } from 'vue-request';
   import { useRouter } from 'vue-router';
 
+  import RedisModel from '@services/model/redis/redis';
   import { RepairAndVerifyFrequencyModes, RepairAndVerifyModes } from '@services/model/redis/redis-dst-history-job';
   import { listPackages } from '@services/source/package';
   import { getRedisList } from '@services/source/redis';
@@ -144,8 +145,6 @@
     type IDataRowBatchKey,
     type InfoItem,
   } from './components/Row.vue';
-
-  type RedisModel = ServiceReturnType<typeof getRedisList>['results'][number];
 
   const router = useRouter();
   const { t } = useI18n();
@@ -268,6 +267,10 @@
       proxy: {
         id: item.proxy[0].spec_config.id,
         count: new Set(item.proxy.map((item) => item.ip)).size,
+      },
+      backendGroup: {
+        id: item.cluster_spec.spec_id,
+        count: item.redis_master.length,
       },
     };
   };
