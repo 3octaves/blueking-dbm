@@ -104,8 +104,9 @@
   import _ from 'lodash';
   import { useI18n } from 'vue-i18n';
 
-  import RedisModel, { RedisClusterTypes } from '@services/model/redis/redis';
-  import ClusterSpecModel from '@services/model/resource-spec/cluster-sepc';
+  import RedisModel from '@services/model/redis/redis';
+
+  import { ClusterTypes } from '@common/const';
 
   import DisableSelect from '@components/render-table/columns/select-disable/index.vue';
   import RenderSpec from '@components/render-table/columns/spec-display/Index.vue';
@@ -116,7 +117,11 @@
 
   import { convertStorageUnits } from '@utils';
 
-  import ChooseClusterTargetPlan, { type Props as TargetPlanProps, type TargetInfo } from './ClusterDeployPlan.vue';
+  import ChooseClusterTargetPlan, {
+    type Props as TargetPlanProps,
+    type SpecResultInfo,
+    type TargetInfo,
+  } from './ClusterDeployPlan.vue';
   import type { IDataRow } from './Row.vue';
 
   interface Props {
@@ -149,16 +154,28 @@
   const selectRef = ref();
   const activeRowData = ref<TargetPlanProps['data']>();
   const showChooseClusterTargetPlan = ref(false);
-  const localValue = shallowRef<ClusterSpecModel>();
   const futureCapacity = ref(1);
   const targetObj = ref<TargetInfo>();
   const targetClusterStats = ref<RedisModel['cluster_stats']>({} as Record<string, never>);
+
+  const localValue = reactive({
+    cluster_capacity: 0,
+    max: 0,
+    cluster_shard_num: 0,
+    spec_id: 0,
+    machine_pair: 0,
+  });
 
   const currentCapacity = computed(() => {
     if (!props.rowData || _.isEmpty(props.rowData?.clusterStats)) {
       return props.rowData?.currentCapacity?.total ?? 0;
     }
     return convertStorageUnits(props.rowData.clusterStats.total, 'B', 'GB');
+  });
+
+  watchEffect(() => {
+    localValue.cluster_shard_num = props.rowData?.shardNum || 0;
+    localValue.machine_pair = props.rowData?.groupNum || 0;
   });
 
   const rules = [
@@ -187,9 +204,12 @@
           storage_spec: spec.storage_spec,
         },
         capacity: rowData.currentCapacity ?? { used: 0, total: 1 },
-        clusterType: rowData.clusterType ?? RedisClusterTypes.TwemproxyRedisInstance,
-        groupNum: rowData.groupNum ?? 0,
+        clusterType: rowData.clusterType ?? ClusterTypes.TWEMPROXY_REDIS_INSTANCE,
+        cloudId: rowData.bkCloudId,
+        // groupNum: rowData.groupNum ?? 0,
+        groupNum: localValue.machine_pair,
         shardNum: rowData.shardNum ?? 0,
+        bkCloudId: rowData.bkCloudId,
       };
       activeRowData.value = obj;
       showChooseClusterTargetPlan.value = true;
@@ -197,8 +217,8 @@
   };
 
   // 从侧边窗点击确认后触发
-  const handleChoosedTargetCapacity = (obj: ClusterSpecModel, capacity: number, targetInfo: TargetInfo) => {
-    localValue.value = obj;
+  const handleChoosedTargetCapacity = (obj: SpecResultInfo, capacity: number, targetInfo: TargetInfo) => {
+    Object.assign(localValue, obj);
     futureCapacity.value = capacity;
     targetObj.value = targetInfo;
     showChooseClusterTargetPlan.value = false;
@@ -210,18 +230,18 @@
 
   defineExpose<Exposes>({
     getValue() {
-      if (!localValue.value) {
+      if (!localValue.spec_id || !localValue.machine_pair || !localValue.cluster_shard_num) {
         return selectRef.value.getValue().then(() => true);
       }
       return Promise.resolve({
-        shard_num: localValue.value.cluster_shard_num, // props.rowData!.shardNum
-        group_num: localValue.value.machine_pair, // targetObj.value!.requireMachineGroupNum,
+        shard_num: localValue.cluster_shard_num, // props.rowData!.shardNum
+        group_num: localValue.machine_pair, // targetObj.value!.requireMachineGroupNum,
         capacity: futureCapacity.value ?? 1,
         future_capacity: futureCapacity.value ?? 1,
         update_mode: targetObj.value?.updateMode,
         resource_spec: {
           backend_group: {
-            spec_id: localValue.value.spec_id,
+            spec_id: localValue.spec_id,
             count: targetObj.value!.requireMachineGroupNum, // 机器实际需要申请的组数
             affinity: AffinityType.CROS_SUBZONE, // 暂时固定 'CROS_SUBZONE',
           },

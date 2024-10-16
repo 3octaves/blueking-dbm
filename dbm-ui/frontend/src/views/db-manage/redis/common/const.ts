@@ -19,6 +19,8 @@ import {
   WriteModes,
 } from '@services/model/redis/redis-dst-history-job';
 
+import { ClusterTypes } from '@common/const';
+
 export const repairAndVerifyFrequencyList = [
   {
     value: RepairAndVerifyFrequencyModes.ONCE_AFTER_REPLICATION,
@@ -105,9 +107,17 @@ export const repairAndVerifyTypeList = [
   },
 ];
 
-export const clusterTypeMachineMap: Record<string, string> = {
+export const QueryKeyMap: Record<string, string> = {
   TwemproxyRedisInstance: 'redis',
   TwemproxyTendisSSDInstance: 'tendisssd',
   PredixyTendisplusCluster: 'tendisplus',
   PredixyRedisCluster: 'redis',
+};
+
+export const ClusterMachineMap: Record<string, string> = {
+  [ClusterTypes.PREDIXY_TENDISPLUS_CLUSTER]: 'tendisplus',
+  [ClusterTypes.PREDIXY_REDIS_CLUSTER]: 'tendiscache',
+  [ClusterTypes.REDIS_INSTANCE]: 'tendiscache',
+  [ClusterTypes.TWEMPROXY_REDIS_INSTANCE]: 'tendiscache',
+  [ClusterTypes.TWEMPROXY_TENDIS_SSD_INSTANCE]: 'tendisssd',
 };
