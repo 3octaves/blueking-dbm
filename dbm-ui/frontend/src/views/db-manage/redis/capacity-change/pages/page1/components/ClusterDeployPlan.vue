@@ -267,7 +267,7 @@
     import type { UnwrapRef } from 'vue';
   import { useI18n } from 'vue-i18n';
 
-  import RedisModel, { ClusterMachineMap, RedisClusterTypes } from '@services/model/redis/redis';
+  import RedisModel, { RedisClusterTypes } from '@services/model/redis/redis';
   import ClusterSpecModel from '@services/model/resource-spec/cluster-sepc';
   import { getFilterClusterSpec } from '@services/source/dbresourceSpec';
   import { getRedisClusterCapacityUpdateInfo } from '@services/source/redisToolbox'
@@ -281,6 +281,7 @@
   import ClusterCapacityUsageRate from '@views/db-manage/common/cluster-capacity-usage-rate/Index.vue'
   import ValueDiff from '@views/db-manage/common/value-diff/Index.vue'
   import CustomSchema from '@views/db-manage/redis/common/cluster-deploy-plan/CustomSchema.vue';
+  import { ClusterMachineMap } from '@views/db-manage/redis/common/const'
 
   import { convertStorageUnits, messageError } from '@utils';
 

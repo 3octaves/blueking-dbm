@@ -133,7 +133,7 @@
   import TicketRemark from '@components/ticket-remark/Index.vue';
 
   import {
-    clusterTypeMachineMap,
+    QueryKeyMap,
     repairAndVerifyFrequencyList,
     repairAndVerifyTypeList,
   } from '@views/db-manage/redis/common/const';
@@ -228,7 +228,7 @@
     if (versionCluserType.value) {
       fetchListPackages({
         db_type: 'redis',
-        query_key: clusterTypeMachineMap[versionCluserType.value] ?? 'redis',
+        query_key: QueryKeyMap[versionCluserType.value] ?? 'redis',
       });
     } else {
       versionList.value = [];

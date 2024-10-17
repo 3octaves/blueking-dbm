@@ -103,7 +103,6 @@
     dbVersion: string;
     srcClusterType: string;
     clusterType: string;
-    machineType: string;
     currentShardNum: number;
     clusterTypeName: string;
     specConfig: {
@@ -180,7 +179,6 @@
     switchMode: '',
     srcClusterType: '',
     clusterType: '',
-    machineType: '',
     dbVersion: '',
     currentShardNum: 0,
     clusterTypeName: '',

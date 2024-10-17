@@ -181,8 +181,8 @@
   import _ from 'lodash';
   import { useI18n } from 'vue-i18n';
 
-  import { ClusterMachineMap, RedisClusterTypes  } from '@services/model/redis/redis';
-    import ClusterSpecModel from '@services/model/resource-spec/cluster-sepc';
+  import { RedisClusterTypes } from '@services/model/redis/redis';
+  import ClusterSpecModel from '@services/model/resource-spec/cluster-sepc';
   import { getFilterClusterSpec } from '@services/source/dbresourceSpec';
 
   import { useBeforeClose } from '@hooks';
@@ -190,6 +190,7 @@
   import DbForm from '@components/db-form/index.vue'
 
   import ApplySchema, { APPLY_SCHEME } from '@views/db-manage/common/apply-schema/Index.vue';
+  import { ClusterMachineMap } from '@views/db-manage/redis/common/const'
 
   import CustomSchema from './CustomSchema.vue';
 
@@ -486,7 +487,7 @@
         future: specInfo.totalCapcity
       })
     }
-    emits('click-confirm', result, { current: Number(specInfo.capacityNeed), future: Number(specInfo.capacityFutureNeed) });
+    emits('click-confirm', result, capacityInfo);
   }
 
   async function handleClose() {

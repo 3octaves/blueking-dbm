@@ -122,11 +122,9 @@
   ];
 
   watch(
-    [() => modelValue.value.count, () => modelValue.value.shardNum],
+    () => [modelValue.value.count, modelValue.value.shardNum],
     ([newCount, newShardNum]) => {
-      if (props.shardNumDisabled) {
-        modelValue.value.shardNum = Number((modelValue.value.clusterShardNum / modelValue.value.count).toFixed(2));
-      } else {
+      if (!props.shardNumDisabled) {
         modelValue.value.clusterShardNum = newCount * newShardNum;
       }
     },
@@ -136,7 +134,23 @@
   );
 
   watch(
-    [() => modelValue.value.specId, () => modelValue.value.count],
+    () => modelValue.value.count,
+    () => {
+      if (props.shardNumDisabled) {
+        if (modelValue.value.count) {
+          modelValue.value.shardNum = Number((modelValue.value.clusterShardNum / modelValue.value.count).toFixed(2));
+        } else {
+          modelValue.value.shardNum = 0;
+        }
+      }
+    },
+    {
+      immediate: true,
+    },
+  );
+
+  watch(
+    () => [modelValue.value.specId, modelValue.value.count],
     () => {
       nextTick(() => {
         const data = specSelectorRef.value!.getData();

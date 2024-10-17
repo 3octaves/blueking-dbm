@@ -46,14 +46,14 @@
   import { useI18n } from 'vue-i18n';
   import { useRequest } from 'vue-request';
 
-  import RedisModel, { ClusterMachineMap } from '@services/model/redis/redis';
-    import ResourceSpecModel from '@services/model/resource-spec/resourceSpec';
+  import RedisModel from '@services/model/redis/redis';
+  import ResourceSpecModel from '@services/model/resource-spec/resourceSpec';
   import type { RedisClusterTypeUpdateDetails } from '@services/model/ticket/details/redis';
   import TicketModel from '@services/model/ticket/ticket';
   import { getResourceSpecList } from '@services/source/dbresourceSpec';
   import { getRedisListByBizId } from '@services/source/redis';
 
-  import { repairAndVerifyFrequencyList, repairAndVerifyTypeList } from '@views/db-manage/redis/common/const';
+  import { ClusterMachineMap, repairAndVerifyFrequencyList, repairAndVerifyTypeList } from '@views/db-manage/redis/common/const'
 
   interface Props {
     ticketDetails: TicketModel<RedisClusterTypeUpdateDetails>
