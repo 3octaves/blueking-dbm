@@ -176,11 +176,8 @@
     }
   });
 
-  watch([
-    () => props.bizId,
-    () => props.cloudId,
-    specs,
-  ], () => {
+  watch(
+    () => [props.bizId, props.cloudId, specs], () => {
     if (
       typeof props.bizId === 'number'
       && props.bizId > 0
@@ -191,10 +188,7 @@
     }
   }, { immediate: true, deep: true });
 
-  watch([
-    () => modelValue.value.capacity,
-    () => modelValue.value.future_capacity,
-  ], ([capacityValue, futureCapacityValue]) => {
+  watch(() => [modelValue.value.capacity, modelValue.value.future_capacity], ([capacityValue, futureCapacityValue]) => {
     if (capacityValue === '' || futureCapacityValue === '') {
       resetSlider();
     } else {

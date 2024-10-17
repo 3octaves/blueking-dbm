@@ -26,14 +26,6 @@ export const enum RedisClusterTypes {
   TwemproxyTendisSSDInstance = 'TwemproxyTendisSSDInstance', // TendisSSD
 }
 
-export const ClusterMachineMap: Record<string, string> = {
-  [RedisClusterTypes.PredixyTendisplusCluster]: 'tendisplus',
-  [RedisClusterTypes.PredixyRedisCluster]: 'tendiscache',
-  [RedisClusterTypes.RedisInstance]: 'tendiscache',
-  [RedisClusterTypes.TwemproxyRedisInstance]: 'tendiscache',
-  [RedisClusterTypes.TwemproxyTendisSSDInstance]: 'tendisssd',
-};
-
 export default class Redis {
   static REDIS_DESTROY = 'REDIS_DESTROY';
   static REDIS_PROXY_CLOSE = 'REDIS_PROXY_CLOSE';
