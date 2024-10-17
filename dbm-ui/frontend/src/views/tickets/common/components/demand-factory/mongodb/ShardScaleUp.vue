@@ -29,57 +29,19 @@
 <script setup lang="tsx">
   import { useI18n } from 'vue-i18n';
 
-  import type { TicketDetails } from '@services/types/ticket';
+  import TicketModel, { type Mongo } from '@services/model/ticket/ticket';
 
-  interface ShardScaleUpDetails {
-    clusters: Record<
-      number,
-      {
-        alias: string;
-        bk_biz_id: number;
-        bk_cloud_id: number;
-        cluster_type: string;
-        cluster_type_name: string;
-        creator: string;
-        db_module_id: number;
-        disaster_tolerance_level: string;
-        id: number;
-        immute_domain: string;
-        major_version: string;
-        name: string;
-        phase: string;
-        region: string;
-        status: string;
-        tag: {
-          bk_biz_id: number;
-          name: string;
-          type: string;
-        }[];
-        time_zone: string;
-        updater: string;
-      }
-    >;
-    infos: {
-      add_shard_nodes_num: number;
-      cluster_ids: number[];
-      node_replica_count: number;
-      current_shard_nodes_num: number;
-      resource_spec: {
-        shard_nodes: {
-          count: number;
-          spec_id: number;
-        };
-      };
-    }[];
-    is_safe: boolean;
-    ip_source: string;
-  }
+  import { TicketTypes } from '@common/const';
 
   interface Props {
-    ticketDetails: TicketDetails<ShardScaleUpDetails>;
+    ticketDetails: TicketModel<Mongo.ShardScaleUp>;
   }
 
   const props = defineProps<Props>();
+
+  defineOptions({
+    name: TicketTypes.MONGODB_ADD_SHARD_NODES,
+  });
 
   const { t } = useI18n();
 

@@ -62,6 +62,19 @@
           {{ t('忽略业务连接') }}
         </span>
       </div>
+      <DbForm
+        class="toolbox-form mt-24"
+        form-type="vertical"
+        :model="formData">
+        <BkFormItem :label="t('备注')">
+          <BkInput
+            v-model="formData.remark"
+            :maxlength="100"
+            :placeholder="t('请提供更多有用信息申请信息_以获得更快审批')"
+            style="width: 700px"
+            type="textarea" />
+        </BkFormItem>
+      </DbForm>
     </div>
     <template #action>
       <BkButton
@@ -98,6 +111,8 @@
   import { getMongoList } from '@services/source/mongodb';
   import { createTicket } from '@services/source/ticket';
 
+  import { useTicketCloneInfo } from '@hooks';
+
   import { useGlobalBizs } from '@stores';
 
   import { ClusterTypes, TicketTypes } from '@common/const';
@@ -111,11 +126,25 @@
   const router = useRouter();
   const { currentBizId } = useGlobalBizs();
 
+  // 单据克隆
+  useTicketCloneInfo({
+    type: TicketTypes.MONGODB_REMOVE_NS,
+    onSuccess(cloneData) {
+      tableData.value = cloneData.tableDataList;
+      isIgnoreBusinessAccess.value = !cloneData.isSafe;
+      formData.remark = cloneData.remark;
+      clusterType.value = cloneData.tableDataList[0].clusterType as ClusterTypes;
+      window.changeConfirm = true;
+    },
+  });
+
   const rowRefs = ref();
   const isShowBatchSelector = ref(false);
   const isSubmitting = ref(false);
   const isIgnoreBusinessAccess = ref(false);
   const clusterType = ref(ClusterTypes.MONGO_REPLICA_SET);
+
+  const formData = reactive(createDefaultData());
 
   const tableData = shallowRef<Array<IDataRow>>([createRowData()]);
   const selectedClusters = shallowRef<{ [key: string]: Array<MongodbModel> }>({
@@ -228,7 +257,7 @@
       const params = {
         bk_biz_id: currentBizId,
         ticket_type: TicketTypes.MONGODB_REMOVE_NS,
-        remark: '',
+        remark: formData.remark,
         details: {
           is_safe: !isIgnoreBusinessAccess.value,
           infos,

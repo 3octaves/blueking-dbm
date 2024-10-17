@@ -2,6 +2,21 @@ import TicketModel from '@services/model/ticket/ticket';
 
 import { TicketTypes } from '@common/const';
 
+// import {
+//   generateAddShardNodesCloneData,
+//   generateAuthorizeRulesCloneData,
+//   generateBackupCloneData,
+//   generateCutOffCloneData,
+//   generateExecScriptApplyCloneData,
+//   generateFullBackupCloneData,
+//   generateProxyScaleUpCloneData,
+//   generateReduceMongosCloneData,
+//   generateReduceShardNodesCloneData,
+//   generateRemoveNsCloneData,
+//   generateReplicasetApplyCloneData,
+//   generateRestoreCloneData,
+//   generateShardApplyCloneData,
+// } from './mongo';
 import {
   generateMysqlAuthorizeRuleCloneData,
   generateMysqlChecksumCloneData,
@@ -143,6 +158,21 @@ export const generateCloneDataHandlerMap = {
   [TicketTypes.TENDBCLUSTER_MIGRATE_CLUSTER]: generateSpiderMasterSlaveCloneCloneData, // spider 迁移主从
   [TicketTypes.TENDBCLUSTER_RESTORE_LOCAL_SLAVE]: generateSpiderSlaveRebuildLocalCloneData, // spider 重建从库-原地重建
   [TicketTypes.TENDBCLUSTER_RESTORE_SLAVE]: generateSpiderSlaveRebuildNewCloneData, // spider 重建从库-新机重建
+  // [TicketTypes.MONGODB_SHARD_APPLY]: generateShardApplyCloneData, // MongoDB 分片式集群部署申请
+  // [TicketTypes.MONGODB_REPLICASET_APPLY]: generateReplicasetApplyCloneData, // MongoDB 副本集部署申请
+  // [TicketTypes.MONGODB_SCALE_UPDOWN]: 'MONGODB_SCALE_UPDOWN', // MongoDB 分片式集群单个容量变更
+  // [TicketTypes.MONGODB_AUTHORIZE]: 'MONGODB_AUTHORIZE', // MongoDB 集群授权
+  // [TicketTypes.MONGODB_AUTHORIZE_RULES]: generateAuthorizeRulesCloneData, // MongoDB 集群授权
+  // [TicketTypes.MONGODB_EXEC_SCRIPT_APPLY]: generateExecScriptApplyCloneData, // mongo 变更脚本执行
+  // [TicketTypes.MONGODB_ADD_SHARD_NODES]: generateAddShardNodesCloneData, // mongo 扩容 shard 节点数
+  // [TicketTypes.MONGODB_REDUCE_SHARD_NODES]: generateReduceShardNodesCloneData, // mongo 缩容 shard 节点数
+  // [TicketTypes.MONGODB_ADD_MONGOS]: generateProxyScaleUpCloneData, // mongo 扩容接入层
+  // [TicketTypes.MONGODB_REDUCE_MONGOS]: generateReduceMongosCloneData, // mongo 缩容接入层
+  // [TicketTypes.MONGODB_CUTOFF]: generateCutOffCloneData, // mongo 整机替换
+  // [TicketTypes.MONGODB_FULL_BACKUP]: generateFullBackupCloneData, // mongo 全库备份
+  // [TicketTypes.MONGODB_REMOVE_NS]: generateRemoveNsCloneData, // mongo 清档
+  // [TicketTypes.MONGODB_BACKUP]: generateBackupCloneData, // mongo 库表备份
+  // [TicketTypes.MONGODB_RESTORE]: generateRestoreCloneData, // mongo 定点构造
 };
 
 const importSqlserverModule = <T extends Record<string, any>>() => {
@@ -173,14 +203,36 @@ const sqlserverTicketModule = importSqlserverModule<{
   [TicketTypes.SQLSERVER_ROLLBACK]: typeof import('./sqlserver/SQLSERVER_ROLLBACK').default;
 }>();
 
+const mongoTicketModule = importSqlserverModule<{
+  [TicketTypes.MONGODB_SHARD_APPLY]: typeof import('./sqlserver/SQLSERVER_ADD_SLAVE').default;
+  [TicketTypes.MONGODB_REPLICASET_APPLY]: typeof import('./sqlserver/SQLSERVER_ADD_SLAVE').default;
+  // [TicketTypes.MONGODB_SCALE_UPDOWN]: 'MONGODB_SCALE_UPDOWN'; // MongoDB 分片式集群单个容量变更
+  // [TicketTypes.MONGODB_AUTHORIZE]: 'MONGODB_AUTHORIZE'; // MongoDB 集群授权
+  [TicketTypes.MONGODB_AUTHORIZE_RULES]: typeof import('./sqlserver/SQLSERVER_ADD_SLAVE').default;
+  [TicketTypes.MONGODB_EXEC_SCRIPT_APPLY]: typeof import('./sqlserver/SQLSERVER_ADD_SLAVE').default;
+  [TicketTypes.MONGODB_ADD_SHARD_NODES]: typeof import('./sqlserver/SQLSERVER_ADD_SLAVE').default;
+  [TicketTypes.MONGODB_REDUCE_SHARD_NODES]: typeof import('./sqlserver/SQLSERVER_ADD_SLAVE').default;
+  [TicketTypes.MONGODB_ADD_MONGOS]: typeof import('./sqlserver/SQLSERVER_ADD_SLAVE').default;
+  [TicketTypes.MONGODB_REDUCE_MONGOS]: typeof import('./sqlserver/SQLSERVER_ADD_SLAVE').default;
+  [TicketTypes.MONGODB_CUTOFF]: typeof import('./sqlserver/SQLSERVER_ADD_SLAVE').default;
+  [TicketTypes.MONGODB_FULL_BACKUP]: typeof import('./sqlserver/SQLSERVER_ADD_SLAVE').default;
+  [TicketTypes.MONGODB_REMOVE_NS]: typeof import('./sqlserver/SQLSERVER_ADD_SLAVE').default;
+  [TicketTypes.MONGODB_BACKUP]: typeof import('./sqlserver/SQLSERVER_ADD_SLAVE').default;
+  [TicketTypes.MONGODB_RESTORE]: typeof import('./sqlserver/SQLSERVER_ADD_SLAVE').default;
+}>();
+
 export const allTicketMap = {
   ...generateCloneDataHandlerMap,
   ...sqlserverTicketModule,
+  ...mongoTicketModule,
 };
 
 export type CloneDataHandlerMap = typeof allTicketMap;
 
-export type CloneDataHandlerMapKeys = keyof CloneDataHandlerMap | keyof typeof sqlserverTicketModule;
+export type CloneDataHandlerMapKeys =
+  | keyof CloneDataHandlerMap
+  | keyof typeof sqlserverTicketModule
+  | keyof typeof mongoTicketModule;
 
 export async function generateCloneData<T extends CloneDataHandlerMap>(
   ticketType: T,

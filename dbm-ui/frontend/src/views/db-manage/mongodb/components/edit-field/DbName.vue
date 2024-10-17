@@ -85,7 +85,7 @@
   let isSubmitting = false;
 
   const tagRef = ref();
-  const localValue = ref<string[]>([]);
+  const localValue = ref<string[]>(props.data);
 
   const rules = computed(() => {
     if (props.rules && props.rules.length > 0) {

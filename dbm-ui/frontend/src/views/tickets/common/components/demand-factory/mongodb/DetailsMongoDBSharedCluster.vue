@@ -21,19 +21,24 @@
   import { useI18n } from 'vue-i18n';
   import { useRequest } from 'vue-request';
 
+  import TicketModel, { type Mongo } from '@services/model/ticket/ticket';
   import { getInfrasCities } from '@services/source/ticket';
-  import type { TicketDetails } from '@services/types/ticket';
+
+  import { TicketTypes } from '@common/const';
 
   import { useAffinity } from '../../../hooks/useAffinity';
   import SpecInfos from '../../SpecInfos.vue';
-  import type { DetailsMongoDBSharedCluster } from '../common/types';
   import DemandInfo from '../components/DemandInfo.vue';
 
   interface Props{
-    ticketDetails: TicketDetails<DetailsMongoDBSharedCluster>
+    ticketDetails: TicketModel<Mongo.ApplySharedCluster>
   }
 
   const props = defineProps<Props>();
+
+  defineOptions({
+    name: TicketTypes.MONGODB_SHARD_APPLY,
+  });
 
   const { t } = useI18n();
   const { affinity } = useAffinity(props.ticketDetails);

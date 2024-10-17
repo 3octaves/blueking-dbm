@@ -19,6 +19,7 @@ import { t } from '@locales/index';
 
 import type { DetailBase } from './details/common';
 
+export type * as Mongo from './details/mongo';
 export type * as Mysql from './details/mysql';
 export type * as Redis from './details/redis';
 export type * as Sqlserver from './details/sqlserver';

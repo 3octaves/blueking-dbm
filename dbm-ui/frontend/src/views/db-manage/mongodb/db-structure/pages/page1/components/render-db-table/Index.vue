@@ -43,7 +43,7 @@
         </template>
         <template #data>
           <RenderDataRow
-            v-for="item in tableData"
+            v-for="item in data"
             :key="item.rowKey"
             ref="rowRefs"
             :data="item" />
@@ -58,17 +58,21 @@
   import RenderTableHeadColumn from '@components/render-table/HeadColumn.vue';
   import RenderTable from '@components/render-table/Index.vue';
 
-  import RenderDataRow, { createRowData, type IDataRow } from './Row.vue';
+  import RenderDataRow, { type IDataRow } from './Row.vue';
+
+  interface Props {
+    data: IDataRow[];
+  }
 
   interface Exposes {
     getValue: () => any;
   }
 
+  defineProps<Props>();
+
   const { t } = useI18n();
 
   const rowRefs = ref();
-
-  const tableData = shallowRef<Array<IDataRow>>([createRowData()]);
 
   defineExpose<Exposes>({
     async getValue() {

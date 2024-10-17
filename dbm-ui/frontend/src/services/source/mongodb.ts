@@ -18,11 +18,7 @@ import MongodbInstanceModel from '@services/model/mongodb/mongodb-instance';
 import MongodbInstanceDetailModel from '@services/model/mongodb/mongodb-instance-detail';
 import type { ListBase } from '@services/types';
 
-import { useGlobalBizs } from '@stores';
-
 import http from '../http';
-
-const { currentBizId } = useGlobalBizs();
 
 const getRootPath = () => `/apis/mongodb/bizs/${window.PROJECT_CONFIG.BIZ_ID}/mongodb_resources`;
 
@@ -206,7 +202,7 @@ export function exportMongodbInstanceToExcel(params: { bk_host_ids?: number[] })
  * 获取业务拓扑树
  */
 export function getMongoDBResourceTree(params: { cluster_type: string }) {
-  return http.get<BizConfTopoTreeModel[]>(`/apis/mongodb/bizs/${currentBizId}/resource_tree/`, params);
+  return http.get<BizConfTopoTreeModel[]>(`/apis/mongodb/bizs/${window.PROJECT_CONFIG.BIZ_ID}/resource_tree/`, params);
 }
 
 /**
@@ -214,7 +210,7 @@ export function getMongoDBResourceTree(params: { cluster_type: string }) {
  */
 export function getRelatedClustersByClusterIds(params: { cluster_ids: number[] }) {
   return http.post<RelatedCluster[]>(
-    `/apis/mongodb/bizs/${currentBizId}/cluster/find_related_clusters_by_cluster_ids/`,
+    `/apis/mongodb/bizs/${window.PROJECT_CONFIG.BIZ_ID}/cluster/find_related_clusters_by_cluster_ids/`,
     params,
   );
 }

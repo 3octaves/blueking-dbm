@@ -61,7 +61,7 @@
       </RenderData>
       <DbForm
         ref="formRef"
-        class="db-table-form"
+        class="toolbox-form db-table-form"
         form-type="vertical"
         :model="formData"
         style="margin-top: 16px">
@@ -84,6 +84,14 @@
               {{ t('3年') }}
             </BkRadio>
           </BkRadioGroup>
+        </BkFormItem>
+        <BkFormItem :label="t('备注')">
+          <BkInput
+            v-model="formData.remark"
+            :maxlength="100"
+            :placeholder="t('请提供更多有用信息申请信息_以获得更快审批')"
+            style="width: 700px"
+            type="textarea" />
         </BkFormItem>
       </DbForm>
     </div>
@@ -130,6 +138,11 @@
   import RenderData from './components/RenderData/Index.vue';
   import RenderDataRow, { createRowData, type IDataRow, type InfoItem } from './components/RenderData/Row.vue';
 
+  const createDefaultData = () => ({
+    file_tag: 'normal_backup',
+    remark: '',
+  });
+
   const { t } = useI18n();
   const router = useRouter();
   const { currentBizId } = useGlobalBizs();
@@ -145,10 +158,11 @@
     [ClusterTypes.MONGO_SHARED_CLUSTER]: [],
   });
 
-  const formData = reactive({
-    // file_tag: 'DBFILE1M',
-    file_tag: 'normal_backup',
-  });
+  // const formData = reactive({
+  //   // file_tag: 'DBFILE1M',
+  //   file_tag: 'normal_backup',
+  // });
+  const formData = reactive(createDefaultData());
 
   const isShardCluster = computed(() => clusterType.value === ClusterTypes.MONGO_SHARED_CLUSTER);
 

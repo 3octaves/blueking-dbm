@@ -32,47 +32,13 @@
   import { useI18n } from 'vue-i18n';
   import { useRequest } from 'vue-request';
 
+  import TicketModel, { type Mongo } from '@services/model/ticket/ticket';
   import { getMongoList } from '@services/source/mongodb';
-  import type { TicketDetails } from '@services/types/ticket';
 
-  interface ShardScaleDownDetails {
-    clusters: Record<
-      number,
-      {
-        alias: string;
-        bk_biz_id: number;
-        bk_cloud_id: number;
-        cluster_type: string;
-        cluster_type_name: string;
-        creator: string;
-        db_module_id: number;
-        disaster_tolerance_level: string;
-        id: number;
-        immute_domain: string;
-        major_version: string;
-        name: string;
-        phase: string;
-        region: string;
-        status: string;
-        tag: {
-          bk_biz_id: number;
-          name: string;
-          type: string;
-        }[];
-        time_zone: string;
-        updater: string;
-      }
-    >;
-    infos: {
-      cluster_id: number;
-      reduce_shard_nodes: number;
-    }[];
-    is_safe: boolean;
-    ip_source: string;
-  }
+  import { TicketTypes } from '@common/const';
 
   interface Props {
-    ticketDetails: TicketDetails<ShardScaleDownDetails>;
+    ticketDetails: TicketModel<Mongo.ShardScaleDown>;
   }
 
   interface RowData {
@@ -83,6 +49,10 @@
   }
 
   const props = defineProps<Props>();
+
+  defineOptions({
+    name: TicketTypes.MONGODB_REDUCE_SHARD_NODES,
+  });
 
   const { t } = useI18n();
 

@@ -74,6 +74,7 @@
   interface Props {
     clusterType: ClusterTypes;
     isBackupRecordType: boolean;
+    selected: Record<string, MongoDBModel[]>;
   }
 
   interface Emits {
@@ -125,6 +126,13 @@
   const isShowClusterSelector = ref(false);
   const formItemRef = ref();
   const targetClusterList = ref<Array<MongoDBModel>>([]);
+
+  watch(
+    () => props.selected,
+    () => {
+      handelClusterChange(props.selected);
+    },
+  );
 
   const handleShowClusterSelector = () => {
     isShowClusterSelector.value = true;

@@ -142,6 +142,21 @@
     [TicketTypes.TENDBCLUSTER_MIGRATE_CLUSTER]: 'spiderMasterSlaveClone', // spider 迁移主从
     [TicketTypes.TENDBCLUSTER_RESTORE_LOCAL_SLAVE]: 'spiderSlaveRebuild', // spider 重建从库-原地重建
     [TicketTypes.TENDBCLUSTER_RESTORE_SLAVE]: 'spiderSlaveRebuild', // spider 重建从库-新机重建
+    [TicketTypes.MONGODB_SHARD_APPLY]: 'MongoDBSharedClusterApply', // MongoDB 分片式集群部署申请
+    [TicketTypes.MONGODB_REPLICASET_APPLY]: 'MongoDBReplicaSetApply', // MongoDB 副本集部署申请
+    [TicketTypes.MONGODB_SCALE_UPDOWN]: 'MongoCapacityChange', // MongoDB 分片式集群单个容量变更
+    [TicketTypes.MONGODB_AUTHORIZE]: 'MONGODB_AUTHORIZE', // MongoDB 集群授权
+    [TicketTypes.MONGODB_AUTHORIZE_RULES]: 'MongodbPermission', // MongoDB 集群授权
+    [TicketTypes.MONGODB_EXEC_SCRIPT_APPLY]: 'MongoScriptExecute', // mongo 变更脚本执行
+    [TicketTypes.MONGODB_ADD_SHARD_NODES]: 'MongoShardScaleUp', // mongo 扩容 shard 节点数
+    [TicketTypes.MONGODB_REDUCE_SHARD_NODES]: 'MongoShardScaleDown', // mongo 缩容 shard 节点数
+    [TicketTypes.MONGODB_ADD_MONGOS]: 'MongoProxyScaleUp', // mongo 扩容接入层
+    [TicketTypes.MONGODB_REDUCE_MONGOS]: 'MongoProxyScaleDown', // mongo 缩容接入层
+    [TicketTypes.MONGODB_CUTOFF]: 'MongoDBReplace', // mongo 整机替换
+    [TicketTypes.MONGODB_FULL_BACKUP]: 'MongoDbBackup', // mongo 全库备份
+    [TicketTypes.MONGODB_REMOVE_NS]: 'MongoDbClear', // mongo 清档
+    [TicketTypes.MONGODB_BACKUP]: 'MongoDbTableBackup', // mongo 库表备份
+    [TicketTypes.MONGODB_RESTORE]: 'MongoDBStructure', // mongo 定点构造
   };
 
   const isShowTicketClone = computed(() => !!ticketTypeRouteNameMap[props.data.ticket_type]);

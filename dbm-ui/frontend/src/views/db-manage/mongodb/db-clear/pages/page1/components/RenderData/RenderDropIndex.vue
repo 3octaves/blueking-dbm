@@ -24,11 +24,17 @@
 
   import TableEditSelect from '@components/render-table/columns/select/index.vue';
 
+  interface Props {
+    data?: boolean;
+  }
+
   interface Exposes {
     getValue: () => Promise<{
       drop_index: boolean;
     }>;
   }
+
+  const props = defineProps<Props>();
 
   const { t } = useI18n();
 
@@ -44,7 +50,7 @@
   ];
 
   const editSelectRef = ref<InstanceType<typeof TableEditSelect>>();
-  const localValue = ref('keep');
+  const localValue = ref(props.data ? 'delete' : 'keep');
 
   const handleChange = (value: string) => {
     localValue.value = value;

@@ -92,6 +92,8 @@
   import { getMongoInstancesList, getMongoTopoList } from '@services/source/mongodb';
   import { createTicket } from '@services/source/ticket';
 
+  import { useTicketCloneInfo } from '@hooks';
+
   import { useGlobalBizs } from '@stores';
 
   import { ClusterTypes, TicketTypes } from '@common/const';
@@ -110,13 +112,24 @@
 
   const createDefaultFormData = () => ({
     clusterType: ClusterTypes.MONGO_REPLICA_SET,
+    remark: '',
+  });
+
+  // 单据克隆
+  useTicketCloneInfo({
+    type: TicketTypes.MONGODB_CUTOFF,
+    onSuccess(cloneData) {
+      const { tableDataList } = cloneData;
+      tableData.value = tableDataList;
+      // remark.value = cloneData.remark;
+      window.changeConfirm = true;
+    },
   });
 
   const rowRefs = ref();
   const isShowMasterInstanceSelector = ref(false);
   const isSubmitting = ref(false);
   const tableData = ref([createRowData()]);
-
   const selected = shallowRef({ mongoCluster: [] } as InstanceSelectorValues<MongodbInstanceModel>);
 
   const formData = reactive(createDefaultFormData());
@@ -370,6 +383,7 @@
       const params = {
         bk_biz_id: currentBizId,
         ticket_type: TicketTypes.MONGODB_CUTOFF,
+        remark: formData.remark,
         details: {
           ip_source: 'resource_pool',
           infos,

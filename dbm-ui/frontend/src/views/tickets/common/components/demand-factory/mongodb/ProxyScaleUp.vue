@@ -20,68 +20,12 @@
 <script setup lang="tsx">
   import { useI18n } from 'vue-i18n';
 
-  import type { TicketDetails } from '@services/types/ticket';
+  import TicketModel, { type Mongo } from '@services/model/ticket/ticket';
 
-  interface ProxyScaleUpDetails {
-    clusters: {
-      [key: string]: {
-        alias: string;
-        bk_biz_id: number;
-        bk_cloud_id: number;
-        cluster_type: string;
-        cluster_type_name: string;
-        creator: string;
-        disaster_tolerance_level: string;
-        db_module_id: number;
-        id: number;
-        immute_domain: string;
-        major_version: string;
-        name: string;
-        phase: string;
-        region: string;
-        status: string;
-        tag: string[];
-        time_zone: string;
-        updater: string;
-      };
-    };
-    infos: {
-      cluster_id: number;
-      resource_spec: {
-        mongos: {
-          count: number;
-          spec_id: number;
-        };
-      };
-      role: string;
-    }[];
-    is_safe: boolean;
-    ip_source: string;
-    specs: {
-      [key: string]: {
-        cpu: {
-          max: number;
-          min: number;
-        };
-        device_class: string[];
-        id: number;
-        mem: {
-          max: number;
-          min: number;
-        };
-        name: string;
-        qps: Record<string, unknown>;
-        storage_spec: {
-          mount_point: string;
-          size: number;
-          type: string;
-        }[];
-      };
-    };
-  }
+  import { TicketTypes } from '@common/const';
 
   interface Props {
-    ticketDetails: TicketDetails<ProxyScaleUpDetails>;
+    ticketDetails: TicketModel<Mongo.ProxyScaleUp>;
   }
 
   interface RowData {
@@ -92,6 +36,10 @@
   }
 
   const props = defineProps<Props>();
+
+  defineOptions({
+    name: TicketTypes.MONGODB_SCALE_UPDOWN,
+  });
 
   const { t } = useI18n();
 

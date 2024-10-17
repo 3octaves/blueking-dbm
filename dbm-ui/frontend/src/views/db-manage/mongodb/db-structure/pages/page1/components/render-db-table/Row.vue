@@ -17,6 +17,9 @@
       <RenderDbName
         ref="dbPatternsRef"
         :data="data.databases" />
+      <RenderDbName
+        ref="dbPatternsRef"
+        :data="data.databases" />
     </td>
     <td style="padding: 0">
       <RenderDbName
@@ -27,6 +30,9 @@
         @change="handleDatabasesIgnoreChange" />
     </td>
     <td style="padding: 0">
+      <RenderTableName
+        ref="tablePatternsRef"
+        :data="data.tables" />
       <RenderTableName
         ref="tablePatternsRef"
         :data="data.tables" />
@@ -46,11 +52,11 @@
 
   export interface IDataRow {
     rowKey: string;
-    clusterName: string;
-    databases?: string[];
-    databasesIgnore?: string[];
-    tables?: string[];
-    tablesIgnore?: string[];
+    // clusterName: string;
+    databases: string[];
+    databasesIgnore: string[];
+    tables: string[];
+    tablesIgnore: string[];
   }
 
   // 创建表格数据
@@ -58,6 +64,11 @@
     rowKey: random(),
     clusterName: '',
   });
+
+  // export const createRowData = (data?: Omit<IDataRow, 'rowKey'>) => ({
+  //   rowKey: random(),
+  //   clusterName: '',
+  // });
 
   interface Props {
     data: IDataRow;
@@ -70,6 +81,10 @@
 <script setup lang="ts">
   import RenderDbName from '@views/db-manage/mongodb/components/edit-field/DbName.vue';
   import RenderTableName from '@views/db-manage/mongodb/components/edit-field/TableName.vue';
+
+  // interface Props {
+  //   data: IDataRow;
+  // }
 
   const props = defineProps<Props>();
 

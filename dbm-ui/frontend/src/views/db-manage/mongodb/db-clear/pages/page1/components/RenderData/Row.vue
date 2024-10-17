@@ -25,12 +25,19 @@
         :cluster-type="clusterType" />
     </td>
     <td style="padding: 0">
-      <RenderDropType ref="dropTypeRef" />
+      <RenderDropType
+        ref="dropTypeRef"
+        :data="data.dropType" />
     </td>
     <td style="padding: 0">
-      <RenderDropIndex ref="dropIndexRef" />
+      <RenderDropIndex
+        ref="dropIndexRef"
+        :data="data.dropIndex" />
     </td>
     <td style="padding: 0">
+      <RenderDbName
+        ref="dbPatternsRef"
+        :data="data.dbPatterns" />
       <RenderDbName
         ref="dbPatternsRef"
         :data="data.dbPatterns" />
@@ -44,6 +51,9 @@
         @change="handleDatabasesIgnoreChange" />
     </td>
     <td style="padding: 0">
+      <RenderTableName
+        ref="tablePatternsRef"
+        :data="data.tablePatterns" />
       <RenderTableName
         ref="tablePatternsRef"
         :data="data.tablePatterns" />
@@ -70,6 +80,8 @@
     clusterName: string;
     clusterId: number;
     clusterType: string;
+    dropType?: string;
+    dropIndex?: boolean;
     dbPatterns?: string[];
     tablePatterns?: string[];
     ignoreDbs?: string[];
