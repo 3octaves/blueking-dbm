@@ -87,6 +87,7 @@
   import type { IDataRow as HaStorageLayerLocalRow } from './components/ha-storage-layer-local/Row.vue';
   import RenderStorageLayerRemoteTable from './components/ha-storage-layer-remote/Index.vue';
   import type { IDataRow as HaStorageLayerRemoteRow } from './components/ha-storage-layer-remote/Row.vue';
+  import RenderStorageLayerRemoteReadonlySlaveTable from './components/ha-storage-layer-remote-readonly-slave/Index.vue';
   import RenderSingleStorageTable from './components/single-storage-layer/Index.vue';
   import type { IDataRow as SingleStorageRow } from './components/single-storage-layer/Row.vue';
 
@@ -150,6 +151,10 @@
       value: 'haStorageLayer',
     },
     {
+      label: t('主从 - 存储层 (非 standy )'),
+      value: 'haStorageLayerReadonlySlave',
+    },
+    {
       label: t('单节点'),
       value: 'singleStorageLayer',
     },
@@ -171,6 +176,9 @@
     }
     if (roleType === 'singleStorageLayer') {
       return RenderSingleStorageTable;
+    }
+    if (roleType === 'haStorageLayerReadonlySlave') {
+      return RenderStorageLayerRemoteReadonlySlaveTable;
     }
     if (updateType === 'local') {
       return RenderStorageLayerLocalTable;

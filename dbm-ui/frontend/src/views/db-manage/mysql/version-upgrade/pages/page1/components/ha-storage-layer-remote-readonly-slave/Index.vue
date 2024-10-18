@@ -28,6 +28,12 @@
             </template>
           </RenderTableHeadColumn>
           <RenderTableHeadColumn :width="220">
+            <span>{{ t('主从实例') }}</span>
+          </RenderTableHeadColumn>
+          <RenderTableHeadColumn :width="220">
+            <span>{{ t('只读实例') }}</span>
+          </RenderTableHeadColumn>
+          <RenderTableHeadColumn :width="220">
             <span>{{ t('当前版本') }}</span>
           </RenderTableHeadColumn>
           <RenderTableHeadColumn :width="220">
@@ -37,6 +43,11 @@
             :min-width="130"
             :width="300">
             <span>{{ t('新主从主机') }}</span>
+          </RenderTableHeadColumn>
+          <RenderTableHeadColumn
+            :min-width="130"
+            :width="300">
+            <span>{{ t('新只读主机') }}</span>
           </RenderTableHeadColumn>
           <RenderTableHeadColumn
             fixed="right"
@@ -212,6 +223,8 @@
       packageVersion: item.masters[0].version,
       moduleName: item.db_module_name,
       cloudId: item.bk_cloud_id,
+      masterSlaveList: [...item.masters, ...item.slaves].filter((item) => item.is_stand_by).map((item) => item.ip),
+      readonlySlaveList: item.slaves.filter((item) => item.is_stand_by).map((item) => item.ip),
     },
   });
 
