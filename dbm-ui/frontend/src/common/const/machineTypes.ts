@@ -62,3 +62,9 @@ export enum MachineTypes {
 export enum MachineTypes {
   RIAK = 'riak',
 }
+// doris
+export enum MachineTypes {
+  DORIS_FOLLOWER = 'doris_follower',
+  DORIS_OBSERVER = 'doris_observer',
+  DORIS_BACKEND = 'doris_backend',
+}

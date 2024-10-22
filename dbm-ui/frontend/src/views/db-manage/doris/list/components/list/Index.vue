@@ -95,8 +95,9 @@
 
   import DorisModel from '@services/model/doris/doris';
   import {
-    getDorisInstanceList,
-    getDorisList,
+   getDorisDetail,
+   getDorisInstanceList,
+   getDorisList
   } from '@services/source/doris';
   import { createTicket } from '@services/source/ticket';
   import { getUserList } from '@services/source/user';
@@ -113,8 +114,9 @@
 
   import {
     ClusterTypes,
+    DBTypes,
     TicketTypes,
-    UserPersonalSettings
+    UserPersonalSettings,
   } from '@common/const';
 
   import RenderClusterStatus from '@components/cluster-status/Index.vue';
@@ -122,6 +124,7 @@
   import TextOverflowLayout from '@components/text-overflow-layout/Index.vue';
 
   import ClusterCapacityUsageRate from '@views/db-manage/common/cluster-capacity-usage-rate/Index.vue'
+  import EditEntryConfig, { type RowData } from '@views/db-manage/common/cluster-entry-config/Index.vue';
   import ClusterIpCopy from '@views/db-manage/common/cluster-ip-copy/Index.vue';
   import DropdownExportExcel from '@views/db-manage/common/dropdown-export-excel/index.vue';
   import OperationBtnStatusTips from '@views/db-manage/common/OperationBtnStatusTips.vue';
@@ -354,6 +357,16 @@
                     }/>
                   )
                 }
+                <span v-db-console="doris.clusterManage.modifyEntryConfiguration">
+                  <EditEntryConfig
+                    id={data.id}
+                    getDetailInfo={getDorisDetail}
+                    permission={data.permission.access_entry_edit}
+                    resource={DBTypes.DORIS}
+                    renderEntry={renderEntry}
+                    sort={entrySort}
+                    onSuccess={fetchTableData} />
+                </span>
               </>
             ),
           }}
@@ -817,6 +830,24 @@
     tableRef.value!.fetchData({ ...getSearchSelectorParams }, { ...sortValue }, loading);
     isInit.value = false;
   };
+
+
+  const renderEntry = (data: RowData) => {
+    if (data.role === 'master_entry') {
+      return (
+        <span>
+          <bk-tag size="small" theme="success">{ t('主') }</bk-tag>{ data.entry }
+        </span>
+      )
+    }
+    return (
+      <span>
+        <bk-tag size="small" theme="info">{ t('从') }</bk-tag>{ data.entry }
+      </span>
+    )
+  }
+
+  const entrySort = (data: RowData[]) => data.sort(a => a.role === 'master_entry' ? -1 : 1);
 
   const handleCopy = <T,>(dataList: T[], field: keyof T) => {
     const copyList = dataList.reduce((prevList, tableItem) => {
