@@ -448,7 +448,7 @@
       return info;
     }
 
-    const checkValue = props?.disableDialogSubmitMethod
+    const checkValue = props.disableDialogSubmitMethod
       ? props.disableDialogSubmitMethod(selectedClusterList.value)
       : false;
     if (checkValue) {

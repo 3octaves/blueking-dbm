@@ -14,7 +14,7 @@
   import _ from 'lodash'
   import { useI18n } from 'vue-i18n';
 
-  import { getAccountPrivs } from '@services/source/mysqlPermission';
+  import { getAccountPrivs } from '@services/source/mysqlPermissionAccount';
 
   import { AccountTypes } from '@common/const';
 
@@ -58,146 +58,120 @@
 
   const columns = computed(() => {
     const ipColums = [
-        {
-          label: t('源客户端 IP'),
-          field: 'ip',
-          width: 240,
-          renderHead: () => (
-            <>
-              <div class='custom-head-title'>{t('查询的对象')}</div>
-              <div class='custom-head-sub-title'>{t('源客户端 IP')}</div>
-            </>
-          ),
-          rowspan: ({ row }: { row: TableItem }) => {
-            const rowSpan = tableData.value.filter((item) => _.isEqual(item.ip, row.ip)).length;
-            return rowSpan > 1 ? rowSpan : 1;
-          },
-          render: ({ row }: { row: TableItem }) => <span style="font-weight: bolder">{row.ip.join('，')}</span>
-        },
-        {
-          label: t('集群域名'),
-          field: 'immute_domain',
-          width: 240,
-          renderHead: () => (
-            <>
-              <div class='custom-head-title'>{t('匹配的规则')}</div>
-              <div class='custom-head-sub-title'>{t('集群域名')}</div>
-            </>
-          ),
-          rowspan: ({ row }: { row: TableItem }) => {
-            const rowSpan = tableData.value.filter((item) => _.isEqual(item.ip, row.ip) && _.isEqual(item.db, row.db) && item.immute_domain === row.immute_domain).length;
-            return rowSpan > 1 ? rowSpan : 1;
-          },
-          render: ({ row }: { row: TableItem }) => (
-            <>
-              {
-                props.isMaster ? <bk-tag theme="info">{t('主')}</bk-tag> : <bk-tag theme="success">{t('从')}</bk-tag>
-              }
-              <span class="ml-4">{row.immute_domain}</span>
-            </>
-          ),
-        },
-        {
-          label: t('账号'),
-          field: 'user',
-          width: 240,
-          renderHead: () => (
-            <>
-              <div class='custom-head-title'></div>
-              <div class='custom-head-sub-title'>{t('账号')}</div>
-            </>
-          ),
-          rowspan: ({ row }: { row: TableItem }) => {
-            const rowSpan = tableData.value.filter((item) => _.isEqual(item.ip, row.ip) && _.isEqual(item.db, row.db) && item.immute_domain === row.immute_domain).length;
-            return rowSpan > 1 ? rowSpan : 1;
-          },
-        },
-        {
-          label: t('匹配中的访问源'),
-          field: 'match_ip',
-          width: 240,
-          renderHead: () => (
-            <>
-              <div class='custom-head-title'></div>
-              <div class='custom-head-sub-title'>{t('匹配中的访问源')}</div>
-            </>
-          ),
-          rowspan: ({ row }: { row: TableItem }) => {
-            const rowSpan = tableData.value.filter((item) => _.isEqual(item.ip, row.ip) && _.isEqual(item.db, row.db) && item.immute_domain === row.immute_domain).length;
-            return rowSpan > 1 ? rowSpan : 1;
-          },
-        },
-        {
-          label: t('匹配中的 DB'),
-          field: 'match_db',
-          width: 240,
-          renderHead: () => (
-            <>
-              <div class='custom-head-title'></div>
-              <div class='custom-head-sub-title'>{t('匹配中的 DB')}</div>
-            </>
-          ),
-          render: ({ row }: { row: TableItem }) => (
-            <bk-tag>{row.match_db}</bk-tag>
-          ),
-        },
-        {
-          label: t('权限'),
-          field: 'priv',
-          width: 240,
-          renderHead: () => (
-            <>
-              <div class='custom-head-title'></div>
-              <div class='custom-head-sub-title'>{t('权限')}</div>
-            </>
-          ),
-          render: ({ row }: { row: TableItem }) => {
-            const { priv } = row
-            const privList = priv.split(',')
-
-            return privList.map((privItem, index) => (
-              <>
-                { index !== 0 && <span>,</span> }
-                <span>{privItem}</span>
-                { isSensitivePriv(accountType, privItem) && (
-                  <bk-tag
-                    size="small"
-                    theme="warning"
-                    class="ml-4"
-                  >
-                    {t('敏感')}
-                  </bk-tag>
-                )}
-              </>
-            ))
+      {
+        label: t('查询的对象'),
+        children: [
+          {
+            label: t('源客户端 IP'),
+            field: 'ip',
+            width: 240,
+            rowspan: ({ row }: { row: TableItem }) => {
+              const rowSpan = tableData.value.filter((item) => _.isEqual(item.ip, row.ip)).length;
+              return rowSpan > 1 ? rowSpan : 1;
+            },
+            render: ({ row }: { row: TableItem }) => <span style="font-weight: bolder">{row.ip.join('，')}</span>
           }
-        },
-      ];
-
-      if (props.dbMemo.length > 0) {
-        ipColums.splice(1, 0, {
-          label: t('访问的 DB'),
-          field: 'db',
-          width: 240,
-          renderHead: () => (
-            <>
-              <div class='custom-head-title'></div>
-              <div class='custom-head-sub-title'>{t('访问的 DB')}</div>
-            </>
-          ),
-          rowspan: ({ row }: { row: TableItem }) => {
-            const rowSpan = tableData.value.filter((item) => _.isEqual(item.ip, row.ip) && _.isEqual(item.db, row.db)).length;
-            return rowSpan > 1 ? rowSpan : 1;
+        ]
+      },
+      {
+        label: t('匹配的规则'),
+        children: [
+          {
+            label: t('集群域名'),
+            field: 'immute_domain',
+            width: 240,
+            rowspan: ({ row }: { row: TableItem }) => {
+              const rowSpan = tableData.value.filter((item) => _.isEqual(item.ip, row.ip) && _.isEqual(item.db, row.db) && item.immute_domain === row.immute_domain).length;
+              return rowSpan > 1 ? rowSpan : 1;
+            },
+            render: ({ row }: { row: TableItem }) => (
+              <>
+                {
+                  props.isMaster ? <bk-tag theme="info">{t('主')}</bk-tag> : <bk-tag theme="success">{t('从')}</bk-tag>
+                }
+                <span class="ml-4">{row.immute_domain}</span>
+              </>
+            ),
           },
-          render: ({ row }: { row: TableItem }) => (
-            <>
-              { row.db.map(dbItem => <bk-tag>{dbItem}</bk-tag>) }
-            </>
-          )
-        })
-      }
+          {
+            label: t('账号'),
+            field: 'user',
+            width: 240,
+            rowspan: ({ row }: { row: TableItem }) => {
+              const rowSpan = tableData.value.filter((item) => _.isEqual(item.ip, row.ip) && _.isEqual(item.db, row.db) && item.immute_domain === row.immute_domain).length;
+              return rowSpan > 1 ? rowSpan : 1;
+            },
+          },
+          {
+            label: t('匹配中的访问源'),
+            field: 'match_ip',
+            width: 240,
+            rowspan: ({ row }: { row: TableItem }) => {
+              const rowSpan = tableData.value.filter((item) => _.isEqual(item.ip, row.ip) && _.isEqual(item.db, row.db) && item.immute_domain === row.immute_domain).length;
+              return rowSpan > 1 ? rowSpan : 1;
+            },
+          },
+          {
+            label: t('匹配中的 DB'),
+            field: 'match_db',
+            width: 240,
+            render: ({ row }: { row: TableItem }) => (
+              <bk-tag>{row.match_db}</bk-tag>
+            ),
+          },
+          {
+            label: t('权限'),
+            field: 'priv',
+            width: 240,
+            render: ({ row }: { row: TableItem }) => {
+              const { priv } = row
+              const privList = priv.split(',')
 
-      return ipColums;
+              return privList.map((privItem, index) => (
+                <>
+                  { index !== 0 && <span>,</span> }
+                  <span>{privItem}</span>
+                  { isSensitivePriv(accountType, privItem) && (
+                    <bk-tag
+                      size="small"
+                      theme="warning"
+                      class="ml-4"
+                    >
+                      {t('敏感')}
+                    </bk-tag>
+                  )}
+                </>
+              ))
+            }
+          }
+        ]
+      }
+    ];
+
+    if (props.dbMemo.length > 0) {
+      ipColums[0].children.push({
+        label: t('访问的 DB'),
+        field: 'db',
+        width: 240,
+        renderHead: () => (
+          <>
+            <div class='custom-head-title'></div>
+            <div class='custom-head-sub-title'>{t('访问的 DB')}</div>
+          </>
+        ),
+        rowspan: ({ row }: { row: TableItem }) => {
+          const rowSpan = tableData.value.filter((item) => _.isEqual(item.ip, row.ip) && _.isEqual(item.db, row.db)).length;
+          return rowSpan > 1 ? rowSpan : 1;
+        },
+        render: ({ row }: { row: TableItem }) => (
+          <>
+            { row.db.map(dbItem => <bk-tag>{dbItem}</bk-tag>) }
+          </>
+        )
+      })
+    }
+
+    return ipColums;
   });
 
   const tableData = computed(() => {

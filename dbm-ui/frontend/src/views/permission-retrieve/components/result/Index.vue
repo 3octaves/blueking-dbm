@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="tsx">
-  import { getAccountPrivs } from '@services/source/mysqlPermission';
+  import { getAccountPrivs } from '@services/source/mysqlPermissionAccount';
 
   import { useTableMaxHeight } from '@hooks';
 
@@ -119,47 +119,27 @@
 <style lang="less" scoped>
   .permission-retrieve-result {
     :deep(.bk-table-head) {
-      height: 100%;
-      min-height: 84px;
+      .is-head-group {
+        padding: 0 16px;
+        font-weight: bolder;
+        background: #eaebf0;
+        color: #313238;
+
+        &:hover {
+          background: #dcdee5;
+        }
+      }
 
       th {
         border: none;
-      }
 
-      .cell {
-        padding: 0;
-        height: 100%;
+        .cell {
+          background: #f0f1f5;
 
-        .head-text {
-          display: block;
-          width: 100%;
+          &:hover {
+            background: #eaebf0;
+          }
         }
-      }
-    }
-
-    :deep(.custom-head-title) {
-      height: 42px;
-      width: 100%;
-      background: #dcdee5;
-      font-weight: bolder;
-      background: #eaebf0;
-      line-height: 42px;
-      padding: 0 16px;
-
-      &:hover {
-        background: #dcdee5;
-      }
-    }
-
-    :deep(.custom-head-sub-title) {
-      height: 42px;
-      background: #f0f1f5;
-      color: #313238;
-      line-height: 42px;
-      padding: 0 16px;
-
-      &:hover {
-        background: #eaebf0;
       }
     }
   }

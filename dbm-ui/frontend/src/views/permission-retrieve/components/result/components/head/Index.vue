@@ -55,7 +55,7 @@
 <script setup lang="ts">
   import { useI18n } from 'vue-i18n';
 
-  import { getAccountPrivs } from '@services/source/mysqlPermission';
+  import { getAccountPrivs } from '@services/source/mysqlPermissionAccount';
 
   import { useCopy } from '@hooks';
 

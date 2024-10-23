@@ -40,7 +40,7 @@
 <script setup lang="tsx">
   import { useRequest } from 'vue-request';
 
-  import { getAccountUsers } from '@services/source/mysqlPermission';
+  import { getAccountUsers } from '@services/source/mysqlPermissionAccount';
 
   import { accoutMap } from './common/config';
 

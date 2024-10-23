@@ -13,7 +13,7 @@
 
 import type { ComponentProps } from 'vue-component-type-helpers';
 
-import { getAccountUsers } from '@services/source/mysqlPermission';
+import { getAccountUsers } from '@services/source/mysqlPermissionAccount';
 
 import { AccountTypes, ClusterTypes } from '@common/const';
 

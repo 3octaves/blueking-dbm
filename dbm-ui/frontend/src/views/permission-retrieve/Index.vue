@@ -50,7 +50,7 @@
   import { useI18n } from 'vue-i18n';
   import { useRequest } from 'vue-request';
 
-  import { getAccountPrivs, getDownloadPrivs } from '@services/source/mysqlPermission';
+  import { getAccountPrivs, getDownloadPrivs } from '@services/source/mysqlPermissionAccount';
 
   import { batchSplitRegex } from '@common/regex';
 
@@ -95,9 +95,12 @@
     },
   });
 
-  watch([() => formData.ips, () => formData.immute_domains], () => {
-    optionsRef.value!.getUserList();
-  });
+  watch(
+    () => [formData.ips, formData.immute_domains],
+    () => {
+      optionsRef.value!.getUserList();
+    },
+  );
 
   const getApiParams = (pagination = false) => {
     dbMemo.value = formData.dbs;
@@ -130,6 +133,15 @@
     Object.assign(formData, getDefaultFormData());
     resultRef.value!.resetPagination();
     dbMemo.value = [];
+    mutate({
+      match_ips_count: 0,
+      results: {
+        privs_for_ip: null,
+        privs_for_cluster: null,
+        has_priv: null,
+        no_priv: null,
+      },
+    });
   };
 
   const handleExport = () => {
@@ -141,12 +153,13 @@
   .permission-retrieve {
     .bk-card {
       border: none;
+
       :deep(.bk-card-head) {
         border-bottom: none;
 
         .title {
-          color: #313238;
           margin-left: 8px;
+          color: #313238;
         }
       }
     }
