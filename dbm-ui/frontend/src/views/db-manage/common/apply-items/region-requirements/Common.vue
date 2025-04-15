@@ -33,7 +33,7 @@
 
   import CityCodeItem from './components/CityCode.vue';
   import DisasterToleranceLevelItem from './components/DisasterToleranceLevel.vue';
-  import SubzonesItem from './components/Subzones.vue';
+  import SubzonesItem from './components/subzones/Index.vue';
 
   interface Props {
     type?: ComponentProps<typeof DisasterToleranceLevelItem>['type'];
@@ -63,24 +63,16 @@
 
   const { t } = useI18n();
 
-  const showSubZoneItem = computed(
-    () =>
-      modelValue.value.disaster_tolerance_level &&
-      modelValue.value.city_code &&
-      ([Affinity.CROS_SUBZONE, Affinity.SAME_SUBZONE_CROSS_SWTICH].includes(
-        modelValue.value.disaster_tolerance_level as Affinity,
-      ) ||
-        (modelValue.value.disaster_tolerance_level === Affinity.NONE && modelValue.value.city_code !== 'default')),
-  );
+  const showSubZoneItem = computed(() => modelValue.value.disaster_tolerance_level && modelValue.value.city_code);
 
   defineExpose<Expose>({
     getValue() {
       const { city_code: city, disaster_tolerance_level: affinity, sub_zone_ids: subZoneIds } = modelValue.value;
-      // 跨园区-指定多个园区 / 指定园区 / 无容灾要求且指定地域
+      // 跨园区-指定多个园区 / 指定园区 / 无容灾要求-指定地域-指定园区
       if (
         (affinity === Affinity.CROS_SUBZONE && subZoneIds.length > 0) ||
         affinity === Affinity.SAME_SUBZONE_CROSS_SWTICH ||
-        (affinity === Affinity.NONE && subZoneIds.length > 0)
+        (affinity === Affinity.NONE && city !== 'default' && subZoneIds.length > 0)
       ) {
         return {
           affinity,
@@ -92,7 +84,7 @@
         };
       }
 
-      // 跨园区-随机可用区 / 不限园区 / 无容灾要求且地域无限制
+      // 跨园区-随机园区 / 不限园区 / 无容灾要求-随机地域 / 无容灾要求-指定地域-随机园区
       return {
         affinity,
         location_spec: {
