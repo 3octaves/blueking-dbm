@@ -15,6 +15,7 @@
   import { getInfrasSubzonesByCity } from '@services/source/infras';
 
   interface Props {
+    subzoneIds: number[];
     subzoneList?: ServiceReturnType<typeof getInfrasSubzonesByCity>;
   }
 
@@ -24,10 +25,18 @@
     reset: () => void;
   }
 
-  defineProps<Props>();
+  const props = defineProps<Props>();
   const emits = defineEmits<Emits>();
 
   const localValue = ref(0);
+
+  watch(
+    () => props.subzoneIds,
+    () => {
+      console.log('single', props.subzoneIds);
+      [localValue.value] = props.subzoneIds;
+    },
+  );
 
   const handleChange = () => {
     emits('change', localValue.value);

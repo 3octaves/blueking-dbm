@@ -5,6 +5,7 @@
     @change="handleRandomSeletableChange" />
   <Multiple
     ref="multipleRef"
+    :subzone-ids="modelValue"
     :subzone-list="subzoneList"
     @change="handleMutipleChange" />
 </template>
