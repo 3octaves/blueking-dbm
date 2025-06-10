@@ -3,7 +3,8 @@ import { t } from '@locales/index';
 export enum Affinity {
   CROS_SUBZONE = 'CROS_SUBZONE',
   CROSS_RACK = 'CROSS_RACK',
-  MAX_EACH_ZONE_EQUAL = 'MAX_EACH_ZONE_EQUAL',
+  MAJORITY_ELECTION_DISTRI = 'MAJORITY_ELECTION_DISTRI', // mongodb 特有
+  MAX_EACH_ZONE_EQUAL = 'MAX_EACH_ZONE_EQUAL', // 大数据 特有
   NONE = 'NONE',
   SAME_SUBZONE_CROSS_SWTICH = 'SAME_SUBZONE_CROSS_SWTICH',
 }
@@ -11,6 +12,7 @@ export enum Affinity {
 export const affinityMap: Record<keyof typeof Affinity, string> = {
   [Affinity.CROS_SUBZONE]: t('跨园区'),
   [Affinity.CROSS_RACK]: t('不限园区'),
+  [Affinity.MAJORITY_ELECTION_DISTRI]: t('跨园区（至少 2 园区）'),
   [Affinity.MAX_EACH_ZONE_EQUAL]: t('尽量分散'),
   [Affinity.NONE]: t('无'),
   [Affinity.SAME_SUBZONE_CROSS_SWTICH]: t('指定园区'),

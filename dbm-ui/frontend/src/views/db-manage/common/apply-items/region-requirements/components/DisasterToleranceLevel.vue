@@ -35,7 +35,13 @@
   import { Affinity, affinityMap } from '@common/const';
 
   interface Props {
-    type?: 'common' | 'bigdata' | 'single';
+    /**
+     *   -common:  默认情况
+     *   -bigdata: 尽量分散 + 无容灾
+     *   -single： mysql、sqlserver 的单节点只有无容灾
+     *   -mongodb：跨园区有两种情况
+     */
+    type?: 'common' | 'bigdata' | 'single' | 'mongodb';
   }
 
   const props = withDefaults(defineProps<Props>(), {
@@ -65,10 +71,18 @@
   if (props.type === 'single') {
     radioDataList = [Affinity.NONE].map((key) => getAffinityItem(key));
   } else {
-    const defaultAffinityList =
-      props.type === 'bigdata'
-        ? [Affinity.MAX_EACH_ZONE_EQUAL]
-        : [Affinity.CROS_SUBZONE, Affinity.SAME_SUBZONE_CROSS_SWTICH, Affinity.CROSS_RACK];
+    const defaultAffinityMap = {
+      bigdata: [Affinity.MAX_EACH_ZONE_EQUAL],
+      common: [Affinity.CROS_SUBZONE, Affinity.SAME_SUBZONE_CROSS_SWTICH, Affinity.CROSS_RACK],
+      mongodb: [
+        Affinity.MAJORITY_ELECTION_DISTRI,
+        Affinity.CROS_SUBZONE,
+        Affinity.SAME_SUBZONE_CROSS_SWTICH,
+        Affinity.CROSS_RACK,
+      ],
+    };
+    const defaultAffinityList = defaultAffinityMap[props.type];
+
     const radioAffinityList = systemAffinityList.some(
       (systemAffinityItem) => systemAffinityItem.value === Affinity.NONE,
     )

@@ -32,7 +32,8 @@
         </DbCard>
         <RegionRequirements
           ref="regionRequirements"
-          v-model="formData.details" />
+          v-model="formData.details"
+          type="mongodb" />
         <DbCard :title="t('数据库部署信息')">
           <BkFormItem
             :label="t('MongoDB版本')"
