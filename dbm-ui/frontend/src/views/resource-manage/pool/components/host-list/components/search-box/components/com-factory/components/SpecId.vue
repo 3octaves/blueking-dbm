@@ -66,15 +66,13 @@
 
   import { getResourceSpec, getResourceSpecList } from '@services/source/dbresourceSpec';
 
-  import { DBTypeInfos, DBTypes, type InfoItem } from '@common/const';
+  import { type DBInfoItem, DBTypeInfos, DBTypes } from '@common/const';
 
   interface Props {
     model: Record<string, any>;
   }
 
-  interface Emits {
-    (e: 'change', value: ValueType): void;
-  }
+  type Emits = (e: 'change', value: ValueType) => void;
 
   interface Expose {
     reset: () => void;
@@ -82,13 +80,13 @@
 
   type ValueType = number | string;
 
-  const props = defineProps<Props>();
-
-  const emits = defineEmits<Emits>();
-
   defineOptions({
     inheritAttrs: false,
   });
+
+  const props = defineProps<Props>();
+
+  const emits = defineEmits<Emits>();
 
   const defaultValue = defineModel<ValueType>('defaultValue');
 
@@ -99,7 +97,7 @@
 
   const currentDbType = ref('');
   const currentMachine = ref('');
-  const clusterMachineList = shallowRef<InfoItem['machineList']>([]);
+  const clusterMachineList = shallowRef<DBInfoItem['machineList']>([]);
 
   const { loading: isResourceSpecLoading, run: fetchResourceSpecDetail } = useRequest(getResourceSpec, {
     manual: true,
@@ -112,8 +110,8 @@
   });
 
   const {
-    loading: isResourceSpecListLoading,
     data: resourceSpecList,
+    loading: isResourceSpecListLoading,
     run: fetchResourceSpecList,
   } = useRequest(getResourceSpecList, {
     manual: true,
@@ -139,9 +137,9 @@
     () => {
       if (currentMachine.value) {
         fetchResourceSpecList({
+          limit: -1,
           spec_cluster_type: currentDbType.value,
           spec_machine_type: currentMachine.value,
-          limit: -1,
         });
       }
     },
