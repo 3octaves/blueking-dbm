@@ -84,7 +84,7 @@
   export type PanelListType = InstanceSelectorPanelListType;
 
   interface Props {
-    clusterType: ClusterTypes | 'TendbClusterHost' | 'mongoCluster';
+    clusterType: ClusterTypes | 'TendbClusterHost' | 'MongoHost';
     count: number;
     field: string;
     label?: string;

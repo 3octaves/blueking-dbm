@@ -75,7 +75,7 @@
   import RenderText from '@components/render-table/columns/text-plain/index.vue';
 
   interface Props {
-    clusterType: ClusterTypes | 'TendbClusterHost' | 'mongoCluster';
+    clusterType: ClusterTypes | 'TendbClusterHost' | 'MongoHost';
     count?: number;
     data?: {
       clusterId: number;

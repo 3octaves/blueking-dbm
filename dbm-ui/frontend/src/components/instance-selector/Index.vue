@@ -216,8 +216,8 @@
   import MongodbModel from '@services/model/mongodb/mongodb';
   import TendbhaModel from '@services/model/mysql/tendbha';
   import TendbClusterModel from '@services/model/tendbcluster/tendbcluster';
-  import { checkMongoInstances, checkMysqlInstances, checkRedisInstances } from '@services/source/instances';
-  import { getMongoInstancesList, getMongoTopoList } from '@services/source/mongodb';
+  import { checkMysqlInstances, checkRedisInstances } from '@services/source/instances';
+  import { getMongodbMachineList, getMongoTopoList } from '@services/source/mongodb';
   import { queryClusters as queryMysqlCluster } from '@services/source/mysqlCluster';
   import { getRedisClusterList, getRedisInstances, getRedisMachineList } from '@services/source/redis';
   import {
@@ -319,7 +319,7 @@
       | 'TendbClusterHost'
       | 'RedisHost'
       | 'RedisInstance'
-      | 'mongoCluster'
+      | 'MongoHost'
       | 'TendbSingleHost'
       | 'SpiderHost'
       | 'SqlserverHaHost'
@@ -609,10 +609,10 @@
         },
       },
     ],
-    mongoCluster: [
+    MongoHost: [
       {
         content: MongoClusterContent,
-        id: 'mongoCluster',
+        id: 'MongoHost',
         name: t('Mongo 主库主机'),
         previewConfig: {
           displayKey: 'ip',
@@ -622,32 +622,11 @@
             field: 'ip',
             label: 'IP',
           },
-          getTableList: getMongoInstancesList,
+          getTableList: getMongodbMachineList,
         },
         topoConfig: {
           countFunc: (item: MongodbModel) => item.instanceCount,
           getTopoList: getMongoTopoList,
-        },
-      },
-      {
-        content: ManualInputContent,
-        id: 'manualInput',
-        manualConfig: {
-          activePanelId: 'mongocluster',
-          checkInstances: checkMongoInstances,
-          checkKey: 'instance_address',
-          checkType: 'instance',
-        },
-        name: t('手动输入'),
-        previewConfig: {
-          displayKey: 'ip',
-        },
-        tableConfig: {
-          firsrColumn: {
-            field: 'ip',
-            label: 'IP',
-          },
-          getTableList: getTendbclusterInstanceList,
         },
       },
     ],

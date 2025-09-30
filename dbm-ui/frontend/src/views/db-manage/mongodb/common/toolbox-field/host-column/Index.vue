@@ -22,7 +22,7 @@
     </EditableInput>
     <InstanceSelector
       v-model:is-show="isShowSelector"
-      :cluster-types="['mongoCluster']"
+      :cluster-types="['MongoHost']"
       :selected="selected"
       :tab-list-config="tabListConfig"
       @change="handleInstanceSelectChange" />
@@ -114,7 +114,7 @@
   };
 
   const handleInstanceSelectChange = (data: InstanceSelectorValues<IValue>) => {
-    emits('batch-edit', data.mongoCluster);
+    emits('batch-edit', data.MongoHost);
   };
 </script>
 

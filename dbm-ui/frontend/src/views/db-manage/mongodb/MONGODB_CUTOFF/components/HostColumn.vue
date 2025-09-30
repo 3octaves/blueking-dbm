@@ -36,7 +36,8 @@
   <InstanceSelector
     :key="clusterType"
     v-model:is-show="showSelector"
-    :cluster-types="['mongoCluster']"
+    :cluster-types="['MongoHost']"
+    hide-manual-input
     :selected="selectedIps"
     :tab-list-config="tabListConfig"
     @change="handleSelectorChange" />
@@ -45,8 +46,9 @@
   import { useI18n } from 'vue-i18n';
   import { useRequest } from 'vue-request';
 
-  import MongodbInstanceModel from '@services/model/mongodb/mongodb-instance';
-  import { getMongoInstancesList, getMongoTopoList } from '@services/source/mongodb';
+  import MongodbMachineModel from '@services/model/mongodb/mongodb-machine';
+  import { getGlobalMachine } from '@services/source/dbbase';
+  import { getMongodbMachineList, getMongoTopoList } from '@services/source/mongodb';
 
   import { ClusterTypes } from '@common/const';
   import { ipv4 } from '@common/regex';
@@ -65,7 +67,7 @@
   }
 
   interface Emits {
-    (e: 'batch-edit', list: MongodbInstanceModel[]): void;
+    (e: 'batch-edit', list: MongodbMachineModel[]): void;
     (e: 'append-row'): void;
   }
 
@@ -77,28 +79,28 @@
     bk_cloud_id: number;
     bk_host_id?: number;
     cluster_id: number;
-    cluster_type: MongodbInstanceModel['cluster_type'];
+    cluster_type: MongodbMachineModel['cluster_type'];
     ip: string;
-    machine_type: MongodbInstanceModel['machine_type'];
+    machine_type: MongodbMachineModel['machine_type'];
     master_domain: string;
     related_clusters: {
       id: number;
       master_domain: string;
     }[];
     shard: string;
-    spec_config: MongodbInstanceModel['spec_config'];
+    spec_config: MongodbMachineModel['spec_config'];
   }>({
     default: () => ({
       bk_cloud_id: 0,
       bk_host_id: 0,
       cluster_id: 0,
-      cluster_type: ClusterTypes.MONGO_REPLICA_SET as MongodbInstanceModel['cluster_type'],
+      cluster_type: ClusterTypes.MONGO_REPLICA_SET as MongodbMachineModel['cluster_type'],
       ip: '',
-      machine_type: '' as MongodbInstanceModel['machine_type'],
+      machine_type: '' as MongodbMachineModel['machine_type'],
       master_domain: '',
       related_clusters: [],
       shard: '',
-      spec_config: {} as MongodbInstanceModel['spec_config'],
+      spec_config: {} as MongodbMachineModel['spec_config'],
     }),
   });
 
@@ -108,32 +110,16 @@
   const tabListConfig = computed(
     () =>
       ({
-        mongoCluster: [
+        MongoHost: [
           {
             name: t('待替换的主机'),
             tableConfig: {
-              getTableList: (params: ServiceParameters<typeof getMongoInstancesList>) =>
-                getMongoInstancesList({
+              getTableList: (params: ServiceParameters<typeof getMongodbMachineList>) =>
+                getMongodbMachineList({
                   ...params,
                   cluster_type: props.clusterType,
                 }),
               multiple: true,
-            },
-            topoConfig: {
-              getTopoList: (params: ServiceParameters<typeof getMongoTopoList>) =>
-                getMongoTopoList({
-                  ...params,
-                  cluster_type: props.clusterType,
-                }),
-            },
-          },
-          {
-            tableConfig: {
-              getTableList: (params: ServiceParameters<typeof getMongoInstancesList>) =>
-                getMongoInstancesList({
-                  ...params,
-                  cluster_type: props.clusterType,
-                }),
             },
             topoConfig: {
               getTopoList: (params: ServiceParameters<typeof getMongoTopoList>) =>
@@ -149,7 +135,7 @@
   const selectedIps = computed<InstanceSelectorValues<IValue>>(
     () =>
       ({
-        mongoCluster: props.selected,
+        MongoHost: props.selected,
       }) as unknown as InstanceSelectorValues<IValue>,
   );
 
@@ -171,7 +157,7 @@
     },
   ];
 
-  const { loading, run: queryHost } = useRequest(getMongoInstancesList, {
+  const { loading, run: queryHost } = useRequest(getGlobalMachine, {
     manual: true,
     onSuccess: (data) => {
       const [item] = data.results;
@@ -191,7 +177,7 @@
             }))
             .filter((cluster) => cluster.master_domain !== item.master_domain),
           shard: item.shard,
-          spec_config: item.spec_config as MongodbInstanceModel['spec_config'],
+          spec_config: item.spec_config as MongodbMachineModel['spec_config'],
         };
       }
     },
@@ -206,13 +192,13 @@
       bk_cloud_id: 0,
       bk_host_id: 0,
       cluster_id: 0,
-      cluster_type: ClusterTypes.MONGO_REPLICA_SET as MongodbInstanceModel['cluster_type'],
+      cluster_type: '',
       ip: value,
-      machine_type: '' as MongodbInstanceModel['machine_type'],
+      machine_type: '',
       master_domain: '',
       related_clusters: [],
       shard: '',
-      spec_config: {} as MongodbInstanceModel['spec_config'],
+      spec_config: {} as MongodbMachineModel['spec_config'],
     };
     if (value) {
       queryHost({
@@ -222,7 +208,7 @@
   };
 
   const handleSelectorChange = (selected: InstanceSelectorValues<IValue>) => {
-    emits('batch-edit', selected.mongoCluster as unknown as MongodbInstanceModel[]);
+    emits('batch-edit', selected.MongoHost as unknown as MongodbMachineModel[]);
   };
 
   watch(
