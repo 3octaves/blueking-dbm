@@ -128,7 +128,7 @@
 <script lang="ts" setup>
   import { useI18n } from 'vue-i18n';
 
-  import MongodbInstanceModel from '@services/model/mongodb/mongodb-instance';
+  import MongodbMachineModel from '@services/model/mongodb/mongodb-machine';
   import type { Mongodb } from '@services/model/ticket/ticket';
 
   import { useCreateTicket, useTicketDetail } from '@hooks';
@@ -148,16 +148,12 @@
       bk_cloud_id: number;
       bk_host_id: number;
       cluster_id: number;
-      cluster_type: MongodbInstanceModel['cluster_type'];
+      cluster_type: MongodbMachineModel['cluster_type'];
       ip: string;
       machine_type: MachineTypes;
-      master_domain: string;
-      related_clusters: {
-        id: number;
-        master_domain: string;
-      }[];
+      related_clusters: MongodbMachineModel['related_clusters'];
       shard: string;
-      spec_config: MongodbInstanceModel['spec_config'];
+      spec_config: MongodbMachineModel['spec_config'];
     };
     rowspan: number;
     spec_id: number;
@@ -171,13 +167,12 @@
       bk_cloud_id: 0,
       bk_host_id: 0,
       cluster_id: 0,
-      cluster_type: ClusterTypes.MONGO_REPLICA_SET as MongodbInstanceModel['cluster_type'],
+      cluster_type: '',
       ip: '',
       machine_type: '' as MachineTypes,
-      master_domain: '',
-      related_clusters: [],
+      related_clusters: [] as MongodbMachineModel['related_clusters'],
       shard: '',
-      spec_config: {} as MongodbInstanceModel['spec_config'],
+      spec_config: {} as MongodbMachineModel['spec_config'],
     },
     rowspan: data.rowspan || 1,
     spec_id: data.spec_id || 0,
@@ -266,7 +261,6 @@
             createTableRow({
               host: {
                 ip: machineInfo.ip,
-                master_domain: clusters[infoItem.cluster_id].immute_domain,
               } as RowData['host'],
               spec_id: machineInfo.spec_id,
             }),
@@ -356,7 +350,7 @@
     });
   };
 
-  const handleHostBatchEdit = (list: MongodbInstanceModel[]) => {
+  const handleHostBatchEdit = (list: MongodbMachineModel[]) => {
     const dataList = list.reduce<RowData[]>((acc, item) => {
       if (!selectedMap.value[item.ip]) {
         acc.push(
@@ -368,15 +362,9 @@
               cluster_type: item.cluster_type,
               ip: item.ip,
               machine_type: item.machine_type as MachineTypes,
-              master_domain: item.master_domain,
-              related_clusters: item.related_clusters
-                .map((cluster) => ({
-                  id: cluster.id,
-                  master_domain: cluster.master_domain,
-                }))
-                .filter((cluster) => cluster.master_domain !== item.master_domain),
+              related_clusters: item.related_clusters,
               shard: item.shard,
-              spec_config: item.spec_config as MongodbInstanceModel['spec_config'],
+              spec_config: item.spec_config as MongodbMachineModel['spec_config'],
             },
           }),
         );

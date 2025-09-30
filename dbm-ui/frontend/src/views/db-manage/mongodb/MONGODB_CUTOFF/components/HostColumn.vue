@@ -50,7 +50,7 @@
   import { getGlobalMachine } from '@services/source/dbbase';
   import { getMongodbMachineList, getMongoTopoList } from '@services/source/mongodb';
 
-  import { ClusterTypes } from '@common/const';
+  import { ClusterTypes, DBTypes } from '@common/const';
   import { ipv4 } from '@common/regex';
 
   import InstanceSelector, {
@@ -165,17 +165,11 @@
         modelValue.value = {
           bk_cloud_id: item.bk_cloud_id,
           bk_host_id: item.bk_host_id,
-          cluster_id: item.cluster_id,
+          cluster_id: item.cluster_id, // related cluster
           cluster_type: item.cluster_type,
           ip: item.ip,
           machine_type: item.machine_type,
-          master_domain: item.master_domain,
-          related_clusters: item.related_clusters
-            .map((cluster) => ({
-              id: cluster.id,
-              master_domain: cluster.master_domain,
-            }))
-            .filter((cluster) => cluster.master_domain !== item.master_domain),
+          related_clusters: item.related_clusters,
           shard: item.shard,
           spec_config: item.spec_config as MongodbMachineModel['spec_config'],
         };
@@ -202,7 +196,9 @@
     };
     if (value) {
       queryHost({
-        instance_address: value,
+        cluster_type: props.clusterType,
+        db_type: DBTypes.MONGODB,
+        ip: value,
       });
     }
   };
