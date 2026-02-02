@@ -5430,5 +5430,7 @@
   "主机处理待办": "主机处理待办",
   "Mongos 状态修复": "Mongos 状态修复",
   "数据导出": "数据导出",
+  "Tendb Cluster-主域名": "Tendb Cluster-主域名",
+  "Tendb Cluster-从域名": "Tendb Cluster-从域名",
   "这行勿动！新增翻译请在上一行添加！": ""
 }

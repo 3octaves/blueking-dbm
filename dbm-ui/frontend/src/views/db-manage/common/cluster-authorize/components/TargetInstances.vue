@@ -23,27 +23,23 @@
         ...state.tableProps,
         columns: collapseTableColumns,
       }"
-      :title="tabListConfigMap[state.clusterType].name" />
+      :title="tabListMap[state.clusterType]" />
   </BkFormItem>
-  <ClusterSelector
+  <DomainSelector
+    v-model="selectedList"
     v-model:is-show="state.isShow"
     :cluster-types="clusterTypes"
-    only-one-type
-    :selected="selectedList"
-    :tab-list-config="tabListConfig"
+    unique-panel-settings
     @change="handleClusterChange" />
 </template>
 
 <script setup lang="tsx">
   import { useI18n } from 'vue-i18n';
 
-  import { getTendbSlaveClusterList } from '@services/source/tendbcluster';
-  import { getTendbhaList, getTendbhaSalveList } from '@services/source/tendbha';
-
   import { AccountTypes, ClusterTypes } from '@common/const';
 
-  import ClusterSelector, { type TabConfig } from '@components/cluster-selector/Index.vue';
   import DBCollapseTable from '@components/db-collapse-table/DBCollapseTable.vue';
+  import DomainSelector, { type IRowData, tabListMap } from '@components/domain-selector/Index.vue';
 
   import { execCopy } from '@utils';
 
@@ -61,7 +57,7 @@
 
   type ResourceItem = Props['data'][number];
 
-  type ClusterSelectorResult = Record<string, Props['data']>;
+  type ClusterSelectorResult = Record<string, IRowData[]>;
 
   interface Exposes {
     getClusterType(): ClusterTypes;
@@ -85,78 +81,6 @@
     },
   ];
 
-  const tabListConfigMap = {
-    [ClusterTypes.MONGO_REPLICA_SET]: {
-      name: t('副本集集群'),
-      showPreviewResultTitle: true,
-    },
-    [ClusterTypes.MONGO_SHARED_CLUSTER]: {
-      name: t('分片集群'),
-      showPreviewResultTitle: true,
-    },
-    [ClusterTypes.SQLSERVER_HA]: {
-      name: t('主从集群'),
-      showPreviewResultTitle: true,
-    },
-    [ClusterTypes.SQLSERVER_SINGLE]: {
-      name: t('单节点集群'),
-      showPreviewResultTitle: true,
-    },
-    [ClusterTypes.TENDBCLUSTER]: {
-      name: t('TendbCluster-主域名'),
-      showPreviewResultTitle: true,
-    },
-    [ClusterTypes.TENDBHA]: {
-      getResourceList: (params: ServiceParameters<typeof getTendbhaList>) => {
-        const realParams = { ...params };
-        realParams.master_domain = params.domain;
-        delete realParams.domain;
-        return getTendbhaList(realParams);
-      },
-      name: t('MySQL主从-主域名'),
-      showPreviewResultTitle: true,
-    },
-    [ClusterTypes.TENDBSINGLE]: {
-      name: t('MySQL单节点'),
-      showPreviewResultTitle: true,
-    },
-    tendbclusterSlave: {
-      getResourceList: (params: any) => {
-        // eslint-disable-next-line no-param-reassign
-        params.slave_domain = params.domain;
-        // eslint-disable-next-line no-param-reassign
-        delete params.domain;
-        return getTendbSlaveClusterList(params);
-      },
-      name: t('TendbCluster-从域名'),
-      showPreviewResultTitle: true,
-    },
-    tendbhaSlave: {
-      getResourceList: (params: ServiceParameters<typeof getTendbhaSalveList>) => {
-        const realParams = { ...params };
-        realParams.slave_domain = realParams.domain;
-        delete realParams.domain;
-        return getTendbhaSalveList(realParams).then((data) => ({
-          ...data,
-          results: data.results.reduce<ServiceReturnType<typeof getTendbhaSalveList>['results']>((result, item) => {
-            item.cluster_entry.forEach((entryItem) => {
-              if (entryItem.role === 'slave_entry') {
-                result.push(
-                  Object.assign({}, item, {
-                    master_domain: entryItem.entry,
-                  }),
-                );
-              }
-            });
-            return result;
-          }, []),
-        }));
-      },
-      name: t('MySQL主从-从域名'),
-      showPreviewResultTitle: true,
-    },
-  } as unknown as Record<string, TabConfig>;
-
   const state = reactive({
     clusterType: ClusterTypes.TENDBHA as string,
     isShow: false,
@@ -170,7 +94,7 @@
       {
         label: t('复制所有域名'),
         onClick: () => {
-          const value = state.tableProps.data.map((item) => item.master_domain);
+          const value = state.tableProps.data.map((item) => item.domain);
           execCopy(value.join('\n'), t('复制成功，共n条', { n: value.length }));
         },
       },
@@ -187,23 +111,13 @@
       tendbhaSlave: [],
     } as ClusterSelectorResult,
     tableProps: {
-      data: [] as ResourceItem[],
+      data: [] as IRowData[],
       pagination: {
         count: 0,
         small: true,
       },
     },
   });
-
-  const tabListConfig = computed(() =>
-    props.clusterTypes.reduce(
-      (prevConfig, clusterTypeItem) => ({
-        ...prevConfig,
-        [clusterTypeItem]: tabListConfigMap[clusterTypeItem],
-      }),
-      {} as Record<string, TabConfig>,
-    ),
-  );
 
   const collapseTableColumns = computed(() => {
     const columns = [
@@ -229,9 +143,9 @@
         label: t('操作'),
         render: ({ index }: { index: number }) => (
           <bk-button
-            theme='primary'
+            onClick={() => handleRemoveSelected(index)}
             text
-            onClick={() => handleRemoveSelected(index)}>
+            theme='primary'>
             {t('删除')}
           </bk-button>
         ),
@@ -276,7 +190,13 @@
 
   const updateTableData = (data: ResourceItem[]) => {
     formRef.value.clearValidate();
-    state.tableProps.data = data;
+    state.tableProps.data = data.map(
+      (item) =>
+        ({
+          cluster_name: item.cluster_name,
+          domain: item.master_domain,
+        }) as IRowData,
+    );
     state.tableProps.pagination.count = data.length;
     targetInstances.value = data.map((item) => item.master_domain);
   };
@@ -287,6 +207,7 @@
       if (selected[key].length > 0) {
         state.clusterType = key as ClusterTypes;
       }
+      // TODO 等接口完善字段
       list.push(...selected[key]);
     });
     state.selected = selected;
@@ -311,7 +232,7 @@
     init(clusterType: ClusterTypes, data: ResourceItem[]) {
       state.clusterType = clusterType;
       state.selected = {
-        [clusterType]: data,
+        [clusterType]: data.map((item) => ({ domain: item.master_domain }) as IRowData),
       };
       updateTableData(data);
     },

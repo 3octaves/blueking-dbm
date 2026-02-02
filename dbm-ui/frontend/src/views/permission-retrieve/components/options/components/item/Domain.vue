@@ -11,13 +11,11 @@
       @change="handleDomainChange"
       @icon-click="() => (clusterSelectorShow = true)" />
   </BkFormItem>
-  <ClusterSelector
+  <DomainSelector
     v-model:is-show="clusterSelectorShow"
-    :cluster-types="accoutMap[accountType as keyof typeof accoutMap].clusterSelectorTypes"
     :disable-dialog-submit-method="disableClusterSubmitMethod"
-    only-one-type
-    :selected="selectedClusters"
-    :tab-list-config="clusterTabListConfig"
+    :keys="accoutMap[accountType as keyof typeof accoutMap].clusterSelectorTypes"
+    unique-panel-settings
     @change="handleClusterSelectorChange">
     <template #submitTips="{ clusterList: resultClusterList }">
       <I18nT
@@ -36,7 +34,7 @@
         </span>
       </I18nT>
     </template>
-  </ClusterSelector>
+  </DomainSelector>
 </template>
 
 <script setup lang="tsx">
@@ -46,12 +44,11 @@
   import TendbsingleModel from '@services/model/mysql/tendbsingle';
   import SpiderModel from '@services/model/tendbcluster/tendbcluster';
   import { filterClusters } from '@services/source/dbbase';
-  import { getTendbhaList, getTendbhaSalveList } from '@services/source/tendbha';
 
   import { AccountTypes, ClusterTypes } from '@common/const';
   import { batchSplitRegex, domainRegex } from '@common/regex';
 
-  import ClusterSelector, { type TabConfig } from '@components/cluster-selector/Index.vue';
+  import DomainSelector, { type IRowData, type ISupportKey } from '@components/domain-selector/Index.vue';
 
   import accoutMap from '../../components/common/config';
 
@@ -87,33 +84,25 @@
   const getDefaultSelectedClusters = () =>
     accoutMap[props.accountType as keyof typeof accoutMap].clusterSelectorTypes.reduce(
       (prevMap, type) => Object.assign({}, prevMap, { [type]: [] }),
-      {},
+      {} as Record<ISupportKey, IRowData[]>,
     );
 
-  const clusterTabListConfig = {
-    [ClusterTypes.TENDBHA]: {
-      getResourceList: (params: ServiceParameters<typeof getTendbhaList>) => {
-        // eslint-disable-next-line
-        params.master_domain = params.domain;
-        // eslint-disable-next-line
-        delete params.domain;
-        return getTendbhaList(params);
-      },
-      name: t('高可用-主域名'),
-      showPreviewResultTitle: true,
-    },
-    tendbhaSlave: {
-      getResourceList: (params: ServiceParameters<typeof getTendbhaSalveList>) => {
-        // eslint-disable-next-line
-        params.slave_domain = params.domain;
-        // eslint-disable-next-line
-        delete params.domain;
-        return getTendbhaSalveList(params);
-      },
-      name: t('高可用-从域名'),
-      showPreviewResultTitle: true,
-    },
-  } as unknown as Record<string, TabConfig>;
+  // const dataSourceMap = {
+  //   [ClusterTypes.TENDBHA]: (params: ServiceParameters<typeof getTendbhaList>) => {
+  //     // eslint-disable-next-line
+  //     params.master_domain = params.domain;
+  //     // eslint-disable-next-line
+  //     delete params.domain;
+  //     return getTendbhaList(params);
+  //   },
+  //   [ClusterTypes.TENDBHA_SLAVE]: (params: ServiceParameters<typeof getTendbhaSalveList>) => {
+  //     // eslint-disable-next-line
+  //     params.slave_domain = params.domain;
+  //     // eslint-disable-next-line
+  //     delete params.domain;
+  //     return getTendbhaSalveList(params);
+  //   },
+  // };
 
   const rules = [
     {
@@ -156,14 +145,17 @@
 
   const updateClusterInfo = () => {
     const clusterList = Object.values(selectedClusters.value).find((clusterList) => clusterList.length > 0);
-    clusterType.value = (clusterList?.[0].cluster_type || ClusterTypes.TENDBSINGLE) as ClusterTypes;
+    // TODO 需要接口返回
+    // clusterType.value = (clusterList?.[0].cluster_type || ClusterTypes.TENDBSINGLE) as ClusterTypes;
+    clusterType.value = ClusterTypes.TENDBHA as ClusterTypes;
+    // TODO TENDBCLUSTER也要判断
     isMaster.value = !selectedClusters.value?.tendbhaSlave?.length;
   };
 
   const handleClusterSelectorChange = (selected: Record<string, Array<SelectorModelType>>) => {
     selectedClusters.value = selected;
     const domainList = Object.keys(selected).reduce<string[]>(
-      (prevList, key) => prevList.concat(selected[key].map((item) => item.master_domain)),
+      (prevList, key) => prevList.concat(selected[key].map((item) => item.domain)),
       [],
     );
     modelValue.value = domainList.join(',');
@@ -225,7 +217,7 @@
     const selectDomainList = Object.values(selectedClusters.value).flatMap((item) => item);
 
     const diffResult = getDomainDiffInfo(
-      selectDomainList.map((item) => item.master_domain),
+      selectDomainList.map((item) => item.domain),
       newValidDomainList,
     );
 
@@ -234,7 +226,8 @@
     const deleteSet = new Set(deleteList);
 
     if (addList.length) {
-      filterClusters<SelectorModelType>({
+      // TODO 这里要确认能不能直接用域名接口，且clustertype非必填
+      filterClusters({
         bk_biz_id: window.PROJECT_CONFIG.BIZ_ID,
         domain: addList.join(','),
       }).then((clusterResultList) => {
@@ -244,7 +237,9 @@
         // 新增时，查询集群信息，同步已选集群
         const selected = selectedClusters.value;
         clusterResultList.forEach((clusterItem) => {
-          selected[clusterItem.cluster_type] = selected[clusterItem.cluster_type].concat(clusterItem);
+          selected[clusterItem.cluster_type as ISupportKey] = selected[clusterItem.cluster_type as ISupportKey].concat({
+            domain: clusterItem.master_domain,
+          } as IRowData);
         });
         selectedClusters.value = selected;
         updateClusterInfo();
@@ -264,8 +259,10 @@
   const deleteSelectedCluster = (deleteSet: Set<string>) => {
     if (deleteSet.size) {
       Object.keys(selectedClusters.value).forEach((key) => {
-        const clusterList = selectedClusters.value[key];
-        selectedClusters.value[key] = clusterList.filter((clusterItem) => !deleteSet.has(clusterItem.master_domain));
+        const clusterList = selectedClusters.value[key as ISupportKey];
+        selectedClusters.value[key as ISupportKey] = clusterList.filter(
+          (clusterItem) => !deleteSet.has(clusterItem.domain),
+        );
       });
       updateClusterInfo();
     }

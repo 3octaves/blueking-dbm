@@ -15,14 +15,16 @@ import { getAccountUsers } from '@services/source/mysqlPermissionAccount';
 
 import { AccountTypes, ClusterTypes } from '@common/const';
 
+import { type ISupportKey, SupportKey } from '@components/domain-selector/Index.vue';
+
 export default {
   [AccountTypes.MYSQL]: {
-    clusterSelectorTypes: [ClusterTypes.TENDBHA, 'tendbhaSlave', ClusterTypes.TENDBSINGLE],
+    clusterSelectorTypes: [ClusterTypes.TENDBHA, SupportKey.TENDBHA_SLAVE, ClusterTypes.TENDBSINGLE],
     // hostSelectorTypes: ['TendbSingleHost', 'TendbHaHost'],
     ruleApi: getAccountUsers,
   },
   [AccountTypes.TENDBCLUSTER]: {
-    clusterSelectorTypes: [ClusterTypes.TENDBCLUSTER],
+    clusterSelectorTypes: [ClusterTypes.TENDBCLUSTER, SupportKey.TENDBCLUSTER_SLAVE],
     // hostSelectorTypes: ['TendbClusterHost'],
     ruleApi: getAccountUsers,
   },

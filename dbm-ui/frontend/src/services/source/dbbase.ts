@@ -399,3 +399,33 @@ export function queryDirtyMachineAttrs(params: {
     cache: 3000,
   });
 }
+
+export function filterClusterEntries(params: {
+  bk_biz_id: number;
+  cluster_entry_type?: 'dns' | 'clb' | 'polaris' | 'clbDns';
+  cluster_name?: string;
+  cluster_type: ClusterTypes;
+  domain?: string;
+  instance?: string;
+  limit?: number;
+  offset?: number;
+  role?: 'master_entry' | 'slave_entry' | 'proxy_entry' | 'node_entry';
+}) {
+  return http
+    .get<
+      ListBase<
+        {
+          cluster_entry_type: string;
+          cluster_name: string;
+          cluster_status: string;
+          domain: string;
+          instances: string[];
+          role: string;
+        }[]
+      >
+    >(`${path}/filter_cluster_entries/`, params)
+    .then((res) => {
+      console.log(res);
+      return res;
+    });
+}
