@@ -3,7 +3,11 @@ import { computed, shallowRef } from 'vue';
 
 import type { Props as ContextProps } from '@components/db-quick-search/bk-quick-search/Index.vue';
 
-export default <T extends { label: string; value: string | number }>(config: ContextProps['data'][number]) => {
+export default <
+  T extends { children?: { label: string; value: string | number }[]; label: string; value: string | number },
+>(
+  config: ContextProps['data'][number],
+) => {
   const filterKey = ref('');
   const remoteList = shallowRef<T[]>([]);
   const isLoading = ref(false);

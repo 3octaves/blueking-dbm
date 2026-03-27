@@ -20,10 +20,10 @@
     :placeholder="t('请选择操作系统类型')"
     @change="handleChange">
     <BkOption
-      v-for="item in data"
-      :key="item"
-      :label="item"
-      :value="item" />
+      v-for="item in osTypeList"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value" />
   </BkSelect>
 </template>
 <script setup lang="ts">
@@ -31,6 +31,8 @@
   import { useRequest } from 'vue-request';
 
   import { getOsTypeList } from '@services/source/dbresourceResource';
+
+  import { specialOptionLabelMap, SpecialOptions } from '@common/const';
 
   interface Props {
     defaultValue?: string;
@@ -49,6 +51,18 @@
   const emits = defineEmits<Emits>();
 
   const { t } = useI18n();
+
+  const osTypeList = computed(() =>
+    (data.value || [])
+      .map((item) => ({
+        label: item,
+        value: item,
+      }))
+      .concat({
+        label: specialOptionLabelMap[SpecialOptions.EMPTY],
+        value: SpecialOptions.EMPTY,
+      }),
+  );
 
   const { data, loading } = useRequest(getOsTypeList, {
     defaultParams: [

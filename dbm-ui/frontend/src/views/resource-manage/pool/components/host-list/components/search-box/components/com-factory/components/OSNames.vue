@@ -20,7 +20,7 @@
     :placeholder="t('请选择操作系统名称')"
     @change="handleChange">
     <BkOption
-      v-for="item in data?.os_names"
+      v-for="item in osNameList"
       :key="item.value"
       :label="item.text"
       :value="item.value">
@@ -33,6 +33,8 @@
   import { useRequest } from 'vue-request';
 
   import { getResourceOsName } from '@services/source/dbresourceResource';
+
+  import { specialOptionLabelMap, SpecialOptions } from '@common/const';
 
   interface Props {
     defaultValue?: string;
@@ -51,6 +53,13 @@
   const emits = defineEmits<Emits>();
 
   const { t } = useI18n();
+
+  const osNameList = computed(() =>
+    (data.value?.os_names || []).concat({
+      text: specialOptionLabelMap[SpecialOptions.EMPTY],
+      value: SpecialOptions.EMPTY,
+    }),
+  );
 
   const { data, loading } = useRequest(getResourceOsName);
 

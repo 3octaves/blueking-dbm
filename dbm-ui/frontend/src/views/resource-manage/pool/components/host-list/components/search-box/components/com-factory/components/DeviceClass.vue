@@ -25,11 +25,11 @@
     @change="handleChange"
     @scroll-end="handleScrollEnd">
     <BkOption
-      v-for="(item, index) in deviceList"
-      :key="`${item}#${index}`"
-      :label="item"
-      :value="item">
-      {{ item }}
+      v-for="(item, index) in deviceSelectList"
+      :key="`${item.value}#${index}`"
+      :label="item.label"
+      :value="item.value">
+      {{ item.label }}
     </BkOption>
   </BkSelect>
 </template>
@@ -38,6 +38,8 @@
   import { useRequest } from 'vue-request';
 
   import { fetchDeviceClass } from '@services/source/dbresourceResource';
+
+  import { specialOptionLabelMap, SpecialOptions } from '@common/const';
 
   interface Props {
     defaultValue?: string;
@@ -63,6 +65,18 @@
     limit: 12,
     offset: 0,
   };
+
+  const deviceSelectList = computed(() =>
+    deviceList.value
+      .map((item) => ({
+        label: item,
+        value: item,
+      }))
+      .concat({
+        label: specialOptionLabelMap[SpecialOptions.EMPTY],
+        value: SpecialOptions.EMPTY,
+      }),
+  );
 
   let isAppend = false;
 

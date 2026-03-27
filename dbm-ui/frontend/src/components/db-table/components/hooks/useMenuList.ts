@@ -6,7 +6,7 @@ export default <T extends Record<string, any>>(config: {
   remoteMethod?: (params: {
     defaultValue?: string;
     keyword?: string;
-  }) => Promise<{ label: string; value: number | string }[]>;
+  }) => Promise<{ label: string; value: number | string }[] | { label: string; value: number | string }[][]>;
   remoteSearch?: boolean;
 }) => {
   const filterKey = ref('');

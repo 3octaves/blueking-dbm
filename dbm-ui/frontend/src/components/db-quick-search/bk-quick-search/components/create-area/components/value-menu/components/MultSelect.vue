@@ -17,20 +17,40 @@
       <div
         ref="layout"
         class="bk-quick-search-value-wrapper">
-        <div
-          v-for="(valueItem, index) in renderList"
-          :key="valueItem.value"
-          class="value-item"
-          :class="{ active: activeIndex === index }"
-          @click="handleChange(valueItem)">
-          <Checkbox
-            :checked="Boolean(checkedMap[valueItem.value])"
-            style="pointer-events: none" />
-          {{ valueItem.label }}
-        </div>
+        <template v-if="isChildrenMode">
+          <div
+            v-for="valueItem in renderList"
+            :key="valueItem.value"
+            class="value-item-group">
+            <div
+              v-for="(childValueItem, childIndex) in valueItem.children"
+              :key="childValueItem.value"
+              class="value-item"
+              :class="{ active: activeIndex === childIndex }"
+              @click="handleChange(childValueItem)">
+              <Checkbox
+                :checked="Boolean(checkedMap[childValueItem.value])"
+                style="pointer-events: none" />
+              {{ childValueItem.label }}
+            </div>
+          </div>
+        </template>
+        <template v-else>
+          <div
+            v-for="(valueItem, index) in renderList"
+            :key="valueItem.value"
+            class="value-item"
+            :class="{ active: activeIndex === index }"
+            @click="handleChange(valueItem)">
+            <Checkbox
+              :checked="Boolean(checkedMap[valueItem.value])"
+              style="pointer-events: none" />
+            {{ valueItem.label }}
+          </div>
+        </template>
       </div>
       <div
-        v-if="filterKey && renderList.length < 1 && !isRemoteListLoading"
+        v-if="isSearchEmpty"
         class="bk-quick-search-value-panel-filter-empty">
         <BkException
           description="搜索为空"
@@ -57,6 +77,7 @@
   }
 
   interface IResult {
+    children?: { label: string; value: string | number }[];
     label: string;
     value: string | number;
   }
@@ -89,6 +110,14 @@
     ),
   );
 
+  const isSearchEmpty = computed(() => {
+    const isRenderListEmpty = isChildrenMode.value
+      ? renderList.value.every((item) => item.children?.length === 0)
+      : renderList.value.length === 0;
+    return filterKey.value && isRenderListEmpty && !isRemoteListLoading.value;
+  });
+  const isChildrenMode = computed(() => list.value.length > 0 && list.value[0].children);
+
   const renderList = computed(() => {
     if (props.config.remoteSearch) {
       return list.value;
@@ -96,7 +125,22 @@
     const keyword = `${filterKey.value || ''}`.trim().toLowerCase();
     if (!keyword) {
       const modelValueMap = makeMap(defaultModelValue.map((item) => item.value));
+
+      if (isChildrenMode.value) {
+        // if (defaultModelValue.length > 0) {
+        //   const no
+        // }
+        return list.value;
+      }
       return [...defaultModelValue, ..._.filter(list.value, (item) => !modelValueMap[item.value])];
+    }
+
+    if (isChildrenMode.value) {
+      return list.value.map((item) => {
+        return Object.assign(item, {
+          children: (item.children || []).filter((child) => child.label.toLowerCase().includes(keyword)),
+        });
+      });
     }
     return _.filter(list.value, (item) => item.label.toLowerCase().includes(keyword));
   });
