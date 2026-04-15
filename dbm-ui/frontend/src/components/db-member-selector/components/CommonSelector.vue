@@ -31,7 +31,6 @@
       :search-from-default-alternate="false"
       tag-clearable
       @remove-selected="handleRemoveSelected" />
-    <TenantSelector v-model="modelValue"></TenantSelector>
     <DbIcon
       v-if="modelValue.length > 0"
       v-bk-tooltips="t('复制')"
@@ -48,8 +47,6 @@
   import { getUserList } from '@services/source/user';
 
   import { execCopy } from '@utils';
-
-  import TenantSelector from './components/TenantSelector.vue';
 
   const emits = defineEmits<(e: 'change', value: string[]) => void>();
 

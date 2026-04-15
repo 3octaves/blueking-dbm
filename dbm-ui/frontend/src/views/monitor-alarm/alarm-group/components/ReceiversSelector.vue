@@ -13,6 +13,7 @@
 
 <template>
   <div class="receivers-selector-wrapper">
+    <!-- replace -->
     <UserSelector
       v-if="!loading"
       ref="userSelectorRef"
