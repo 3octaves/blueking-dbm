@@ -13,7 +13,7 @@
 
 import { useRequest } from 'vue-request';
 
-import type { BigdataFunctions } from '@services/model/function-controller/functionController';
+import type { BigdataFunctions, K8sFunctions } from '@services/model/function-controller/functionController';
 import { queryClusterInstanceCount } from '@services/source/dbbase';
 
 import { useFunController, useUserProfile } from '@stores';
@@ -24,6 +24,7 @@ import {
   type DBInfoItem,
   DBTypeInfos,
   DBTypes,
+  K8sCountMap,
   UserPersonalSettings,
 } from '@common/const';
 
@@ -70,6 +71,22 @@ export function useBizDbDisplay(options?: { ignoreClusterCount?: boolean; manual
                 } else {
                   const clusterCount =
                     clusterInstanceCount.value![dbTypeInfo.id as unknown as ClusterTypes].cluster_count || 0;
+                  if (clusterCount) {
+                    return prevList.concat(dbTypeInfo);
+                  }
+                }
+              }
+            } else if (dbTypeInfo.moduleId === 'k8s') {
+              const data = funControllerStore.funControllerData.getFlatData(dbTypeInfo.moduleId);
+              if (data[dbType as K8sFunctions]) {
+                if (ignoreClusterCount) {
+                  return prevList.concat(dbTypeInfo);
+                } else {
+                  const clusterCount = K8sCountMap[dbTypeInfo.id as string]!.reduce(
+                    (prevCount, key) =>
+                      prevCount + (clusterInstanceCount.value![key as ClusterTypes]?.cluster_count || 0),
+                    0,
+                  );
                   if (clusterCount) {
                     return prevList.concat(dbTypeInfo);
                   }
