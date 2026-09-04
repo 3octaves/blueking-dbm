@@ -59,6 +59,16 @@ const routes: RouteRecordRaw[] = [
       createApplyRoute(DBTypes.K8S_SURREALDB, TicketTypes.K8S_SURREALDB_HA_APPLY, t('申请 SurrealDB 集群部署')),
       createApplyRoute(DBTypes.K8S_SURREALDB, TicketTypes.K8S_SURREALDB_SINGLE_APPLY, t('申请 SurrealDB 单节点部署')),
       createApplyRoute(DBTypes.K8S_QRRANT, TicketTypes.K8S_QDRANT_HA_APPLY, t('申请 Qdrant 集群部署')),
+      createApplyRoute(
+        DBTypes.K8S_VICTORIAMETRICS,
+        TicketTypes.K8S_VICTORIAMETRICS_STANDARD_APPLY,
+        t('申请 VictoriaMetrics 标准集群部署'),
+      ),
+      createApplyRoute(
+        DBTypes.K8S_VICTORIAMETRICS,
+        TicketTypes.K8S_VICTORIAMETRICS_QUERY_APPLY,
+        t('申请 VictoriaMetrics 查询集群部署'),
+      ),
     ],
   },
 ];
