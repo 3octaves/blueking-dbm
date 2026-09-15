@@ -16,11 +16,11 @@
     class="cluster-detail-dialog-mode">
     <template v-if="data">
       <DisplayBox
-        cluster-detail-router-name="VictoriametricsStandardDetail"
+        cluster-detail-router-name="VictoriametricsClusterDetail"
         :data="data">
         <div
           v-if="data.isOnline"
-          v-db-console="'victoriametrics.standardClusterList.disable'"
+          v-db-console="'victoriametrics.clusterList.disable'"
           class="ml-4">
           <OperationBtnStatusTips :data="data">
             <AuthButton
@@ -36,7 +36,7 @@
         </div>
         <div
           v-if="data.isOnline"
-          v-db-console="'victoriametrics.standardClusterList.restart'"
+          v-db-console="'victoriametrics.clusterList.restart'"
           class="ml-4">
           <OperationBtnStatusTips :data="data">
             <AuthButton
@@ -133,9 +133,8 @@
   import { useI18n } from 'vue-i18n';
   import { useRequest } from 'vue-request';
 
+  import VictoriametricsClusterDetailModel from '@services/model/victoriametrics/victoriametrics-cluster-detail';
   import VictoriametricsInstanceModel from '@services/model/victoriametrics/victoriametrics-instance';
-  import VictoriametricsStandardDetailModel from '@services/model/victoriametrics/victoriametrics-standard-detail';
-  import { getVictoriametricsStandardDetail } from '@services/source/victoriametricsStandard';
 
   import { ClusterTypes } from '@common/const';
 
@@ -152,6 +151,8 @@
 
   import { execCopy } from '@utils';
 
+  import { getVictoriametricsClusterDetail } from '@/services/source/victoriametricsCluster';
+
   import useRoleList from './useRoleList';
 
   interface Props {
@@ -165,11 +166,11 @@
 
   const { t } = useI18n();
 
-  const data = ref<VictoriametricsStandardDetailModel>();
+  const data = ref<VictoriametricsClusterDetailModel>();
   const isLoading = ref(false);
 
   const { changeCountData, defaultRole: role, list: roleList } = useRoleList();
-  const { run: fetchClusterDetail } = useRequest(getVictoriametricsStandardDetail, {
+  const { run: fetchClusterDetail } = useRequest(getVictoriametricsClusterDetail, {
     manual: true,
     onAfter() {
       isLoading.value = false;

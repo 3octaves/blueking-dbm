@@ -1,4 +1,4 @@
-/*
+<!--
  * TencentBlueKing is pleased to support the open source community by making 蓝鲸智云-DB管理系统(BlueKing-BK-DBM) available.
  *
  * Copyright (C) 2017-2023 THL A29 Limited, a Tencent company. All rights reserved.
@@ -9,17 +9,25 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed
  * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for
  * the specific language governing permissions and limitations under the License.
- */
+-->
+<template>
+  <ClusterDetail :cluster-id="clusterId" />
+</template>
+<script setup lang="ts">
+  import { useRoute, useRouter } from 'vue-router';
 
-import ClusterEntryDetailModel from '@services/model/cluster-entry/cluster-entry-details';
+  import ClusterDetail from '../common/cluster-detail/Index.vue';
 
-import VictoriametricsStandardModel from './victoriametrics-standard';
+  const route = useRoute();
+  const router = useRouter();
 
-export default class VictoriametricsStandardDetail extends VictoriametricsStandardModel {
-  cluster_entry_details: ClusterEntryDetailModel[];
+  const clusterId = Number(route.params.clusterId);
 
-  constructor(payload = {} as VictoriametricsStandardDetail) {
-    super(payload);
-    this.cluster_entry_details = payload.cluster_entry_details.map((item) => new ClusterEntryDetailModel(item));
-  }
-}
+  defineExpose({
+    routerBack() {
+      router.push({
+        name: 'VictoriametricsSelectList',
+      });
+    },
+  });
+</script>
