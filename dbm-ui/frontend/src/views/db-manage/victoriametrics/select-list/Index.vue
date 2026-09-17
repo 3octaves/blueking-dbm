@@ -151,7 +151,7 @@
   import OperationBtnStatusTips from '@views/db-manage/common/OperationBtnStatusTips.vue';
   import useClusterTableSelect from '@views/db-manage/hooks/useClusterTableSelect';
   import useGoClusterDetail from '@views/db-manage/hooks/useGoClusterDetail';
-  import ClusterDetail from '@views/db-manage/victoriametrics/common/cluster-detail/Index.vue';
+  import ClusterDetail from '@views/db-manage/victoriametrics/common/select-detail/Index.vue';
 
   import VictoriametricsselectModel from '@/services/model/victoriametrics/victoriametrics-select';
   import { getVictoriametricsSelectList } from '@/services/source/victoriametricsSelect';

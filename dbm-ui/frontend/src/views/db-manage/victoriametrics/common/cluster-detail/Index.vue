@@ -134,7 +134,7 @@
   import { useRequest } from 'vue-request';
 
   import VictoriametricsClusterDetailModel from '@services/model/victoriametrics/victoriametrics-cluster-detail';
-  import VictoriametricsInstanceModel from '@services/model/victoriametrics/victoriametrics-instance';
+  import VictoriametricsClusterInstanceModel from '@services/model/victoriametrics/victoriametrics-cluster-instance';
 
   import { ClusterTypes } from '@common/const';
 
@@ -214,7 +214,7 @@
     },
   );
 
-  const handleRequestSuccess = (list: VictoriametricsInstanceModel[]) => {
+  const handleRequestSuccess = (list: VictoriametricsClusterInstanceModel[]) => {
     const currantCountData = list.reduce(
       (acc, cur) => {
         return Object.assign(acc, { [cur.componentName]: (acc[cur.componentName as keyof typeof acc] || 0) + 1 });

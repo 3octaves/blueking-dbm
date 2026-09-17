@@ -16,7 +16,7 @@
 <script setup lang="ts">
   import { useRoute, useRouter } from 'vue-router';
 
-  import ClusterDetail from '../common/cluster-detail/Index.vue';
+  import ClusterDetail from '../common/select-detail/Index.vue';
 
   const route = useRoute();
   const router = useRouter();

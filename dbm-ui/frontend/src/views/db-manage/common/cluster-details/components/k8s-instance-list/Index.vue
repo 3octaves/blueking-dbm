@@ -323,10 +323,14 @@
   };
   const manageActionId = manageActionIdMap[props.clusterType as string];
 
-  // 磁盘扩容显隐：VictoriaMetrics 仅标准集群 vmstorage 角色支持；其余集群沿用原规则（SurrealDB HA 的 surreal 角色除外）
+  // 磁盘扩容显隐：VictoriaMetrics 仅标准集群 vmstorage 角色支持（查询集群无磁盘扩容）；
+  // 其余集群沿用原规则（SurrealDB HA 的 surreal 角色除外）
   const isDiskExpansionShow = computed(() => {
     if (props.clusterType === ClusterTypes.K8S_VICTORIAMETRICS_CLUSTER) {
       return props.role === 'vmstorage';
+    }
+    if (props.clusterType === ClusterTypes.K8S_VICTORIAMETRICS_SELECT) {
+      return false;
     }
     return !(props.clusterType === ClusterTypes.K8S_SURREALDB_HA && props.role === 'surreal');
   });
@@ -345,7 +349,7 @@
         cluster_id: props.clusterData.id,
         enable,
       }).then(() => {
-        messageSuccess(enable ? t('已启用存储 CLB') : t('已停用存储 CLB'));
+        // messageSuccess(enable ? t('已启用存储 CLB') : t('已停用存储 CLB'));
         handleOperateSuccess();
       });
     };

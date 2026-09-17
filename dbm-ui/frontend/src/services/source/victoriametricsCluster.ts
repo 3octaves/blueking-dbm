@@ -15,7 +15,7 @@ import KubernetesComponentSpecModel from '@services/model/kubernetes/kubernetes-
 import KubernetesOperationLogModel from '@services/model/kubernetes/kubernetes-operation-log';
 import VictoriametricsClusterModel from '@services/model/victoriametrics/victoriametrics-cluster';
 import VictoriametricsClusterDetailModel from '@services/model/victoriametrics/victoriametrics-cluster-detail';
-import VictoriametricsInstanceModel from '@services/model/victoriametrics/victoriametrics-instance';
+import VictoriametricsClusterInstanceModel from '@services/model/victoriametrics/victoriametrics-cluster-instance';
 
 import http from '../http';
 import type { ListBase, ResourceTopo } from '../types';
@@ -65,10 +65,10 @@ export const getVictoriametricsClusterInstanceList = function (params: {
   namespace: string;
 }) {
   return http
-    .get<ListBase<VictoriametricsInstanceModel[]>>(`${getRootPath()}/list_instances/`, params)
+    .get<ListBase<VictoriametricsClusterInstanceModel[]>>(`${getRootPath()}/list_instances/`, params)
     .then((data) => ({
       ...data,
-      results: data.results.map((item) => new VictoriametricsInstanceModel(item)),
+      results: data.results.map((item) => new VictoriametricsClusterInstanceModel(item)),
     }));
 };
 
@@ -84,8 +84,8 @@ export const retrieveVictoriametricsClusterInstanceDetail = function (params: {
   podName: string;
 }) {
   return http
-    .get<VictoriametricsInstanceModel>(`${getRootPath()}/retrieve_instance/`, params)
-    .then((res) => new VictoriametricsInstanceModel(res));
+    .get<VictoriametricsClusterInstanceModel>(`${getRootPath()}/retrieve_instance/`, params)
+    .then((res) => new VictoriametricsClusterInstanceModel(res));
 };
 
 /**
