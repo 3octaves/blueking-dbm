@@ -79,7 +79,7 @@ export default class VictoriametricsSelect extends ClusterBase {
   query_entry: string;
   status: 'normal' | 'abnormal';
   // 查询集群关联的外部 Storage 节点（多节点中文逗号分隔），来源/字段契约待后端确认（占位）
-  storage_nodes?: string;
+  storage_nodes: string[];
   update_at: string;
   updater: string;
   write_entry: string;
@@ -120,7 +120,7 @@ export default class VictoriametricsSelect extends ClusterBase {
     this.phase = payload.phase || '';
     this.phase_name = payload.phase_name || '';
     this.status = payload.status || '';
-    this.storage_nodes = payload.storage_nodes || '';
+    this.storage_nodes = payload.storage_nodes || [];
     this.update_at = payload.update_at || '';
     this.updater = payload.updater;
   }

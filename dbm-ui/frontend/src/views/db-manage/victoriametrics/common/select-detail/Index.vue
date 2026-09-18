@@ -71,7 +71,7 @@
               <template v-else>--</template>
             </template>
             <template #storageNode>
-              {{ data.storage_nodes || '--' }}
+              {{ data.storage_nodes.length ? data.storage_nodes.join(',') : '--' }}
             </template>
             <template #k8sClusterName>
               <K8SClusterName
