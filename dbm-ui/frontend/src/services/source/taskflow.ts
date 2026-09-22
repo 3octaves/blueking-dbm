@@ -186,15 +186,25 @@ export function getRetryNodeHistories(params: { node_id: string; root_id: string
 }
 
 /**
- * 节点日志
+ * 节点日志（单次分片，由调用方指定 offset / limit）
+ * 响应为标准列表结构：count 为全量总数，results 为当前分片
  */
-export function getNodeLog(params: { labels?: string; node_id: string; root_id: string; version_id: string }) {
+export function getNodeLog(params: {
+  labels?: string;
+  limit?: number;
+  node_id: string;
+  offset?: number;
+  root_id: string;
+  version_id: string;
+}) {
   return http.get<
-    {
-      levelname: string;
-      message: string;
-      timestamp: number;
-    }[]
+    ListBase<
+      {
+        levelname: string;
+        message: string;
+        timestamp: number;
+      }[]
+    >
   >(`${path}/${params.root_id}/node_log/`, params);
 }
 

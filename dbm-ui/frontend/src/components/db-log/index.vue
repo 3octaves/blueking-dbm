@@ -60,9 +60,11 @@
   }
 
   interface Exposes {
+    appendLog: (list: NodeLog[]) => void;
     clearLog: () => void;
     destroy: () => void;
     getValue: () => string[];
+    getVisibleRows: () => number;
     init: () => void;
     resizeFit: () => void;
     setLog: (list: NodeLog[]) => void;
@@ -217,6 +219,30 @@
     });
   };
 
+  /**
+   * 追加日志
+   * 不清屏，仅写入新增分片，保留用户当前滚动位置
+   */
+  const handleAppendLog = (list: NodeLog[] = []) => {
+    if (!list.length) {
+      return;
+    }
+
+    localLogList = [...localLogList, ...list];
+    const content = formatLogData(list).join('\r\n');
+    terminal?.write(content);
+    setTimeout(() => {
+      updateLogicalLineNumbers();
+      updateLineNumbers();
+      checkTermScroll();
+    });
+  };
+
+  /**
+   * 终端当前可见的逻辑行数，用于换算一屏的分片条数
+   */
+  const getVisibleRows = () => terminal?.rows ?? 0;
+
   const destroyTerm = () => {
     isAutoScrollEnabled = true;
     terminal?.clear();
@@ -244,11 +270,13 @@
   });
 
   defineExpose<Exposes>({
+    appendLog: handleAppendLog,
     clearLog: handleClearLog,
     destroy: destroyTerm,
     getValue() {
       return formatLogData(localLogList, false);
     },
+    getVisibleRows,
     init: initTerm,
     resizeFit() {
       fitAddon?.fit();
