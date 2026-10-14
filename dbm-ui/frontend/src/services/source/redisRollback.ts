@@ -17,6 +17,16 @@ import type { ListBase } from '@services/types';
 
 import http from '../http';
 
+// TODO: 后端接口未就绪，暂时返回本地假数据；联调后置为 false 并删除 redisRollbackMock.ts
+import {
+  getMockRollbackBatchDetails,
+  getMockRollbackBatches,
+  getMockRollbackPrecheck,
+  getMockShardRoute,
+} from './redisRollbackMock';
+
+const IS_MOCK = true;
+
 const getRootPath = () => `/apis/redis/bizs/${window.PROJECT_CONFIG.BIZ_ID}/rollback`;
 
 // 备份批次相关接口
@@ -43,6 +53,9 @@ export function getRollbackBatches(params: {
   shard_values?: string[];
   start_time?: string;
 }) {
+  if (IS_MOCK) {
+    return getMockRollbackBatches(params);
+  }
   return http
     .post<{
       batches: RollbackBatch[];
@@ -67,6 +80,9 @@ export function getRollbackBatchDetails(params: {
   cluster_id: number;
   shard_values?: string[];
 }) {
+  if (IS_MOCK) {
+    return getMockRollbackBatchDetails(params);
+  }
   return http
     .post<{
       backup_identify: string;
@@ -93,6 +109,9 @@ export function getRollbackPrecheck(params: {
   };
   shard_values?: string[];
 }) {
+  if (IS_MOCK) {
+    return getMockRollbackPrecheck(params);
+  }
   return http.post<{
     binlog_nonconsecutive: boolean;
     errors: string[];
@@ -110,6 +129,9 @@ export function getRollbackPrecheck(params: {
 
 // 按 Key 反查所在分片（经接入层在线命令计算落点，传入 backup_identify 时求批次分片集合并集）
 export function getShardRoute(params: { backup_identify?: string; cluster_id: number; keys: string[] }) {
+  if (IS_MOCK) {
+    return getMockShardRoute(params);
+  }
   return http.post<{
     batch_shard_values: string[];
     results: {

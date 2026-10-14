@@ -100,6 +100,7 @@
     <BackupRecordSelector
       v-model:is-show="isSelectorShow"
       :cluster="{
+        cluster_domain: currentRow?.cluster.master_domain || '',
         cluster_type: currentRow?.cluster.cluster_type || '',
         id: currentRow?.cluster.id || 0,
       }"
@@ -407,7 +408,7 @@
       })
       .catch(() => {
         Object.assign(rowItem.precheck, {
-          message: t('网络异常，预校验失败'),
+          message: '',
           state: 'fail',
         });
       });

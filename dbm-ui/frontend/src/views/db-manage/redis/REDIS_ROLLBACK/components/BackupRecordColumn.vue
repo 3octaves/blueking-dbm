@@ -28,42 +28,36 @@
       v-if="modelValue"
       class="backup-record-cell"
       @click="emit('open')">
-      <div class="record-row">
-        <span class="record-label">{{ t('备份记录') }}：</span>
-        <span>{{ modelValue.backup_identify }}</span>
-        <DbTag
+      <div class="backup-rec">
+        <div class="backup-rec-label">{{ t('备份记录') }}：</div>
+        <div class="backup-rec-value is-identify">{{ modelValue.backup_identify }}</div>
+        <div class="backup-rec-label">{{ t('备份方式') }}：</div>
+        <div class="backup-rec-value">{{ backupTypeText }}</div>
+        <div class="backup-rec-label">{{ t('构造范围') }}：</div>
+        <div class="backup-rec-value">{{ scopeText }}</div>
+        <template v-if="showRecovery">
+          <div class="backup-rec-label">{{ t('构造到') }}：</div>
+          <div class="backup-rec-value">{{ modelValue.recovery_time_point || t('仅用全备') }}</div>
+        </template>
+        <template v-if="modelValue.allow_binlog_nonconsecutive">
+          <div class="backup-rec-label">{{ t('binlog 不连续') }}：</div>
+          <div class="backup-rec-value">{{ t('仍构造') }}</div>
+        </template>
+      </div>
+      <div
+        v-if="precheckText || topoWarning"
+        class="backup-rec-foot">
+        <span
+          v-if="precheckText"
+          :class="precheckClass">
+          {{ precheckText }}
+        </span>
+        <span
           v-if="topoWarning"
           v-bk-tooltips="topoWarning"
-          class="ml-4"
-          theme="warning">
-          {{ t('拓扑不一致') }}
-        </DbTag>
-      </div>
-      <div class="record-row">
-        <span class="record-label">{{ t('备份方式') }}：</span>
-        <span>{{ backupTypeText }}</span>
-      </div>
-      <div class="record-row">
-        <span class="record-label">{{ t('构造范围') }}：</span>
-        <span>{{ scopeText }}</span>
-      </div>
-      <div
-        v-if="showRecovery"
-        class="record-row">
-        <span class="record-label">{{ t('构造到') }}：</span>
-        <span>{{ modelValue.recovery_time_point || t('仅用全备') }}</span>
-      </div>
-      <div
-        v-if="modelValue.allow_binlog_nonconsecutive"
-        class="record-row">
-        <span class="record-label">{{ t('binlog 不连续') }}：</span>
-        <span>{{ t('仍构造') }}</span>
-      </div>
-      <div
-        v-if="precheck && precheck.state !== 'unset'"
-        class="record-row precheck-row"
-        :class="precheckClass">
-        {{ precheckText }}
+          class="topo-tip ml-4">
+          <DbIcon type="gaojing" />
+        </span>
       </div>
     </div>
     <EditableBlock
@@ -146,7 +140,7 @@
   });
 
   const precheckText = computed(() => {
-    if (!props.precheck) {
+    if (!props.precheck || props.precheck.state === 'unset') {
       return '';
     }
     const { message, state } = props.precheck;
@@ -162,41 +156,65 @@
 
 <style lang="less" scoped>
   .backup-record-cell {
-    width: 100%;
-    min-height: 32px;
-    font-size: 12px;
-    line-height: 20px;
+    padding: 0 8px;
     cursor: pointer;
 
     &:hover {
       background: #f5f7fa;
     }
+  }
 
-    .record-row {
-      display: flex;
-      overflow: hidden;
+  // 「标签 ：值」双列回显（标签右对齐）
+  .backup-rec {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: 4px;
+    font-size: 12px;
+    line-height: 22px;
+    color: #313238;
 
-      .record-label {
-        flex-shrink: 0;
-        color: #979ba5;
-      }
+    .backup-rec-label {
+      color: #63656e;
+      text-align: right;
+      white-space: nowrap;
     }
 
-    .precheck-row.is-success {
+    .backup-rec-value {
+      white-space: nowrap;
+
+      &.is-identify {
+        font-weight: 500;
+      }
+    }
+  }
+
+  .backup-rec-foot {
+    margin-top: 4px;
+    font-size: 12px;
+
+    .is-success {
       color: #2dcb56;
     }
 
-    .precheck-row.is-warning {
-      color: #ff9c01;
+    .is-warning {
+      color: #eb9000;
     }
 
-    .precheck-row.is-error {
+    .is-error {
       color: #ea3636;
+    }
+
+    .topo-tip {
+      color: #eb9000;
     }
   }
 
   // 空态块与已选态保持一致的可点击反馈
   .backup-record-empty {
     cursor: pointer;
+
+    &:hover {
+      background: #f5f7fa;
+    }
   }
 </style>
