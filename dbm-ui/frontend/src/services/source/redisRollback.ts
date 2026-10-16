@@ -67,18 +67,12 @@ export function getRollbackBatchDetails(params: {
   cluster_id: number;
   shard_values?: string[];
 }) {
-  return http
-    .post<{
-      backup_identify: string;
-      cluster_shards: Record<string, unknown>[];
-      locator_source: string;
-      shards: RollbackBatchShard[];
-      warnings: string[];
-    }>(`${getBatchesRootPath()}/batch_details/`, params)
-    .then((res) => ({
-      ...res,
-      shards: res.shards.map((item) => new RollbackBatchShard(item)),
-    }));
+  return http.post<{
+    backup_identify: string;
+    cluster_shards: RollbackBatchShard[];
+    locator_source: string;
+    warnings: string[];
+  }>(`${getBatchesRootPath()}/batch_details/`, params);
 }
 
 // 提单前预检：校验分片解析、选备完整性、分片覆盖、binlog 连续性与备份文件有效性
@@ -86,6 +80,7 @@ export function getRollbackPrecheck(params: {
   allow_binlog_nonconsecutive?: boolean;
   backup_identify: string;
   cluster_id: number;
+  recovery_time_point?: string;
   resource_spec?: {
     redis: {
       count: number;

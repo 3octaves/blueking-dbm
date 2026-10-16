@@ -153,12 +153,9 @@
                     </template>
                   </TableColumn>
                 </PrimaryTable>
-                <EmptyStatus
-                  v-if="!isShardLoading && filteredShards.length === 0"
-                  class="w-100"
-                  :is-anomalies="false"
-                  :is-searching="hasSearchCondition"
-                  @clear-search="handleClearSearch" />
+                <div class="picked-count">
+                  {{ t('已选 n / m 个分片', { n: checkedShardValues.length, m: selectedBatch.shard_count }) }}
+                </div>
               </BkLoading>
             </template>
           </template>
@@ -205,13 +202,16 @@
       </section>
     </div>
     <template #footer>
-      <BkButton
-        class="mr-8"
-        :disabled="isConfirmDisabled"
-        theme="primary"
-        @click="handleConfirm">
-        {{ t('确认选择') }}
-      </BkButton>
+      <span
+        v-bk-tooltips="confirmTooltip"
+        class="mr-8">
+        <BkButton
+          :disabled="isConfirmDisabled"
+          theme="primary"
+          @click="handleConfirm">
+          {{ t('确认选择') }}
+        </BkButton>
+      </span>
       <BkButton @click="handleClose">
         {{ t('取消') }}
       </BkButton>
@@ -258,21 +258,36 @@
     value: () => [dayjs().subtract(days, 'day').toDate(), new Date()] as [Date, Date],
   }));
 
+  // 形如 IP 或 IP:port 的输入按 IP 处理
+  const isIpLike = (value: string) => /^(\d{1,3}\.){1,3}\d{1,3}(:\d+)?$/.test(value);
+
+  // 未选字段直接输入时，SuggestMenu 按各搜索项 validator 生成建议项：形如 IP 只命中 IP，其余只命中 Key
   const searchSelectData = [
     {
       id: 'ip',
       name: 'IP',
+      validator: isIpLike,
     },
     {
       id: 'key',
       name: 'Key',
+      validator: (value: string) => !isIpLike(value),
     },
   ];
 
   const isBatchLoading = ref(false);
   const isShardLoading = ref(false);
 
+  // 查询时间窗口：ref 默认最近 3 天；清空后（组件内部会置为 ['','']）接口处回退默认 7 天
   const queryTime = ref<[Date, Date]>([dayjs().subtract(3, 'day').toDate(), new Date()]);
+
+  const getQueryTimeRange = (): [Date, Date] => {
+    const [start, end] = queryTime.value;
+    if (start && end) {
+      return [start, end];
+    }
+    return [dayjs().subtract(7, 'day').toDate(), new Date()];
+  };
 
   const batchList = ref<RollbackBatch[]>([]);
   const currentShardCount = ref(0);
@@ -283,7 +298,6 @@
   const shardList = ref<RollbackBatchShard[]>([]);
 
   const searchValue = ref<Record<string, string>>({});
-  const keyRouteShards = ref<string[] | null>(null);
   const keyRouteWarning = ref('');
 
   const recoveryTimePoint = ref('');
@@ -341,33 +355,27 @@
       dayjs(recoveryTimePoint.value).valueOf() < dayjs(lowerBound.value).valueOf(),
   );
 
-  // IP / Key 过滤（两条件取交集，过滤不影响已勾选分片）
-  const filteredShards = computed(() =>
-    shardList.value.filter((item) => {
-      const ipCondition = searchValue.value.ip;
-      if (ipCondition && !item.source_ip.includes(ipCondition.trim())) {
-        return false;
-      }
-      if (keyRouteShards.value && !keyRouteShards.value.includes(item.shard_value)) {
-        return false;
-      }
-      return true;
-    }),
-  );
+  // IP 过滤：本地匹配当前表格；Key 走 shard_route 反查接口自动勾选，不参与表格过滤。
+  // 输入形如 IP:port 时去掉端口按 IP 匹配，也兼容按完整「IP:port」匹配实例
+  const filteredShards = ref<RollbackBatchShard[]>([]);
+
+  // 分片列表或搜索条件变化后需显式调用，同步过滤结果
+  const updateFilteredShards = () => {
+    const ipCondition = (searchValue.value.ip || '').trim();
+    if (!ipCondition) {
+      filteredShards.value = [...shardList.value];
+      return;
+    }
+    const ip = ipCondition.split(':')[0]!;
+    filteredShards.value = shardList.value.filter(
+      (item) => item.source_ip.includes(ip) || `${item.source_ip}:${item.source_port}`.includes(ipCondition),
+    );
+  };
 
   const isAllFilteredChecked = computed(
     () =>
       filteredShards.value.length > 0 && filteredShards.value.every((item) => checkedShardMap.value[item.shard_value]),
   );
-
-  // 是否存在 IP / Key 过滤条件（决定分片列表空态形态）
-  const hasSearchCondition = computed(() => Boolean(searchValue.value.ip || keyRouteShards.value));
-
-  const handleClearSearch = () => {
-    searchValue.value = {};
-    keyRouteShards.value = null;
-    keyRouteWarning.value = '';
-  };
 
   const isFilteredIndeterminate = computed(
     () => !isAllFilteredChecked.value && filteredShards.value.some((item) => checkedShardMap.value[item.shard_value]),
@@ -383,17 +391,38 @@
     return isRecoveryInvalid.value;
   });
 
+  // 确认按钮 tooltips：仅禁用时提示原因，可用时不显示
+  const confirmTooltip = computed(() => {
+    if (!selectedBatch.value) {
+      return { content: t('请先在左侧选择备份记录'), disabled: false };
+    }
+    if (isRecoveryInvalid.value) {
+      return {
+        content: t('构造到的时间不能早于 n', { n: localLowerBound.value }),
+        disabled: false,
+      };
+    }
+    if (scope.value === 'pick' && checkedShardValues.value.length === 0) {
+      return { content: t('请先勾选参与构造的分片'), disabled: false };
+    }
+    return { content: '', disabled: true };
+  });
+
   // 查询时间跨度不得超过 30 天（list_batches 接口限制）
   const disableQueryDate = (date: Date | number) => dayjs(date).isAfter(dayjs(), 'day');
 
-  const disableRecoveryDate = (date: Date | number) => dayjs(date).isAfter(dayjs(), 'day');
+  // 构造到：禁用未来日期，以及早于参与构造全备最晚结束时间（下限）的日期
+  const disableRecoveryDate = (date: Date | number) =>
+    dayjs(date).isAfter(dayjs(), 'day') ||
+    (Boolean(localLowerBound.value) && dayjs(date).isBefore(dayjs(localLowerBound.value), 'day'));
 
   const fetchBatches = () => {
     isBatchLoading.value = true;
+    const [start, end] = getQueryTimeRange();
     getRollbackBatches({
       cluster_id: props.cluster.id,
-      end_time: dayjs(queryTime.value[1]).format('YYYY-MM-DD HH:mm:ssZ'),
-      start_time: dayjs(queryTime.value[0]).format('YYYY-MM-DD HH:mm:ssZ'),
+      end_time: dayjs(end).format('YYYY-MM-DD HH:mm:ssZ'),
+      start_time: dayjs(start).format('YYYY-MM-DD HH:mm:ssZ'),
     })
       .then((res) => {
         batchList.value = res.batches;
@@ -404,23 +433,33 @@
       });
   };
 
+  // 分片请求序号：切换批次/记录时旧请求可能后返回，只让最新一次的结果生效
+  let shardRequestSeq = 0;
+
   const fetchShards = (restoreChecked: string[] = []) => {
     if (!selectedBatch.value) {
       return;
     }
+    const seq = ++shardRequestSeq;
     isShardLoading.value = true;
     getRollbackBatchDetails({
       backup_identify: selectedBatch.value.backup_identify,
       cluster_id: props.cluster.id,
     })
       .then((res) => {
-        shardList.value = res.shards;
+        if (seq !== shardRequestSeq) {
+          return;
+        }
+        shardList.value = res.cluster_shards.map((item) => new RollbackBatchShard(item));
         checkedShardValues.value = restoreChecked.filter((item) =>
-          res.shards.some((shardItem) => shardItem.shard_value === item),
+          shardList.value.some((shardItem) => shardItem.shard_value === item),
         );
+        updateFilteredShards();
       })
       .finally(() => {
-        isShardLoading.value = false;
+        if (seq === shardRequestSeq) {
+          isShardLoading.value = false;
+        }
       });
   };
 
@@ -433,7 +472,6 @@
       batchList.value = [];
       selectedBatch.value = null;
       shardList.value = [];
-      keyRouteShards.value = null;
       keyRouteWarning.value = '';
       searchValue.value = {};
       fetchBatches();
@@ -444,7 +482,6 @@
     if (record) {
       // 清掉上一次会话遗留的过滤条件，避免分片表格被旧条件过滤成空
       searchValue.value = {};
-      keyRouteShards.value = null;
       keyRouteWarning.value = '';
       selectedBatch.value = new RollbackBatch({
         backup_identify: record.backup_identify,
@@ -460,12 +497,8 @@
       scope.value = record.scope;
       recoveryTimePoint.value = record.recovery_time_point;
       allowBinlog.value = record.allow_binlog_nonconsecutive;
-      if (record.scope === 'pick') {
-        fetchShards(record.shard_values);
-      } else {
-        checkedShardValues.value = [];
-        shardList.value = [];
-      }
+      // 初始化即拉取分片列表并回显勾选，保证切换到「指定分片」时表格有数据
+      fetchShards(record.shard_values);
     } else {
       selectedBatch.value = null;
       scope.value = 'all';
@@ -473,7 +506,6 @@
       shardList.value = [];
       recoveryTimePoint.value = '';
       allowBinlog.value = false;
-      keyRouteShards.value = null;
       keyRouteWarning.value = '';
       searchValue.value = {};
     }
@@ -482,11 +514,17 @@
     });
   });
 
-  // 查询时间变化重新拉取批次列表；跨度超过 30 天时截断（list_batches 接口限制）
-  watch(queryTime, ([start, end]) => {
+  // 查询时间变化重新拉取批次列表；跨度超过 30 天时截断（list_batches 接口限制）；清空后回退默认 7 天
+  watch(queryTime, (value) => {
     if (!isShow.value || isBatchLoading.value) {
       return;
     }
+    if (!value) {
+      selectedBatch.value = null;
+      fetchBatches();
+      return;
+    }
+    const [start, end] = value;
     if (dayjs(end).diff(start, 'day') > 30) {
       queryTime.value = [start, dayjs(start).add(30, 'day').toDate()];
       Message({
@@ -511,9 +549,9 @@
     shardList.value = [];
     recoveryTimePoint.value = '';
     allowBinlog.value = false;
-    keyRouteShards.value = null;
     keyRouteWarning.value = '';
     searchValue.value = {};
+    updateFilteredShards();
     nextTick(() => {
       isRestoring.value = false;
     });
@@ -523,22 +561,27 @@
     if (isRestoring.value) {
       return;
     }
-    if (newScope === 'pick' && shardList.value.length === 0) {
-      fetchShards(checkedShardValues.value);
+    if (newScope === 'pick') {
+      // 默认展示全部分片：清掉上一次遗留的 IP/Key 过滤条件（已勾选的分片保留）
+      if (shardList.value.length === 0) {
+        fetchShards(checkedShardValues.value);
+      }
+      searchValue.value = {};
+      keyRouteWarning.value = '';
+      updateFilteredShards();
     }
     if (newScope === 'all') {
       checkedShardValues.value = [];
     }
   });
 
-  // Key 过滤需经 shard_route 反查所在分片；IP 过滤为本地匹配
+  // Key 过滤经 shard_route 反查所在分片并自动勾选；IP 过滤为本地匹配
   const handleSearchChange = () => {
     const keys = (searchValue.value.key || '')
       .split(/[,\s;，；]+/)
       .map((item) => item.trim())
       .filter(Boolean);
     if (keys.length === 0) {
-      keyRouteShards.value = null;
       keyRouteWarning.value = '';
       return;
     }
@@ -550,7 +593,6 @@
       cluster_id: props.cluster.id,
       keys: [...new Set(keys)].slice(0, 500),
     }).then((res) => {
-      keyRouteShards.value = res.batch_shard_values;
       // 方式 B2：按 Key 反查后自动勾选覆盖这批 Key 所需的分片集合并集
       checkedShardValues.value = [...new Set([...checkedShardValues.value, ...res.batch_shard_values])];
       if (res.results.some((item) => !item.is_covered)) {
@@ -594,7 +636,7 @@
       backup_type: selectedBatch.value.backup_type,
       current_shard_count: currentShardCount.value,
       end_time: selectedBatch.value.end_time,
-      recovery_time_point: recoveryTimePoint.value,
+      recovery_time_point: recoveryTimePoint.value ? dayjs(recoveryTimePoint.value).format('YYYY-MM-DD HH:mm:ss') : '',
       scope: scope.value,
       shard_count: selectedBatch.value.shard_count,
       shard_max_backup_end_time: lowerBound.value,
@@ -722,6 +764,13 @@
       font-size: 12px;
       color: #ff9c01;
       background: #fff4e2;
+    }
+
+    .picked-count {
+      margin-top: 8px;
+      font-size: 12px;
+      // 与 section-hint 同色
+      color: #979ba5;
     }
 
     .recovery-error {

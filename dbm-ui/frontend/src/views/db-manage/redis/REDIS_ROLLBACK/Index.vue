@@ -123,7 +123,6 @@
 </template>
 
 <script setup lang="tsx">
-  import { Message } from 'bkui-vue';
   import { useI18n } from 'vue-i18n';
   import { useRequest } from 'vue-request';
 
@@ -150,7 +149,13 @@
 
   import { random } from '@utils';
 
-  import { createBackupRecord, type IBackupRecord, type IPrecheckResult, utcToLocal } from './components/backup-record';
+  import {
+    createBackupRecord,
+    hasBinlog,
+    type IBackupRecord,
+    type IPrecheckResult,
+    utcToLocal,
+  } from './components/backup-record';
   import BackupRecordColumn from './components/BackupRecordColumn.vue';
   import BackupRecordSelector from './components/BackupRecordSelector.vue';
   import HostCountColumn from './components/HostCountColumn.vue';
@@ -247,7 +252,7 @@
       allow_binlog_nonconsecutive: boolean;
       backup_identify: string;
       cluster_id: number;
-      recovery_time_point: string;
+      recovery_time_point?: string;
       resource_spec: {
         redis: {
           count: number;
@@ -377,6 +382,8 @@
         allow_binlog_nonconsecutive: record.allow_binlog_nonconsecutive,
         backup_identify: record.backup_identify,
         cluster_id: rowItem.cluster.id,
+        // 构造到：按外层选择的时区转 UTC 后传给预校验
+        recovery_time_point: record.recovery_time_point ? formatDateToUTC(record.recovery_time_point) : undefined,
         resource_spec: {
           redis: {
             count: rowItem.hostCount,
@@ -428,21 +435,16 @@
 
   const handleSubmit = () => {
     editableTableRef.value!.validate().then(() => {
-      if (formData.tableData.some((item) => item.precheck.state === 'fail')) {
-        Message({
-          message: t('存在预校验不通过的行，请先调整后再提交'),
-          theme: 'error',
-        });
-        return;
-      }
       createTicketRun({
         details: {
           infos: formData.tableData.map((tableItem) => ({
             allow_binlog_nonconsecutive: tableItem.backupRecord!.allow_binlog_nonconsecutive,
             backup_identify: tableItem.backupRecord!.backup_identify,
             cluster_id: tableItem.cluster.id,
-            // 字段名待后端确认（接口文档缺失），暂按 recovery_time_point 提交
-            recovery_time_point: formatDateToUTC(tableItem.backupRecord!.recovery_time_point),
+            // 构造到仅 TendisSSD / TendisPlus 支持，其他架构不传该字段；字段名待后端确认（接口文档缺失）
+            ...(hasBinlog(tableItem.cluster.cluster_type)
+              ? { recovery_time_point: formatDateToUTC(tableItem.backupRecord!.recovery_time_point) }
+              : {}),
             resource_spec: {
               redis: {
                 count: tableItem.hostCount,

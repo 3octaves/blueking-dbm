@@ -104,6 +104,12 @@
       trigger: 'change',
       validator: (value: string) => Boolean(value),
     },
+    {
+      // 预校验不通过的行不允许提交，随列校验报错
+      message: t('预校验不通过'),
+      trigger: 'change',
+      validator: () => props.precheck?.state !== 'fail',
+    },
   ];
 
   // 未填写待构造的集群时禁用并提示
