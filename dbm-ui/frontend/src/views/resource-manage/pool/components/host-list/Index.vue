@@ -240,6 +240,12 @@
         <template #default="{ row }: { row: DbResourceModel }">{{ row.city || '--' }}</template>
       </TableColumn>
       <TableColumn
+        col-key="zone"
+        :title="t('可用区')"
+        :width="90">
+        <template #default="{ row }: { row: DbResourceModel }">{{ row.zone || t('未知') }}</template>
+      </TableColumn>
+      <TableColumn
         col-key="sub_zone"
         :title="t('园区')"
         :width="90">
@@ -429,6 +435,7 @@
     same_svr_owner_count: ['same_svr_owner_count'],
     sub_zone: ['sub_zone'],
     total_data_storage_cap: ['total_data_storage_cap'],
+    zone: ['zone'],
   };
 
   // 后端导出表头定义（id 对齐后端）
@@ -440,6 +447,7 @@
     { id: 'resource_type', name: t('所属DB') },
     { id: 'labels', name: t('资源标签') },
     { id: 'city', name: t('地域') },
+    { id: 'zone', name: t('可用区') },
     { id: 'sub_zone', name: t('园区') },
     { id: 'rack_id', name: t('机架') },
     { id: 'same_svr_owner_count', name: t('同母机台数') },

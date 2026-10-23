@@ -73,6 +73,8 @@
 
   import { Affinity } from '@common/const';
 
+  // import { useZones } from './zones/hooks/useZones';
+
   const modelValue = defineModel<{
     city_code: string;
     city_name?: string;
@@ -98,25 +100,29 @@
 
   const { data: cityData, loading } = useRequest(getCommonCities);
 
-  watch([cityData, () => modelValue.value.disaster_tolerance_level], () => {
-    if (cityData.value) {
-      const showCityDefault = [Affinity.CROSS_RACK, Affinity.MAX_EACH_ZONE_EQUAL, Affinity.NONE].includes(
-        modelValue.value.disaster_tolerance_level as Affinity,
-      );
-      if (showCityDefault) {
-        commonList.value = cityData.value.common;
-        internalList.value = cityData.value.internal;
-      } else {
-        commonList.value = cityData.value.common.filter((cityItem) => cityItem.city_code !== 'default');
-        internalList.value = cityData.value.internal.filter((cityItem) => cityItem.city_code !== 'default');
-        if (modelValue.value.city_code === 'default') {
-          modelValue.value.city_code = '';
+  watch(
+    [cityData, () => modelValue.value.disaster_tolerance_level],
+    () => {
+      if (cityData.value) {
+        const showCityDefault = [Affinity.CROSS_RACK, Affinity.MAX_EACH_ZONE_EQUAL, Affinity.NONE].includes(
+          modelValue.value.disaster_tolerance_level as Affinity,
+        );
+        if (showCityDefault) {
+          commonList.value = cityData.value.common;
+          internalList.value = cityData.value.internal;
+        } else {
+          commonList.value = cityData.value.common.filter((cityItem) => cityItem.city_code !== 'default');
+          internalList.value = cityData.value.internal.filter((cityItem) => cityItem.city_code !== 'default');
+          if (modelValue.value.city_code === 'default') {
+            modelValue.value.city_code = '';
+          }
         }
-      }
 
-      showInternalList.value = commonList.value.length === 0;
-    }
-  });
+        showInternalList.value = commonList.value.length === 0;
+      }
+    },
+    { immediate: true },
+  );
 
   watch(
     () => modelValue.value.city_code,

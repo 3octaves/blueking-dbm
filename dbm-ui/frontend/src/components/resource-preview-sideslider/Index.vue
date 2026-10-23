@@ -30,9 +30,9 @@
             <div class="sub-title-label">{{ t('地域') }}:</div>
             <div class="sub-title-value">{{ params?.city || '--' }}</div>
           </template>
-          <template v-if="params?.subzones">
-            <div class="sub-title-label">{{ t('园区') }}:</div>
-            <div class="sub-title-value">{{ params?.subzones || '--' }}</div>
+          <template v-if="params?.zones">
+            <div class="sub-title-label">{{ t('可用区') }}:</div>
+            <div class="sub-title-value">{{ params?.zones || '--' }}</div>
           </template>
           <div class="sub-title-label">{{ t('规格') }}:</div>
           <div class="sub-title-value">{{ specInfo?.spec_name || '--' }}</div>
@@ -98,10 +98,10 @@
           :min-width="120"
           :title="t('地域')" />
         <TableColumn
-          col-key="sub_zone"
-          :filter="filterOption['suz_zone']"
+          col-key="zone"
+          :filter="filterOption['zone']"
           :min-width="120"
-          :title="t('园区')" />
+          :title="t('可用区')" />
         <TableColumn
           col-key="rack_id"
           :min-width="120"
@@ -153,6 +153,9 @@
       spec_id?: number;
       subzone_ids?: string;
       subzones?: string;
+      /** 可用区（加性扩展；subzones / subzone_ids 保留兼容但 UI 不再使用） */
+      zone_ids?: string;
+      zones?: string;
     };
   }
 
@@ -209,6 +212,8 @@
       spec_id: props.params.spec_id ? String(props.params.spec_id) : undefined,
       subzone_ids: props.params.subzone_ids || undefined,
       subzones: props.params.subzones || undefined,
+      zone_ids: props.params.zone_ids || undefined,
+      zones: props.params.zones || undefined,
     });
 
     machineNum.value = dataList.count;

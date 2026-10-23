@@ -86,6 +86,8 @@ export default class DbResource {
   total_data_storage_cap: number;
   update_time: string;
   updater: string;
+  zone: string;
+  zone_id: string;
 
   constructor(payload = {} as DbResource) {
     this.agent_status = payload.agent_status || 0;
@@ -125,8 +127,10 @@ export default class DbResource {
     this.sub_zone = payload.sub_zone || '';
     this.sub_zone_id = payload.sub_zone_id || '';
     this.svr_type_name = payload.svr_type_name || '';
-    this.updater = payload.updater || '';
+    this.zone = payload.zone || '';
+    this.zone_id = payload.zone_id || '';
     this.update_time = payload.update_time || '';
+    this.updater = payload.updater || '';
   }
 
   get bkMemText() {

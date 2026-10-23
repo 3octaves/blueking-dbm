@@ -94,6 +94,15 @@
         </template>
       </TableColumn>
       <TableColumn
+        col-key="zone"
+        :filter="tableFilter.zone"
+        :title="t('可用区')"
+        :width="120">
+        <template #default="{ row }: { row: IRowData }">
+          {{ row.zone || t('未知') }}
+        </template>
+      </TableColumn>
+      <TableColumn
         col-key="bk_sub_zone"
         :filter="tableFilter.bk_sub_zone"
         :title="t('园区')"
@@ -232,6 +241,7 @@
   const machineAttrs = [
     'bk_city_id',
     'bk_sub_zone',
+    'zone',
     'bk_os_name',
     'spec_id',
     'instance_role',
@@ -239,7 +249,7 @@
   ] as const;
 
   // 这些属性存在空值，空值统一归为「未知」选项
-  const emptyValueAttrs = ['bk_city_id', 'bk_os_name', 'bk_sub_zone', 'bk_svr_device_cls_name'];
+  const emptyValueAttrs = ['bk_city_id', 'bk_os_name', 'bk_sub_zone', 'zone', 'bk_svr_device_cls_name'];
 
   const getBizMachineAttrs = (attr: (typeof machineAttrs)[number]) =>
     queryBizMachineAttrs({
@@ -296,6 +306,12 @@
       id: 'bk_city_id',
       name: t('地域'),
       remoteMethod: () => getBizMachineAttrs('bk_city_id'),
+      type: 'multiple' as const,
+    },
+    {
+      id: 'zone',
+      name: t('可用区'),
+      remoteMethod: () => getBizMachineAttrs('zone'),
       type: 'multiple' as const,
     },
     {
@@ -369,6 +385,13 @@
       component: markRaw(MultipleSelect),
       props: {
         remoteMethod: () => getBizMachineAttrs('spec_id'),
+      },
+      showConfirmAndReset: true,
+    },
+    zone: {
+      component: markRaw(MultipleSelect),
+      props: {
+        remoteMethod: () => getBizMachineAttrs('zone'),
       },
       showConfirmAndReset: true,
     },

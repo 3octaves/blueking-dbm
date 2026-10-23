@@ -128,6 +128,15 @@
             </template>
           </TableColumn>
           <TableColumn
+            col-key="zone"
+            :min-width="120"
+            :title="t('可用区')"
+            :width="120">
+            <template #default="{ row }: { row: IRowData }">
+              {{ row.zone || '--' }}
+            </template>
+          </TableColumn>
+          <TableColumn
             col-key="subzone"
             :min-width="120"
             :title="t('园区')"
@@ -302,6 +311,7 @@
       [t('规格类型')]: machineTypeMap[row.spec_machine_type],
       [t('规格')]: row.spec_name,
       [t('地域')]: row.city,
+      [t('可用区')]: row.zone || '--',
       [t('园区')]: row.subzone,
       [t('操作系统')]: row.os_name,
       [t('参考水位（台）')]: row.machine_refer_count,
@@ -335,6 +345,8 @@
         os_name: item.os_name,
         spec_id: item.spec_id,
         subzone: item.subzone,
+        zone: item.zone,
+        zone_id: item.zone_id,
       }));
     const totalReplenish = replenishList.reduce((total, item) => total + item.count, 0);
 

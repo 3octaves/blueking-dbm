@@ -10,8 +10,8 @@
     <InfoItem :label="t('地域')">
       {{ cityName }}
     </InfoItem>
-    <InfoItem :label="t('园区')">
-      {{ subZonesText }}
+    <InfoItem :label="t('可用区')">
+      {{ zonesText }}
     </InfoItem>
   </InfoList>
 </template>
@@ -20,7 +20,7 @@
   import { useI18n } from 'vue-i18n';
   import { useRequest } from 'vue-request';
 
-  import { getInfrasCities, getInfrasSubzonesByCity } from '@services/source/infras';
+  import { getInfrasCities, getInfrasCloudSubzones } from '@services/source/infras';
 
   import { Affinity, affinityMap } from '@common/const';
 
@@ -37,6 +37,7 @@
             city: string;
             include_or_exclue?: boolean;
             sub_zone_ids?: number[];
+            zone_ids?: number[];
           };
         };
       };
@@ -48,12 +49,12 @@
   const { t } = useI18n();
 
   const { affinity, location_spec: locationSpec } = Object.values(props.details.resource_spec)[0];
-  const { sub_zone_ids: subZoneIds } = locationSpec;
+  const { zone_ids: zoneIds } = locationSpec;
 
   const affinityText = affinityMap[affinity as Affinity] || '--';
 
   const cityName = ref('--');
-  const subZonesText = ref('--');
+  const zonesText = ref('--');
 
   useRequest(getInfrasCities, {
     onSuccess: (cityList) => {
@@ -63,24 +64,17 @@
     },
   });
 
-  const { run: runGetInfrasSubzonesByCity } = useRequest(getInfrasSubzonesByCity, {
-    manual: true,
-    onSuccess: (subZoneList) => {
-      const subZoneMap = subZoneList.reduce<Record<number, string>>((prevMap, subZoneItem) => {
-        return Object.assign(prevMap, { [subZoneItem.bk_sub_zone_id]: subZoneItem.bk_sub_zone });
-      }, {});
-      if (subZoneIds) {
-        subZonesText.value = subZoneIds.map((subZoneId) => subZoneMap[subZoneId]).join('，');
-      }
-    },
-  });
-
-  if (subZoneIds && subZoneIds.length > 0) {
-    runGetInfrasSubzonesByCity({
-      city_code: props.details.city_code,
+  // 历史单据无 zone_ids 时前端不做园区反查，保持初始值「随机」
+  if (zoneIds && zoneIds.length > 0) {
+    useRequest(getInfrasCloudSubzones, {
+      manual: true,
+      onSuccess: (cloudSubzoneList) => {
+        const zoneNameMap = cloudSubzoneList.reduce<Record<number, string>>((prevMap, cloudSubzoneItem) => {
+          return Object.assign(prevMap, { [cloudSubzoneItem.zone_id]: cloudSubzoneItem.zone_name });
+        }, {});
+        zonesText.value = zoneIds.map((zoneId) => zoneNameMap[zoneId]).join('，');
+      },
     });
-  } else {
-    subZonesText.value = t('随机');
   }
 </script>
 

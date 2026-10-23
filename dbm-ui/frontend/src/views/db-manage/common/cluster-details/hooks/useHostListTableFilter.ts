@@ -100,5 +100,13 @@ export const useHostListTableFilter = (clusterType: ClusterTypes, clusterId: num
       },
       showConfirmAndReset: true,
     },
+    zone: {
+      component: markRaw(MultipleSelect),
+      name: t('可用区'),
+      props: {
+        remoteMethod: () => getBizMachineAttrs('zone'),
+      },
+      showConfirmAndReset: true,
+    },
   };
 };

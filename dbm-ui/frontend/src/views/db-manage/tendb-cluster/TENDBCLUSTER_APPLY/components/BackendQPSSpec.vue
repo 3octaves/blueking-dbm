@@ -74,6 +74,8 @@
           city: cityName,
           subzones: subzoneNames.join('，'),
           subzone_ids: subzoneIds.join(','),
+          zones: zoneNames.join('，'),
+          zone_ids: zoneIds.join(','),
           for_bizs: bizId ? [bizId, 0] : [0],
           resource_types: [DBTypes.TENDBCLUSTER, 'PUBLIC'],
           spec_id: Number(modelValue.spec_id),
@@ -124,7 +126,8 @@
           :cloud-id="cloudId"
           :cluster-type="ClusterTypes.TENDBCLUSTER"
           machine-type="backend"
-          :subzone-ids="subzoneIds" />
+          :subzone-ids="subzoneIds"
+          :zone-ids="zoneIds" />
       </BkFormItem>
       <ResourcePreview
         v-model:tag-list="modelValue.labels"
@@ -133,6 +136,8 @@
           city: cityName,
           subzones: subzoneNames.join('，'),
           subzone_ids: subzoneIds.join(','),
+          zones: zoneNames.join('，'),
+          zone_ids: zoneIds.join(','),
           for_bizs: bizId ? [bizId, 0] : [0],
           resource_types: [DBTypes.TENDBCLUSTER, 'PUBLIC'],
           spec_id: Number(modelValue.spec_id),
@@ -227,6 +232,8 @@
     machineType: string;
     subzoneIds: number[];
     subzoneNames: string[];
+    zoneIds: number[];
+    zoneNames: string[];
   }
 
   const props = defineProps<Props>();

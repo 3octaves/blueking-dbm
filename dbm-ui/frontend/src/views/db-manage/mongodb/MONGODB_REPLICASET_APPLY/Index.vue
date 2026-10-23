@@ -122,7 +122,8 @@
               :cluster-type="DBTypes.MONGODB"
               :machine-type="MachineTypes.MONGODB"
               style="width: 435px"
-              :subzone-ids="formData.details.sub_zone_ids" />
+              :subzone-ids="formData.details.sub_zone_ids"
+              :zone-ids="formData.details.zone_ids" />
             <span class="input-desc ml-32">
               {{ t('共需n台', [hostNumber]) }} ,
               <BkPopover
@@ -150,6 +151,8 @@
               city: formData.details.city_name,
               subzones: formData.details.sub_zone_names.join('，'),
               subzone_ids: formData.details.sub_zone_ids.join(','),
+              zones: formData.details.zone_names.join('，'),
+              zone_ids: formData.details.zone_ids.join(','),
               for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
               resource_types: [DBTypes.MONGODB, 'PUBLIC'],
               spec_id: Number(formData.details.resource_spec.mongo_machine_set.spec_id),
@@ -282,6 +285,8 @@
       start_port: 27001,
       sub_zone_ids: [] as number[],
       sub_zone_names: [] as string[],
+      zone_ids: [] as number[],
+      zone_names: [] as string[],
     },
     remark: '',
     ticket_type: TicketTypes.MONGODB_REPLICASET_APPLY,
@@ -338,12 +343,15 @@
           },
         };
         const subzoneIds = mongoMachineSet.location_spec.sub_zone_ids || [];
+        const zoneIds = mongoMachineSet.location_spec.zone_ids || [];
         Object.assign(formData.details, {
           resource_spec: resourceSpec,
           sub_zone_ids: subzoneIds,
+          zone_ids: zoneIds,
         });
         nextTick(() => {
           regionRequirementsRef.value!.setInitSubzone(subzoneIds);
+          regionRequirementsRef.value!.setInitZones(zoneIds);
         });
       }
     },

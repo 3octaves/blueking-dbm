@@ -103,6 +103,15 @@
         </template>
       </TableColumn>
       <TableColumn
+        col-key="zone"
+        :filter="columnFilter?.zone"
+        :title="t('可用区')"
+        :width="90">
+        <template #default="{ row }: { row: FaultOrRecycleMachineModel }">
+          {{ row.zone || t('未知') }}
+        </template>
+      </TableColumn>
+      <TableColumn
         col-key="sub_zone"
         :filter="columnFilter?.sub_zone"
         :title="t('园区')"

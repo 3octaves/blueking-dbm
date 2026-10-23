@@ -9,7 +9,7 @@ import { ipPort, ipv4 } from '@common/regex';
 
 import { type Props as QuickSearchProps } from '@components/db-quick-search/bk-quick-search/Index.vue';
 
-const dirtyMachineAttrs = ['city', 'sub_zone', 'os_name', 'device_class'] as const;
+const dirtyMachineAttrs = ['city', 'sub_zone', 'zone', 'os_name', 'device_class'] as const;
 
 export const useQuickSearch = (
   pool: ComputedRef<NonNullable<ServiceParameters<typeof queryDirtyMachineAttrs>['pool']>>,
@@ -57,6 +57,12 @@ export const useQuickSearch = (
       id: 'city',
       name: t('地域'),
       remoteMethod: () => getDirtyMachineAttrs('city'),
+      type: 'multiple',
+    },
+    {
+      id: 'zone',
+      name: t('可用区'),
+      remoteMethod: () => getDirtyMachineAttrs('zone'),
       type: 'multiple',
     },
     {

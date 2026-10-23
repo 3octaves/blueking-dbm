@@ -13,6 +13,9 @@ export default class ClusterBase<T extends GroupedClusterTypes = GroupedClusterT
 
   cluster_subzone_ids: number[];
   cluster_subzones: string[];
+  /** 可用区（后端直接返回，前端不做园区反查） */
+  cluster_zone_ids: number[];
+  cluster_zones: string[];
   create_at: string;
   db_type: DBTypeOf<T>;
   id: number;
@@ -36,6 +39,8 @@ export default class ClusterBase<T extends GroupedClusterTypes = GroupedClusterT
     this.update_at = payload.update_at;
     this.cluster_subzone_ids = payload.cluster_subzone_ids || [];
     this.cluster_subzones = payload.cluster_subzones || [];
+    this.cluster_zone_ids = payload.cluster_zone_ids || [];
+    this.cluster_zones = payload.cluster_zones || [];
     this.region = payload.region;
   }
 
@@ -48,6 +53,14 @@ export default class ClusterBase<T extends GroupedClusterTypes = GroupedClusterT
       return t('随机');
     }
     return this.cluster_subzones.join('，');
+  }
+
+  /** 可用区展示值：空值显示「随机」 */
+  get clusterZonesDisplay() {
+    if (this.cluster_zone_ids.length === 0) {
+      return t('随机');
+    }
+    return this.cluster_zones.join('，');
   }
 
   get createAtDisplay() {

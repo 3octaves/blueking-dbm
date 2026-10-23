@@ -122,6 +122,7 @@ interface ResouceListParams {
   spec_id?: string;
   status?: string;
   subzone_ids?: string;
+  zone_ids?: string; // 可用区筛选，逗号分隔
 }
 
 /**
@@ -234,6 +235,7 @@ export function getSpecResourceCount(params: {
   resource_type?: string;
   spec_ids: number[];
   sub_zone_ids?: string[];
+  zone_ids?: string[];
 }) {
   return http.post<Record<number, number>>(`${path}/spec_resource_count/`, params);
 }

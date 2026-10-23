@@ -58,6 +58,8 @@ export default class FaultOrRecycleMachine {
   ticket: string;
   update_at: string;
   updater: string;
+  zone: string;
+  zone_id: string;
 
   constructor(payload = {} as FaultOrRecycleMachine) {
     this.agent_status = payload.agent_status;
@@ -80,6 +82,8 @@ export default class FaultOrRecycleMachine {
     this.ticket = payload.ticket;
     this.update_at = payload.update_at;
     this.updater = payload.updater;
+    this.zone = payload.zone || '--';
+    this.zone_id = payload.zone_id || '';
   }
 
   get bkMemText() {

@@ -147,7 +147,7 @@ export const useInstanceColumnFilter = <T extends readonly string[] = Array<keyo
               value: item.value,
             }));
 
-            if (['bk_os_name', 'bk_sub_zone', 'version'].includes(attr)) {
+            if (['bk_os_name', 'bk_sub_zone', 'version', 'zone'].includes(attr)) {
               const filterList = formatList.filter((item) => item.value !== null && item.value !== '');
               if (filterList.length !== formatList.length) {
                 return filterList.concat({

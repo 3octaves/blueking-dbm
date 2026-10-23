@@ -87,6 +87,12 @@ export const useHostSearchSelect = (
       type: 'multiple' as const,
     },
     {
+      id: 'zone',
+      name: t('可用区'),
+      remoteMethod: () => getBizMachineAttrs('zone'),
+      type: 'multiple' as const,
+    },
+    {
       id: 'bk_sub_zone',
       name: t('园区'),
       remoteMethod: () => getBizMachineAttrs('bk_sub_zone'),

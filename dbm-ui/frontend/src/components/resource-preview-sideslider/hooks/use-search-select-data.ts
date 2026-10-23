@@ -1,7 +1,7 @@
 import { useI18n } from 'vue-i18n';
 
 import { fetchResourceHostDeviceClass, getResourceOsName } from '@services/source/dbresourceResource';
-import { getCommonCities, getInfrasSubzonesByCity } from '@services/source/infras';
+import { getCommonCities, getInfrasCloudSubzones } from '@services/source/infras';
 
 import MultipleSelect from '@components/db-table/components/MultipleSelect.vue';
 
@@ -54,15 +54,15 @@ export default () => {
       },
       showConfirmAndReset: true,
     },
-    suz_zone: {
+    zone: {
       component: markRaw(MultipleSelect),
-      name: t('园区'),
+      name: t('可用区'),
       props: {
         remoteMethod: () => {
-          return getInfrasSubzonesByCity().then((data) =>
+          return getInfrasCloudSubzones().then((data) =>
             data.map((item) => ({
-              label: item.bk_sub_zone,
-              value: item.bk_sub_zone_id,
+              label: item.zone_name,
+              value: item.zone_id,
             })),
           );
         },

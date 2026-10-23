@@ -30,6 +30,15 @@
   <slot name="relatedCluster" />
   <slot name="ip" />
   <TableColumn
+    col-key="zone"
+    :filter="columnFilter?.['zone']"
+    :title="t('可用区')"
+    :width="140">
+    <template #default="{ row }: { row: IRowData }">
+      {{ row.zone || t('未知') }}
+    </template>
+  </TableColumn>
+  <TableColumn
     col-key="bk_sub_zone"
     :filter="columnFilter?.['bk_sub_zone']"
     :title="t('园区')"
@@ -89,6 +98,6 @@
 
   const { data: columnFilter } = useInstanceColumnFilter({
     cluster_type: props.clusterType,
-    instance_attrs: ['role', 'version', 'bk_os_name', 'bk_sub_zone'] as const,
+    instance_attrs: ['role', 'version', 'bk_os_name', 'bk_sub_zone', 'zone'] as const,
   });
 </script>

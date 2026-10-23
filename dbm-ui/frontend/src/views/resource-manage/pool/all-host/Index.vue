@@ -64,6 +64,11 @@
         :title="t('地域')">
       </TableColumn>
       <TableColumn
+        col-key="zone"
+        :filter="columnFilter?.zone"
+        :title="t('可用区')">
+      </TableColumn>
+      <TableColumn
         col-key="sub_zone"
         :filter="columnFilter?.sub_zone"
         :title="t('园区')">

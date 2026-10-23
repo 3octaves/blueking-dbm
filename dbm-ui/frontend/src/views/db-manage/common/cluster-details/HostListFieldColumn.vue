@@ -32,6 +32,14 @@
     </template>
   </TableColumn>
   <TableColumn
+    col-key="zone"
+    :filter="tableFilter['zone']"
+    :title="t('可用区')">
+    <template #default="{ row }: { row: IRowData }">
+      {{ row.host_info.zone || t('未知') }}
+    </template>
+  </TableColumn>
+  <TableColumn
     col-key="bk_sub_zone"
     :filter="tableFilter['bk_sub_zone']"
     :title="t('园区')">

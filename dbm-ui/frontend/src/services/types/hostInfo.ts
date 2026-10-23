@@ -52,4 +52,7 @@ export interface HostInfo {
   operator: string;
   os_name: string;
   os_type: string;
+  /** 可用区（后端下发，可能为空） */
+  zone?: string;
+  zone_id?: number;
 }
