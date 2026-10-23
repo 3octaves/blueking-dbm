@@ -90,6 +90,7 @@
     related_instances: ServiceReturnType<typeof checkInstance>;
     spec: TendbsingleModel['masters'][0]['spec_config'];
     subzones: string;
+    zone: string;
   }>({
     required: true,
   });
@@ -139,6 +140,7 @@
           related_instances: relatedInstances,
           spec: currentHost.spec_config,
           subzones: zoneNames?.join(',') || '',
+          zone: zoneNames?.join(',') || '',
         };
       }
     },
@@ -159,6 +161,7 @@
         id: 0,
       },
       subzones: '',
+      zone: '',
     });
   };
 

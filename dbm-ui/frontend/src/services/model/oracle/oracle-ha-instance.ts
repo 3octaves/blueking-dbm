@@ -54,6 +54,8 @@ export default class OracleHaInstance extends InstanceBase {
   slave_domain: string;
   spec_config: InstanceListSpecConfig;
   version: string;
+  /** 可用区（后端直接返回） */
+  zone: string;
 
   constructor(payload: OracleHaInstance) {
     super(payload);
@@ -70,6 +72,7 @@ export default class OracleHaInstance extends InstanceBase {
     this.bk_mem = payload.bk_mem;
     this.bk_os_name = payload.bk_os_name;
     this.bk_sub_zone = payload.bk_sub_zone;
+    this.zone = payload.zone || '';
     this.bk_svr_device_cls_name = payload.bk_svr_device_cls_name;
     this.cluster_id = payload.cluster_id;
     this.cluster_name = payload.cluster_name;

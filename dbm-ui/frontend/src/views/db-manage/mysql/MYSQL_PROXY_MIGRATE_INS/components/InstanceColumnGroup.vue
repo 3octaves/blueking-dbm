@@ -88,6 +88,7 @@
     role: string;
     spec_config: TendbhaModel['masters'][number]['spec_config'];
     subzones: string;
+    zone: string;
   }>({
     required: true,
   });
@@ -151,6 +152,7 @@
           role: instanceInfo.role,
           spec_config: instanceInfo.spec_config,
           subzones: zoneNames?.join(',') || '',
+          zone: zoneNames?.join(',') || '',
         };
         setTimeout(() => {
           props.handleRowMerge();
@@ -178,6 +180,7 @@
         role: '',
         spec_config: {} as TendbhaModel['masters'][number]['spec_config'],
         subzones: '',
+        zone: '',
       },
     );
   };

@@ -43,6 +43,7 @@
         <AvailableResourceColumn
           :params="{
             subzones: item.multipleCluster.subzones,
+            zones: item.multipleCluster.zones,
             city: item.multipleCluster.city,
             for_bizs: [currentBizId, 0],
             resource_types: [DBTypes.MYSQL, 'PUBLIC'],
@@ -201,6 +202,8 @@
         renderText: '',
         spec_ids: [],
         subzones: '',
+        zone_ids: [],
+        zones: '',
       } as RowData['multipleCluster'],
       data.multipleCluster,
     ),

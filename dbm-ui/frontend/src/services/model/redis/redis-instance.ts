@@ -51,6 +51,8 @@ export default class RedisInstance extends InstanceBase {
   slave_domain: string;
   spec_config: InstanceListSpecConfig;
   version: string;
+  /** 可用区（后端直接返回） */
+  zone: string;
 
   constructor(payload = {} as RedisInstance) {
     super(payload);
@@ -63,6 +65,7 @@ export default class RedisInstance extends InstanceBase {
     this.bk_sub_zone_id = payload.bk_sub_zone_id;
     this.bk_svr_device_cls_name = payload.bk_svr_device_cls_name;
     this.bk_sub_zone = payload.bk_sub_zone || '';
+    this.zone = payload.zone || '';
     this.bk_idc_city_name = payload.bk_idc_city_name || '';
     this.bk_cpu = payload.bk_cpu || 0;
     this.bk_mem = payload.bk_mem || 0;

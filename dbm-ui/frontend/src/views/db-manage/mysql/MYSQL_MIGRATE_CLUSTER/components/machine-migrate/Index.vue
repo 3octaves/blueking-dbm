@@ -43,6 +43,7 @@
           :params="{
             city: item.master.city,
             subzones: item.master.subzones,
+            zones: item.master.zone,
             for_bizs: [currentBizId, 0],
             resource_types: [DBTypes.MYSQL, 'PUBLIC'],
             spec_id: item.specId,
@@ -207,6 +208,7 @@
         role: '',
         spec_id: 0,
         subzones: '',
+        zone: '',
       },
       data.master,
     ),

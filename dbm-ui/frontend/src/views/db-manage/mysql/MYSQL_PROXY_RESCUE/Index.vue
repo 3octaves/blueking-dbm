@@ -72,6 +72,7 @@
             :params="{
               city: item.city,
               subzones: item.subzones,
+              zones: item.zones,
               for_bizs: [currentBizId, 0],
               resource_types: [DBTypes.MYSQL, 'PUBLIC'],
               spec_id: item.specId,
@@ -133,6 +134,7 @@
     labels: ComponentProps<typeof ResourceTagColumn>['modelValue'];
     specId: number;
     subzones: string;
+    zones: string;
   }
 
   const { t } = useI18n();
@@ -157,6 +159,7 @@
     labels: (data.labels || []) as RowData['labels'],
     specId: data.specId || 0,
     subzones: data.subzones || '',
+    zones: data.zones || '',
   });
 
   const defaultData = () => ({
@@ -234,11 +237,13 @@
   const handleInputFinish = (item: RowData) => {
     const region = item.cluster.region;
     const subzones = item.cluster.cluster_subzones;
+    const zones = item.cluster.cluster_zones;
     Object.assign(item, {
       city: region && region !== 'default' ? region : '',
       // 默认目标数量 = 当前数量
       count: item.count || String(item.cluster.proxies?.length || ''),
       subzones: subzones?.join(',') || '',
+      zones: zones?.join(',') || '',
     });
   };
 

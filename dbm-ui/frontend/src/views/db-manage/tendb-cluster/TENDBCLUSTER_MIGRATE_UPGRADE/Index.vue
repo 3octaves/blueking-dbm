@@ -48,6 +48,8 @@
           <AvailableResourceColumn
             :params="{
               subzones: item.cluster.subzones,
+              zones: item.cluster.zones,
+              zone_ids: item.cluster.zone_ids?.join(','),
               city: item.cluster.city,
               for_bizs: [currentBizId, 0],
               resource_types: [DBTypes.TENDBCLUSTER, 'PUBLIC'],

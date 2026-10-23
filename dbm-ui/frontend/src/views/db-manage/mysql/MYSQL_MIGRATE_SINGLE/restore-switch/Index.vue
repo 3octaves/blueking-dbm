@@ -56,6 +56,7 @@
         :params="{
           city: item.host.city,
           subzones: item.host.subzones,
+          zones: item.host.zone,
           for_bizs: [currentBizId, 0],
           resource_types: [DBTypes.MYSQL, 'PUBLIC'],
           spec_id: item.specId,
@@ -133,6 +134,7 @@
           id: 0,
         },
         subzones: '',
+        zone: '',
       } as unknown as RowData['host'],
       data.host,
     ),

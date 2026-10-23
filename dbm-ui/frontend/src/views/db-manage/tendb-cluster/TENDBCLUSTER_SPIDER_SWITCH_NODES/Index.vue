@@ -48,6 +48,7 @@
             :params="{
               city: item.host.bk_idc_city_name,
               subzones: item.host.bk_sub_zone,
+              zones: item.host.zone,
               for_bizs: [currentBizId, 0],
               resource_types: [DBTypes.TENDBCLUSTER, 'PUBLIC'],
               spec_id: item.host.spec.id,

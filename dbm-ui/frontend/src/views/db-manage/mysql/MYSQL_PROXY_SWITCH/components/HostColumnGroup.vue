@@ -98,6 +98,7 @@
     spec_config: TendbhaModel['masters'][number]['spec_config'];
     spec_id_list: number[];
     subzones: string;
+    zone: string;
   }>({
     required: true,
   });
@@ -164,6 +165,7 @@
           spec_config: hostInfo.spec_config,
           spec_id_list: relatedInstances.map((item) => item.spec_config.id),
           subzones: zoneNames?.join(',') || '',
+          zone: zoneNames?.join(',') || '',
         };
         setTimeout(() => {
           props.handleRowMerge();
@@ -191,6 +193,7 @@
         spec_config: {} as TendbhaModel['masters'][number]['spec_config'],
         spec_id_list: [],
         subzones: '',
+        zone: '',
       },
     );
   };

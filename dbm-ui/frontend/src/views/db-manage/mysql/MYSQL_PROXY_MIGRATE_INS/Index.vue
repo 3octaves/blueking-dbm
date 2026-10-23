@@ -48,6 +48,7 @@
             :params="{
               city: item.originProxy.city,
               subzones: item.originProxy.subzones,
+              zones: item.originProxy.zone,
               for_bizs: [currentBizId, 0],
               resource_types: [DBTypes.MYSQL, 'PUBLIC'],
               spec_id: item.specId,
@@ -162,6 +163,7 @@
         role: '',
         spec_config: {},
         subzones: '',
+        zone: '',
       } as unknown as RowData['originProxy'],
       data.originProxy,
     ),

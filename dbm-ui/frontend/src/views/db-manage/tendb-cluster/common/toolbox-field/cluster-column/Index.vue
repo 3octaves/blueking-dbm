@@ -111,6 +111,8 @@
       city?: string;
       spec_ids?: number[];
       subzones?: string;
+      zone_ids?: number[];
+      zones?: string;
     } & TendbClusterModel
   >({
     required: true,
@@ -189,6 +191,8 @@
         const spedIdsSet = new Set<number>();
         const citiesSet = new Set<string>();
         const subzonesSet = new Set<string>();
+        const zoneIdsSet = new Set<number>();
+        const zonesSet = new Set<string>();
         data.forEach((item) => {
           // 规格ID
           if (item.cluster_spec?.spec_id) {
@@ -204,11 +208,21 @@
           (item?.cluster_subzones || []).forEach((zone) => {
             subzonesSet.add(zone);
           });
+
+          // 可用区信息
+          (item?.cluster_zones || []).forEach((zone) => {
+            zonesSet.add(zone);
+          });
+          (item?.cluster_zone_ids || []).forEach((zoneId) => {
+            zoneIdsSet.add(zoneId);
+          });
         });
         modelValue.value = Object.assign({}, currentCluster, {
           city: Array.from(citiesSet).join(','),
           spec_ids: Array.from(spedIdsSet),
           subzones: Array.from(subzonesSet).join(','),
+          zone_ids: Array.from(zoneIdsSet),
+          zones: Array.from(zonesSet).join(','),
         });
         emits('request-success');
         // 集群信息异步回填完成后刷新本单元格校验（如批量录入提前触发的“集群不存在”报错）
@@ -231,6 +245,8 @@
         city: '',
         spec_ids: [],
         subzones: '',
+        zone_ids: [],
+        zones: '',
       },
     );
   };

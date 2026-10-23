@@ -10,6 +10,7 @@ import MultipleSelect from '@components/db-table/components/MultipleSelect.vue';
 const machineAttrs = [
   'bk_city_id',
   'bk_sub_zone',
+  'zone',
   'bk_os_name',
   'spec_id',
   'instance_role',
@@ -31,7 +32,7 @@ export const useHostListTableFilter = (clusterType: ClusterTypes, clusterId: num
         value: item.value,
       }));
 
-      if (['bk_city_id', 'bk_os_name', 'bk_sub_zone', 'bk_svr_device_cls_name'].includes(attr)) {
+      if (['bk_city_id', 'bk_os_name', 'bk_sub_zone', 'bk_svr_device_cls_name', 'zone'].includes(attr)) {
         const filterList = formatList.filter((item) => item.value !== null && item.value !== '');
         if (filterList.length !== formatList.length) {
           return filterList.concat({

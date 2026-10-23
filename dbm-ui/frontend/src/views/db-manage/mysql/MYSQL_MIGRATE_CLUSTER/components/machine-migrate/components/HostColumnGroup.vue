@@ -106,6 +106,7 @@
     role: string;
     spec_id: number;
     subzones: string;
+    zone: string;
   }>({
     required: true,
   });
@@ -183,6 +184,7 @@
           role: currentHost.role,
           spec_id: currentHost.spec_config.id,
           subzones: zoneNames?.join(',') || '',
+          zone: zoneNames?.join(',') || '',
         };
       }
     },
@@ -207,6 +209,7 @@
       role: '',
       spec_id: 0,
       subzones: '',
+      zone: '',
     };
   };
 

@@ -80,6 +80,7 @@
               :params="{
                 city: item.slave.city,
                 subzones: item.slave.subzones,
+                zones: item.slave.zone,
                 for_bizs: [currentBizId, 0],
                 resource_types: [DBTypes.MYSQL, 'PUBLIC'],
                 spec_id: item.specId,
@@ -191,6 +192,7 @@
         role: '',
         spec_id: 0,
         subzones: '',
+        zone: '',
       },
       data.slave,
     ),

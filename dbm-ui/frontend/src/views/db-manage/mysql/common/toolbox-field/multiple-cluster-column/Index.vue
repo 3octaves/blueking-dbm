@@ -113,6 +113,8 @@
     renderText: string;
     spec_ids: number[];
     subzones: string;
+    zone_ids: number[];
+    zones: string;
   }>({
     required: true,
   });
@@ -187,6 +189,8 @@
         const spedIdsSet = new Set<number>();
         const citiesSet = new Set<string>();
         const subzonesSet = new Set<string>();
+        const zoneIdsSet = new Set<number>();
+        const zonesSet = new Set<string>();
         data.forEach((item) => {
           // 规格ID
           if (item.cluster_spec?.spec_id) {
@@ -202,11 +206,21 @@
           (item?.cluster_subzones || []).forEach((zone) => {
             subzonesSet.add(zone);
           });
+
+          // 可用区信息
+          (item?.cluster_zones || []).forEach((zone) => {
+            zonesSet.add(zone);
+          });
+          (item?.cluster_zone_ids || []).forEach((zoneId) => {
+            zoneIdsSet.add(zoneId);
+          });
         });
         modelValue.value.clusters = data;
         modelValue.value.spec_ids = Array.from(spedIdsSet);
         modelValue.value.city = Array.from(citiesSet).join(',');
         modelValue.value.subzones = Array.from(subzonesSet).join(',');
+        modelValue.value.zones = Array.from(zonesSet).join(',');
+        modelValue.value.zone_ids = Array.from(zoneIdsSet);
       }
     },
   });
@@ -232,6 +246,8 @@
           .join('\n'),
         spec_ids: [],
         subzones: '',
+        zone_ids: [],
+        zones: '',
       },
     );
   };
