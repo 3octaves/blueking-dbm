@@ -87,6 +87,7 @@
 
   const modelValue = defineModel<{
     bk_cloud_id: number;
+    bk_cloud_zone: string;
     bk_host_id: number;
     city: string;
     ip: string;
@@ -98,7 +99,6 @@
     spec_config: TendbhaModel['masters'][number]['spec_config'];
     spec_id_list: number[];
     subzones: string;
-    zone: string;
   }>({
     required: true,
   });
@@ -155,6 +155,7 @@
         const [{ region, zone_names: zoneNames }] = relatedClusters;
         modelValue.value = {
           bk_cloud_id: hostInfo.bk_cloud_id,
+          bk_cloud_zone: zoneNames?.join(',') || '',
           bk_host_id: hostInfo.bk_host_id,
           city: region && region !== 'default' ? region : '',
           ip: hostInfo.ip,
@@ -165,7 +166,6 @@
           spec_config: hostInfo.spec_config,
           spec_id_list: relatedInstances.map((item) => item.spec_config.id),
           subzones: zoneNames?.join(',') || '',
-          zone: zoneNames?.join(',') || '',
         };
         setTimeout(() => {
           props.handleRowMerge();
@@ -183,6 +183,7 @@
       {},
       {
         bk_cloud_id: 0,
+        bk_cloud_zone: '',
         bk_host_id: 0,
         city: '',
         ip: value,
@@ -193,7 +194,6 @@
         spec_config: {} as TendbhaModel['masters'][number]['spec_config'],
         spec_id_list: [],
         subzones: '',
-        zone: '',
       },
     );
   };

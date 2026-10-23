@@ -68,12 +68,12 @@
     </template>
   </TableColumn>
   <TableColumn
-    col-key="zone"
-    :filter="columnFilter?.['zone']"
+    col-key="bk_cloud_zone"
+    :filter="columnFilter?.['bk_cloud_zone']"
     :min-width="120"
     :title="t('可用区')">
     <template #default="{ row }: { row: IColumnData }">
-      {{ row.host_info?.zone || t('未知') }}
+      {{ row.host_info?.bk_cloud_zone || t('未知') }}
     </template>
   </TableColumn>
   <TableColumn
@@ -173,6 +173,6 @@
   const { data: columnFilter } = useInstanceColumnFilter({
     cluster_id: props.clusterId,
     cluster_type: props.clusterType,
-    instance_attrs: ['role', 'version', 'bk_os_name', 'bk_sub_zone', 'mongodb_state', 'zone'] as const,
+    instance_attrs: ['role', 'version', 'bk_os_name', 'bk_sub_zone', 'mongodb_state', 'bk_cloud_zone'] as const,
   });
 </script>

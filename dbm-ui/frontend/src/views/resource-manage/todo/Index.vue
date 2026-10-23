@@ -96,12 +96,12 @@
         </template>
       </TableColumn>
       <TableColumn
-        col-key="zone"
-        :filter="columnFilter?.zone"
+        col-key="bk_cloud_zone"
+        :filter="columnFilter?.bk_cloud_zone"
         :title="t('可用区')"
         :width="90">
         <template #default="{ row }: { row: FaultOrRecycleMachineModel }">
-          {{ row.zone || t('未知') }}
+          {{ row.bk_cloud_zone || t('未知') }}
         </template>
       </TableColumn>
       <TableColumn

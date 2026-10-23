@@ -72,7 +72,7 @@
         :params="{
           city: item.host.city,
           subzones: item.host.subzones,
-          zones: item.host.zone,
+          zones: item.host.bk_cloud_zone,
           for_bizs: [currentBizId, 0],
           resource_types: [DBTypes.MYSQL, 'PUBLIC'],
           spec_id: item.specId,
@@ -142,6 +142,7 @@
     host: Object.assign(
       {
         bk_cloud_id: 0,
+        bk_cloud_zone: '',
         bk_host_id: 0,
         city: '',
         ip: '',
@@ -150,7 +151,6 @@
           id: 0,
         },
         subzones: '',
-        zone: '',
       } as unknown as RowData['host'],
       data.host,
     ),

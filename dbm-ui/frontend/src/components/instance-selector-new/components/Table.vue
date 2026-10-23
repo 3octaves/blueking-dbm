@@ -183,7 +183,7 @@
   const { quickSearchData, quickSearchValue } = useInstanceQuickSearch({ cluster_type: props.clusterType });
   const { data: columnFilter } = useInstanceColumnFilter({
     cluster_type: props.clusterType,
-    instance_attrs: ['role', 'version', 'bk_os_name', 'bk_sub_zone', 'zone'] as const,
+    instance_attrs: ['role', 'version', 'bk_os_name', 'bk_sub_zone', 'bk_cloud_zone'] as const,
   });
 
   const instanceTableRef = useTemplateRef('instanceTable');

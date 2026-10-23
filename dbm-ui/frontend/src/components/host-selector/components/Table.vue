@@ -94,12 +94,12 @@
         </template>
       </TableColumn>
       <TableColumn
-        col-key="zone"
-        :filter="tableFilter.zone"
+        col-key="bk_cloud_zone"
+        :filter="tableFilter.bk_cloud_zone"
         :title="t('可用区')"
         :width="120">
         <template #default="{ row }: { row: IRowData }">
-          {{ row.zone || t('未知') }}
+          {{ row.bk_cloud_zone || t('未知') }}
         </template>
       </TableColumn>
       <TableColumn
@@ -241,7 +241,7 @@
   const machineAttrs = [
     'bk_city_id',
     'bk_sub_zone',
-    'zone',
+    'bk_cloud_zone',
     'bk_os_name',
     'spec_id',
     'instance_role',
@@ -249,7 +249,7 @@
   ] as const;
 
   // 这些属性存在空值，空值统一归为「未知」选项
-  const emptyValueAttrs = ['bk_city_id', 'bk_os_name', 'bk_sub_zone', 'zone', 'bk_svr_device_cls_name'];
+  const emptyValueAttrs = ['bk_city_id', 'bk_os_name', 'bk_sub_zone', 'bk_cloud_zone', 'bk_svr_device_cls_name'];
 
   const getBizMachineAttrs = (attr: (typeof machineAttrs)[number]) =>
     queryBizMachineAttrs({
@@ -309,9 +309,9 @@
       type: 'multiple' as const,
     },
     {
-      id: 'zone',
+      id: 'bk_cloud_zone',
       name: t('可用区'),
-      remoteMethod: () => getBizMachineAttrs('zone'),
+      remoteMethod: () => getBizMachineAttrs('bk_cloud_zone'),
       type: 'multiple' as const,
     },
     {
@@ -346,6 +346,13 @@
       component: markRaw(MultipleSelect),
       props: {
         remoteMethod: () => getBizMachineAttrs('bk_city_id'),
+      },
+      showConfirmAndReset: true,
+    },
+    bk_cloud_zone: {
+      component: markRaw(MultipleSelect),
+      props: {
+        remoteMethod: () => getBizMachineAttrs('bk_cloud_zone'),
       },
       showConfirmAndReset: true,
     },
@@ -385,13 +392,6 @@
       component: markRaw(MultipleSelect),
       props: {
         remoteMethod: () => getBizMachineAttrs('spec_id'),
-      },
-      showConfirmAndReset: true,
-    },
-    zone: {
-      component: markRaw(MultipleSelect),
-      props: {
-        remoteMethod: () => getBizMachineAttrs('zone'),
       },
       showConfirmAndReset: true,
     },

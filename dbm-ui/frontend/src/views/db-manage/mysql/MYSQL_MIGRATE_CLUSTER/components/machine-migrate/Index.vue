@@ -43,7 +43,7 @@
           :params="{
             city: item.master.city,
             subzones: item.master.subzones,
-            zones: item.master.zone,
+            zones: item.master.bk_cloud_zone,
             for_bizs: [currentBizId, 0],
             resource_types: [DBTypes.MYSQL, 'PUBLIC'],
             spec_id: item.specId,
@@ -198,6 +198,7 @@
       {
         bk_biz_id: window.PROJECT_CONFIG.BIZ_ID,
         bk_cloud_id: 0,
+        bk_cloud_zone: '',
         bk_host_id: 0,
         city: '',
         cluster_ids: [] as number[],
@@ -208,7 +209,6 @@
         role: '',
         spec_id: 0,
         subzones: '',
-        zone: '',
       },
       data.master,
     ),

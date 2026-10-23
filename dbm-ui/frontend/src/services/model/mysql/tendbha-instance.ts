@@ -21,6 +21,8 @@ export default class TendbhaInstance extends InstanceBase {
   bk_biz_id: number;
   bk_cloud_id: number;
   bk_cloud_name: string;
+  /** 可用区（后端字段 bk_cloud_zone） */
+  bk_cloud_zone: string;
   bk_cpu: number;
   bk_disk: number;
   bk_host_id: number;
@@ -55,8 +57,6 @@ export default class TendbhaInstance extends InstanceBase {
   slave_domain: string;
   spce_config: InstanceListSpecConfig;
   version: string;
-  /** 可用区（后端直接返回） */
-  zone: string;
 
   constructor(payload = {} as TendbhaInstance) {
     super(payload);
@@ -67,7 +67,7 @@ export default class TendbhaInstance extends InstanceBase {
     this.bk_os_name = payload.bk_os_name || '';
     this.bk_rack_id = payload.bk_rack_id || 0;
     this.bk_sub_zone = payload.bk_sub_zone || '';
-    this.zone = payload.zone || '';
+    this.bk_cloud_zone = payload.bk_cloud_zone || '';
     this.bk_sub_zone_id = payload.bk_sub_zone_id;
     this.bk_idc_city_name = payload.bk_idc_city_name || '';
     this.bk_cpu = payload.bk_cpu || 0;

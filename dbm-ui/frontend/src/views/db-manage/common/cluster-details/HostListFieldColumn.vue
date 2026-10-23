@@ -32,11 +32,11 @@
     </template>
   </TableColumn>
   <TableColumn
-    col-key="zone"
-    :filter="tableFilter['zone']"
+    col-key="bk_cloud_zone"
+    :filter="tableFilter['bk_cloud_zone']"
     :title="t('可用区')">
     <template #default="{ row }: { row: IRowData }">
-      {{ row.host_info.zone || t('未知') }}
+      {{ row.host_info.bk_cloud_zone || t('未知') }}
     </template>
   </TableColumn>
   <TableColumn

@@ -64,8 +64,8 @@
         :title="t('地域')">
       </TableColumn>
       <TableColumn
-        col-key="zone"
-        :filter="columnFilter?.zone"
+        col-key="bk_cloud_zone"
+        :filter="columnFilter?.bk_cloud_zone"
         :title="t('可用区')">
       </TableColumn>
       <TableColumn

@@ -10,7 +10,7 @@ import MultipleSelect from '@components/db-table/components/MultipleSelect.vue';
 const machineAttrs = [
   'bk_city_id',
   'bk_sub_zone',
-  'zone',
+  'bk_cloud_zone',
   'bk_os_name',
   'spec_id',
   'instance_role',
@@ -32,7 +32,7 @@ export const useHostListTableFilter = (clusterType: ClusterTypes, clusterId: num
         value: item.value,
       }));
 
-      if (['bk_city_id', 'bk_os_name', 'bk_sub_zone', 'bk_svr_device_cls_name', 'zone'].includes(attr)) {
+      if (['bk_city_id', 'bk_cloud_zone', 'bk_os_name', 'bk_sub_zone', 'bk_svr_device_cls_name'].includes(attr)) {
         const filterList = formatList.filter((item) => item.value !== null && item.value !== '');
         if (filterList.length !== formatList.length) {
           return filterList.concat({
@@ -53,6 +53,14 @@ export const useHostListTableFilter = (clusterType: ClusterTypes, clusterId: num
       name: t('地域'),
       props: {
         remoteMethod: () => getBizMachineAttrs('bk_city_id'),
+      },
+      showConfirmAndReset: true,
+    },
+    bk_cloud_zone: {
+      component: markRaw(MultipleSelect),
+      name: t('可用区'),
+      props: {
+        remoteMethod: () => getBizMachineAttrs('bk_cloud_zone'),
       },
       showConfirmAndReset: true,
     },
@@ -98,14 +106,6 @@ export const useHostListTableFilter = (clusterType: ClusterTypes, clusterId: num
       component: markRaw(MultipleSelect),
       props: {
         remoteMethod: () => getBizMachineAttrs('spec_id'),
-      },
-      showConfirmAndReset: true,
-    },
-    zone: {
-      component: markRaw(MultipleSelect),
-      name: t('可用区'),
-      props: {
-        remoteMethod: () => getBizMachineAttrs('zone'),
       },
       showConfirmAndReset: true,
     },

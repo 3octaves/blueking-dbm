@@ -16,6 +16,7 @@ const machineAttrs = [
   'bk_city_id',
   'bk_sub_zone',
   'bk_os_name',
+  'bk_cloud_zone',
   'spec_id',
   'instance_role',
   'bk_svr_device_cls_name',
@@ -87,9 +88,9 @@ export const useHostSearchSelect = (
       type: 'multiple' as const,
     },
     {
-      id: 'zone',
+      id: 'bk_cloud_zone',
       name: t('可用区'),
-      remoteMethod: () => getBizMachineAttrs('zone'),
+      remoteMethod: () => getBizMachineAttrs('bk_cloud_zone'),
       type: 'multiple' as const,
     },
     {

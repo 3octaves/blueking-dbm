@@ -23,6 +23,8 @@ export interface HostInfo {
     name: string;
   };
   bk_bak_operator: string;
+  /** 可用区（后端下发，可能为空） */
+  bk_cloud_zone?: string;
   bk_cpu: number;
   bk_cpu_architecture: string;
   bk_cpu_module: string;
@@ -52,7 +54,5 @@ export interface HostInfo {
   operator: string;
   os_name: string;
   os_type: string;
-  /** 可用区（后端下发，可能为空） */
-  zone?: string;
   zone_id?: number;
 }
