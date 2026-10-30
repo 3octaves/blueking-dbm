@@ -129,6 +129,7 @@ interface ResouceListParams {
   spec_id?: string;
   status?: string;
   subzone_ids?: string;
+  subzones?: string;
 }
 
 /**

@@ -54,7 +54,7 @@ export default {
   },
   city: {
     component: 'city',
-    label: t('地域 / 可用区 / 园区'),
+    label: t('地域 - 可用区 - 园区'),
     service: getInfrasSubzonesByCity,
     type: 'string',
   },

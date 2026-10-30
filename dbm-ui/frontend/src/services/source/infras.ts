@@ -54,8 +54,9 @@ export function listLogicCities() {
 
 /**
  * 查询城市园区信息
+ * @param params.bk_cloud_zone 可用区名称，用于按可用区收窄园区
  */
-export function getInfrasSubzonesByCity(params?: { city_code?: string }) {
+export function getInfrasSubzonesByCity(params?: { bk_cloud_zone?: string; city_code?: string }) {
   return http.get<
     {
       bk_city: number;
@@ -68,83 +69,64 @@ export function getInfrasSubzonesByCity(params?: { city_code?: string }) {
 
 /**
  * 查询可用区信息
- * 不传 city_code 返回全量，前端按 city_code 分桶（聚合出各地域可用区数量）
+ * 传 city_code 返回该城市下的可用区；不传返回全量
  */
 // TODO: list_cloud_subzones 接口未上线，先用 mock 数据联调，后端就绪后恢复 http.get 实现
 export function getInfrasCloudSubzones(params?: { city_code?: string }) {
   const mockData: {
-    city_code: string;
-    sub_zone_list: { sub_zone: string; sub_zone_id: number }[];
-    zone_id: number;
-    zone_name: string;
+    bk_cloud_region: string;
+    bk_cloud_zone: string;
+    /** 该可用区下的园区名称列表 */
+    subzones: string[];
   }[] = [
     {
-      city_code: '深圳',
-      sub_zone_list: [
-        { sub_zone: '深圳一区（全称）', sub_zone_id: 1001 },
-        { sub_zone: '深圳二区（全称）', sub_zone_id: 1002 },
-        { sub_zone: '深圳三区（全称）', sub_zone_id: 1003 },
-        { sub_zone: '深圳四区（全称）', sub_zone_id: 1004 },
-      ],
-      zone_id: 1,
-      zone_name: '深圳一可用区',
+      bk_cloud_region: '深圳',
+      bk_cloud_zone: '深圳一可用区',
+      subzones: ['深圳一区（全称）', '深圳二区（全称）', '深圳三区（全称）', '深圳四区（全称）'],
     },
     {
-      city_code: '深圳',
-      sub_zone_list: [{ sub_zone: '深圳五区（全称）', sub_zone_id: 1005 }],
-      zone_id: 2,
-      zone_name: '深圳二可用区',
+      bk_cloud_region: '深圳',
+      bk_cloud_zone: '深圳二可用区',
+      subzones: ['深圳五区（全称）'],
     },
     {
-      city_code: 'shanghai',
-      sub_zone_list: [
-        { sub_zone: '上海一区（全称）', sub_zone_id: 2001 },
-        { sub_zone: '上海二区（全称）', sub_zone_id: 2002 },
-      ],
-      zone_id: 3,
-      zone_name: '上海一可用区',
+      bk_cloud_region: 'shanghai',
+      bk_cloud_zone: '上海一可用区',
+      subzones: ['上海一区（全称）', '上海二区（全称）'],
     },
     {
-      city_code: 'shanghai',
-      sub_zone_list: [
-        { sub_zone: '上海三区（全称）', sub_zone_id: 2003 },
-        { sub_zone: '上海四区（全称）', sub_zone_id: 2004 },
-      ],
-      zone_id: 4,
-      zone_name: '上海二可用区',
+      bk_cloud_region: 'shanghai',
+      bk_cloud_zone: '上海二可用区',
+      subzones: ['上海三区（全称）', '上海四区（全称）'],
     },
     {
-      city_code: '广州',
-      sub_zone_list: [{ sub_zone: '广州一区（全称）', sub_zone_id: 3001 }],
-      zone_id: 5,
-      zone_name: '广州一可用区',
+      bk_cloud_region: '广州',
+      bk_cloud_zone: '广州一可用区',
+      subzones: ['广州一区（全称）'],
     },
     {
-      city_code: '南京',
-      sub_zone_list: [
-        { sub_zone: '南京一区（全称）', sub_zone_id: 4001 },
-        { sub_zone: '南京二区（全称）', sub_zone_id: 4002 },
-      ],
-      zone_id: 6,
-      zone_name: '南京一可用区',
+      bk_cloud_region: '南京',
+      bk_cloud_zone: '南京一可用区',
+      subzones: ['南京一区（全称）', '南京二区（全称）'],
     },
     {
-      city_code: '南京',
-      sub_zone_list: [],
-      zone_id: 7,
-      zone_name: '南京二可用区（无园区）',
+      bk_cloud_region: '南京',
+      bk_cloud_zone: '南京二可用区（无园区）',
+      subzones: [],
     },
   ];
 
-  return Promise.resolve(params?.city_code ? mockData.filter((item) => item.city_code === params.city_code) : mockData);
+  return Promise.resolve(
+    params?.city_code ? mockData.filter((item) => item.bk_cloud_region === params.city_code) : mockData,
+  );
 
   // 后端就绪后恢复：
   // return http.get<
   //   {
-  //     city_code: string;
-  //     sub_zone_list: { sub_zone: string; sub_zone_id: number }[];
-  //     zone_id: number;
-  //     zone_name: string;
+  //     bk_cloud_region: string;
+  //     bk_cloud_zone: string;
+  //     /** 该可用区下的园区名称列表 */
+  //     subzones: string[];
   //   }[]
   // >(`${path}/cities/list_cloud_subzones/`, params);
 }

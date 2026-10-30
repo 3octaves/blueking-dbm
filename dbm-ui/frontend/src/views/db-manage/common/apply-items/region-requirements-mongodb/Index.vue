@@ -48,11 +48,12 @@
         city: string;
         include_or_exclue?: boolean;
         sub_zone_ids?: number[];
-        zone_ids?: number[];
+        /** 可用区（接口无独立 id，zone_ids 存可用区名称） */
+        zone_ids?: string[];
       };
     };
     setInitSubzone: (subzoneIds: number[]) => void;
-    setInitZones: (zoneIds: number[]) => void;
+    setInitZones: (zoneNames: string[]) => void;
   }
 
   const emits = defineEmits<Emits>();
@@ -64,7 +65,8 @@
     disaster_tolerance_level: string;
     sub_zone_ids: number[];
     sub_zone_names: string[];
-    zone_ids: number[];
+    /** 可用区（接口无独立 id，zone_ids 存可用区名称） */
+    zone_ids: string[];
     zone_names: string[];
   }>({
     required: true,
@@ -151,7 +153,7 @@
     setInitSubzone(subzoneIds: number[]) {
       modelValue.value.sub_zone_ids = subzoneIds;
     },
-    setInitZones(zoneIds: number[]) {
+    setInitZones(zoneIds: string[]) {
       zonesRef.value?.setInitZones(zoneIds);
     },
   });

@@ -237,7 +237,7 @@
     machineType: string;
     subzoneIds: number[];
     subzoneNames: string[];
-    zoneIds: number[];
+    zoneIds: string[];
     zoneNames: string[];
   }
 
