@@ -38,19 +38,19 @@
       <template #default="{ row: data }: { row: RowData }"> {{ data.spec?.spec_name || '--' }} </template>
     </TicketInfoTableColumn>
     <TicketInfoTableColumn
-      col-key="city"
+      col-key="region"
       :min-width="120"
       :title="t('地域')">
       <template #default="{ row: data }: { row: RowData }">
-        {{ data.city || '--' }}
+        {{ data.region || data.city || '--' }}
       </template>
     </TicketInfoTableColumn>
     <TicketInfoTableColumn
-      col-key="subzone"
+      col-key="zone"
       :min-width="120"
-      :title="t('园区')">
+      :title="t('可用区')">
       <template #default="{ row: data }: { row: RowData }">
-        {{ data.subzone || '--' }}
+        {{ data.zone || '--' }}
       </template>
     </TicketInfoTableColumn>
     <TicketInfoTableColumn

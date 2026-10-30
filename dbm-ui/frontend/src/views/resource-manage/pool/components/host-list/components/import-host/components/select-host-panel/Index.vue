@@ -80,9 +80,16 @@
       </TableColumn>
       <TableColumn
         col-key="bk_idc_city_name"
-        :title="t('地域')">
+        :title="t('城市')">
         <template #default="{ row }: { row: HostInfo }">
           {{ row.bk_idc_city_name || '--' }}
+        </template>
+      </TableColumn>
+      <TableColumn
+        col-key="bk_cloud_zone"
+        :title="t('可用区')">
+        <template #default="{ row }: { row: HostInfo }">
+          {{ row.bk_cloud_zone || '--' }}
         </template>
       </TableColumn>
       <TableColumn

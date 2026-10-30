@@ -203,7 +203,8 @@
                       :cloud-id="formData.details.bk_cloud_id"
                       cluster-type="mysql"
                       machine-type="backend"
-                      :subzone-ids="formData.details.sub_zone_ids" />
+                      :subzone-ids="formData.details.sub_zone_ids"
+                      :zone-ids="formData.details.zone_ids" />
                   </BkFormItem>
                   <ResourcePreview
                     v-model:tag-list="formData.details.resource_spec.single.labels"
@@ -212,6 +213,7 @@
                       city: formData.details.city_name,
                       subzones: formData.details.sub_zone_names.join('，'),
                       subzone_ids: formData.details.sub_zone_ids.join(','),
+                      cloud_zone: formData.details.zone_names.join('，'),
                       for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                       resource_types: [DBTypes.MYSQL, 'PUBLIC'],
                       spec_id: Number(formData.details.resource_spec.single.spec_id),
@@ -237,7 +239,8 @@
                         :cloud-id="formData.details.bk_cloud_id"
                         cluster-type="mysql"
                         machine-type="proxy"
-                        :subzone-ids="formData.details.sub_zone_ids" />
+                        :subzone-ids="formData.details.sub_zone_ids"
+                        :zone-ids="formData.details.zone_ids" />
                     </BkFormItem>
                     <ResourcePreview
                       v-model:tag-list="formData.details.resource_spec.proxy.labels"
@@ -246,6 +249,7 @@
                         city: formData.details.city_name,
                         subzones: formData.details.sub_zone_names.join('，'),
                         subzone_ids: formData.details.sub_zone_ids.join(','),
+                        cloud_zone: formData.details.zone_names.join('，'),
                         for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                         resource_types: [DBTypes.MYSQL, 'PUBLIC'],
                         spec_id: Number(formData.details.resource_spec.proxy.spec_id),
@@ -280,7 +284,8 @@
                         :cloud-id="formData.details.bk_cloud_id"
                         cluster-type="mysql"
                         machine-type="backend"
-                        :subzone-ids="formData.details.sub_zone_ids" />
+                        :subzone-ids="formData.details.sub_zone_ids"
+                        :zone-ids="formData.details.zone_ids" />
                     </BkFormItem>
                     <ResourcePreview
                       v-model:tag-list="formData.details.resource_spec.backend.labels"
@@ -289,6 +294,7 @@
                         city: formData.details.city_name,
                         subzones: formData.details.sub_zone_names.join('，'),
                         subzone_ids: formData.details.sub_zone_ids.join(','),
+                        cloud_zone: formData.details.zone_names.join('，'),
                         for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                         resource_types: [DBTypes.MYSQL, 'PUBLIC'],
                         spec_id: Number(formData.details.resource_spec.backend.spec_id),
@@ -471,6 +477,8 @@
       start_proxy_port: 10000,
       sub_zone_ids: [] as number[],
       sub_zone_names: [] as string[],
+      zone_ids: [] as number[],
+      zone_names: [] as string[],
     },
     remark: '',
     ticket_type: ticketType,
@@ -509,6 +517,7 @@
       if (details.ip_source === 'resource_pool') {
         const { backend } = details.resource_spec!;
         const subzoneIds = backend.location_spec.sub_zone_ids || [];
+        const zoneIds = backend.location_spec.zone_ids || [];
         const labels = (backend.labels || []).map((labelItem, labelIndex) => ({
           id: Number(labelItem),
           value: backend.label_names[labelIndex],
@@ -524,9 +533,11 @@
           inst_num: details.domains.length / backend.count,
           resource_spec: resourceSpec,
           sub_zone_ids: subzoneIds,
+          zone_ids: zoneIds,
         });
         nextTick(() => {
           regionRequirementsRef.value!.setInitSubzone(subzoneIds);
+          regionRequirementsRef.value!.setInitZones(zoneIds);
         });
       }
 
@@ -571,6 +582,7 @@
         const backendGroup = details.resource_spec.backend_group!;
         const proxy = details.resource_spec.proxy!;
         const subzoneIds = backendGroup.location_spec.sub_zone_ids || [];
+        const zoneIds = backendGroup.location_spec.zone_ids || [];
         const backendLabels = (backendGroup.labels || []).map((labelItem, labelIndex) => ({
           id: Number(labelItem),
           value: backendGroup.label_names[labelIndex],
@@ -595,9 +607,11 @@
           inst_num: details.domains.length / backendGroup.count,
           resource_spec: resourceSpec,
           sub_zone_ids: subzoneIds,
+          zone_ids: zoneIds,
         });
         nextTick(() => {
           regionRequirementsRef.value!.setInitSubzone(subzoneIds);
+          regionRequirementsRef.value!.setInitZones(zoneIds);
         });
       }
 
@@ -907,7 +921,7 @@
       return {
         charset,
         deployStructure: clusterTypeInfos[clusterType].name,
-        disasterDefence: t('同城跨园区'),
+        disasterDefence: t('同城跨可用区'),
         domain: `${domainInfo.masterDomain.prefix}${key || '{' + t('集群标识') + '}'}${domainInfo.masterDomain.suffix}`,
         slaveDomain: `${domainInfo.slaveDomain?.prefix}${key || '{' + t('集群标识') + '}'}${domainInfo.slaveDomain?.suffix}`,
         spec: hostSpecInfo.value ? `${hostSpecInfo.value.cpu}/${hostSpecInfo.value.mem}` : '',

@@ -37,6 +37,8 @@ export interface InstanceInfos {
     alias: string;
     bk_biz_id: number;
     bk_cloud_id: number;
+    /** 可用区（后端字段 bk_cloud_zone） */
+    bk_cloud_zone: string[];
     cluster_name: string;
     cluster_type: ClusterTypes;
     creator: string;
@@ -50,8 +52,6 @@ export interface InstanceInfos {
     status: string;
     time_zone: string;
     updater: string;
-    zone_list: string[];
-    zone_names: string[];
   }[];
   role: string;
   spec_config: {

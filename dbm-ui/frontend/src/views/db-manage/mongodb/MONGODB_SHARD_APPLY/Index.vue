@@ -86,7 +86,8 @@
                   :cloud-id="formData.details.bk_cloud_id"
                   :cluster-type="DBTypes.MONGODB"
                   :machine-type="MachineTypes.MONGO_CONFIG"
-                  :subzone-ids="formData.details.sub_zone_ids" />
+                  :subzone-ids="formData.details.sub_zone_ids"
+                  :zone-ids="formData.details.zone_ids" />
               </BkFormItem>
               <ResourcePreview
                 v-model:tag-list="formData.details.resource_spec.mongo_config.labels"
@@ -95,6 +96,7 @@
                   city: formData.details.city_name,
                   subzones: formData.details.sub_zone_names.join('，'),
                   subzone_ids: formData.details.sub_zone_ids.join(','),
+                  cloud_zone: formData.details.zone_names.join('，'),
                   for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                   resource_types: [DBTypes.MONGODB, 'PUBLIC'],
                   spec_id: Number(formData.details.resource_spec.mongo_config.spec_id),
@@ -129,7 +131,8 @@
                   :cloud-id="formData.details.bk_cloud_id"
                   :cluster-type="DBTypes.MONGODB"
                   :machine-type="MachineTypes.MONGOS"
-                  :subzone-ids="formData.details.sub_zone_ids" />
+                  :subzone-ids="formData.details.sub_zone_ids"
+                  :zone-ids="formData.details.zone_ids" />
               </BkFormItem>
               <ResourcePreview
                 v-model:tag-list="formData.details.resource_spec.mongos.labels"
@@ -138,6 +141,7 @@
                   city: formData.details.city_name,
                   subzones: formData.details.sub_zone_names.join('，'),
                   subzone_ids: formData.details.sub_zone_ids.join(','),
+                  cloud_zone: formData.details.zone_names.join('，'),
                   for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                   resource_types: [DBTypes.MONGODB, 'PUBLIC'],
                   spec_id: Number(formData.details.resource_spec.mongos.spec_id),
@@ -169,6 +173,8 @@
                 bk_biz_id: formData.bk_biz_id,
                 sub_zone_ids: formData.details.sub_zone_ids,
                 sub_zone_names: formData.details.sub_zone_names,
+                zone_ids: formData.details.zone_ids,
+                zone_names: formData.details.zone_names,
                 bk_cloud_id: formData.details.bk_cloud_id,
               }" />
           </BkFormItem>
@@ -319,6 +325,8 @@
       start_port: 27021,
       sub_zone_ids: [] as number[],
       sub_zone_names: [] as string[],
+      zone_ids: [] as number[],
+      zone_names: [] as string[],
     },
     remark: '',
     ticket_type: TicketTypes.MONGODB_SHARD_APPLY,
@@ -377,12 +385,15 @@
           });
         }, {});
         const subzoneIds = details.resource_spec!.mongo_config.location_spec.sub_zone_ids || [];
+        const zoneIds = details.resource_spec!.mongo_config.location_spec.zone_ids || [];
         Object.assign(formData.details, {
           resource_spec: resourceSpec,
           sub_zone_ids: subzoneIds,
+          zone_ids: zoneIds,
         });
         nextTick(() => {
           regionRequirementsRef.value!.setInitSubzone(subzoneIds);
+          regionRequirementsRef.value!.setInitZones(zoneIds);
         });
       }
     },

@@ -12,7 +12,7 @@ import MultipleSelect from '@components/db-table/components/MultipleSelect.vue';
 
 import { t } from '@/locales';
 
-const dirtyMachineAttrs = ['city', 'sub_zone', 'os_name', 'device_class'] as const;
+const dirtyMachineAttrs = ['city', 'sub_zone', 'os_name', 'device_class', 'bk_cloud_zone', 'bk_cloud_region'] as const;
 
 export const useColumnFilter = (pool: ComputedRef<ServiceParameters<typeof queryDirtyMachineAttrs>['pool']>) => {
   const baseFilter = {

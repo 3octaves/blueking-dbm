@@ -14,7 +14,7 @@ export const useQuickSearch = () => {
   const quickSearchData = [
     {
       id: 'bk_idc_city_name',
-      name: t('地域'),
+      name: t('城市'),
       type: 'input',
     },
     {

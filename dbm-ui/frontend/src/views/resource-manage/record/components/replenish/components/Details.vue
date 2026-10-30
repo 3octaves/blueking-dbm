@@ -221,20 +221,20 @@
           </TableColumn>
           <!-- 地域 -->
           <TableColumn
-            col-key="city"
+            col-key="region"
             :title="t('地域')"
             :width="100">
             <template #default="{ row }: { row: RowData }">
-              {{ row.city || '--' }}
+              {{ row.region || '--' }}
             </template>
           </TableColumn>
-          <!-- 园区 -->
+          <!-- 可用区 -->
           <TableColumn
-            col-key="subzone"
-            :title="t('园区')"
+            col-key="zone"
+            :title="t('可用区')"
             :width="120">
             <template #default="{ row }: { row: RowData }">
-              {{ row.subzone || '--' }}
+              {{ row.zone || '--' }}
             </template>
           </TableColumn>
           <!-- 操作系统 -->
@@ -362,6 +362,7 @@
     operator: string;
     os_name: string;
     record_id: number;
+    region: string;
     renderKey: string;
     spec: {
       spec_machine_type: string;
@@ -373,6 +374,7 @@
     sub_ticket_id: number;
     subzone: string;
     ticket_id: number;
+    zone: string;
   } & TicketModel;
 
   interface Props {

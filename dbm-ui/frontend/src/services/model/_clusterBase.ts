@@ -11,8 +11,8 @@ import { t } from '@locales/index';
 export default class ClusterBase<T extends GroupedClusterTypes = GroupedClusterTypes> {
   static getRoleFaildInstanceList = (data: ClusterListNode[]) => _.filter(data, (item) => item.status !== 'running');
 
-  cluster_subzone_ids: number[];
-  cluster_subzones: string[];
+  /** 可用区（集群维度，名称列表；接口字段 bk_cloud_zone） */
+  bk_cloud_zone: string[];
   create_at: string;
   db_type: DBTypeOf<T>;
   id: number;
@@ -34,8 +34,7 @@ export default class ClusterBase<T extends GroupedClusterTypes = GroupedClusterT
     this.phase = payload.phase;
     this.tags = payload.tags || [];
     this.update_at = payload.update_at;
-    this.cluster_subzone_ids = payload.cluster_subzone_ids || [];
-    this.cluster_subzones = payload.cluster_subzones || [];
+    this.bk_cloud_zone = payload.bk_cloud_zone || [];
     this.region = payload.region;
   }
 
@@ -43,11 +42,12 @@ export default class ClusterBase<T extends GroupedClusterTypes = GroupedClusterT
     return _.sortBy(this.tags, (item) => item.key).filter((item) => !item.system);
   }
 
-  get clusterSubzonesDisplay() {
-    if (this.cluster_subzone_ids.length === 0) {
+  /** 可用区展示值：空值显示「随机」 */
+  get clusterZonesDisplay() {
+    if (this.bk_cloud_zone.length === 0) {
       return t('随机');
     }
-    return this.cluster_subzones.join('，');
+    return this.bk_cloud_zone.join('，');
   }
 
   get createAtDisplay() {

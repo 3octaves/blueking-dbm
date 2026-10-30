@@ -30,9 +30,9 @@
             <div class="sub-title-label">{{ t('地域') }}:</div>
             <div class="sub-title-value">{{ params?.city || '--' }}</div>
           </template>
-          <template v-if="params?.subzones">
-            <div class="sub-title-label">{{ t('园区') }}:</div>
-            <div class="sub-title-value">{{ params?.subzones || '--' }}</div>
+          <template v-if="params?.cloud_zone">
+            <div class="sub-title-label">{{ t('可用区') }}:</div>
+            <div class="sub-title-value">{{ params?.cloud_zone || '--' }}</div>
           </template>
           <div class="sub-title-label">{{ t('规格') }}:</div>
           <div class="sub-title-value">{{ specInfo?.spec_name || '--' }}</div>
@@ -98,10 +98,10 @@
           :min-width="120"
           :title="t('地域')" />
         <TableColumn
-          col-key="sub_zone"
-          :filter="filterOption['suz_zone']"
+          col-key="zone"
+          :filter="filterOption['zone']"
           :min-width="120"
-          :title="t('园区')" />
+          :title="t('可用区')" />
         <TableColumn
           col-key="rack_id"
           :min-width="120"
@@ -141,6 +141,8 @@
     params: {
       bk_cloud_ids?: string;
       city?: string;
+      /** 可用区（集群/主机维度的 bk_cloud_zone 名称） */
+      cloud_zone?: string;
       for_biz?: number;
       for_bizs?: number[];
       hosts?: HostInfo[];
@@ -204,6 +206,7 @@
       ...params,
       ...props.params,
       bk_biz_id: undefined, // 资源池参数用for_biz,把db-table内置的bk_biz_id去掉
+      bk_cloud_zone: props.params.cloud_zone || undefined,
       city: props.params.city || undefined,
       labels: labels || undefined, // 不传即为不限制（即通用无标签）
       spec_id: props.params.spec_id ? String(props.params.spec_id) : undefined,

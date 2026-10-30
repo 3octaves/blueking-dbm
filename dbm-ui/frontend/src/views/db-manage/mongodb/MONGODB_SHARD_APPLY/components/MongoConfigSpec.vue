@@ -35,6 +35,7 @@
           city: params.city_name,
           subzones: params.sub_zone_names.join('，'),
           subzone_ids: params.sub_zone_ids.join(','),
+          cloud_zone: params.zone_names.join('，'),
           for_bizs: params.bk_biz_id ? [params.bk_biz_id, 0] : [0],
           resource_types: [DBTypes.MONGODB, 'PUBLIC'],
           spec_id: Number(modelValue.spec_id),
@@ -172,6 +173,7 @@
           :cluster-type="ClusterTypes.MONGODB"
           :machine-type="MachineTypes.MONGODB"
           :subzone-ids="params.sub_zone_ids"
+          :zone-ids="params.zone_ids"
           @update:model-value="handleSpecChange" />
       </BkFormItem>
       <ResourcePreview
@@ -181,6 +183,7 @@
           city: params.city_name,
           subzones: params.sub_zone_names.join('，'),
           subzone_ids: params.sub_zone_ids.join(','),
+          cloud_zone: params.zone_names.join('，'),
           for_bizs: params.bk_biz_id ? [params.bk_biz_id, 0] : [0],
           resource_types: [DBTypes.MONGODB, 'PUBLIC'],
           spec_id: Number(modelValue.spec_id),
@@ -284,6 +287,8 @@
       city_name: string;
       sub_zone_ids: number[];
       sub_zone_names: string[];
+      zone_ids: number[];
+      zone_names: string[];
     };
   }
 

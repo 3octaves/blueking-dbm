@@ -61,6 +61,7 @@
     showRefresh?: boolean;
     // eslint-disable-next-line vue/require-default-prop
     subzoneIds?: number[];
+    zoneIds?: number[];
   }
 
   type Emits = (e: 'update:modelValue', value: number | string) => void;
@@ -144,6 +145,11 @@
         sub_zone_ids: props.subzoneIds.map((item) => `${item}`),
       });
     }
+    if (props.zoneIds) {
+      Object.assign(params, {
+        zone_ids: props.zoneIds.map((item) => `${item}`),
+      });
+    }
     getSpecResourceCount(params).then((data) => {
       list.value = list.value.map((item) =>
         Object.assign(item, {
@@ -158,7 +164,7 @@
   }, 100);
 
   watch(
-    () => [props.bizId, props.cloudId, props.city, props.subzoneIds, data.value],
+    () => [props.bizId, props.cloudId, props.city, props.subzoneIds, props.zoneIds, data.value],
     () => {
       if (
         typeof props.bizId === 'number' &&

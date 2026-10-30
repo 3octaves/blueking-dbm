@@ -13,7 +13,8 @@
         cluster-type="redis"
         :machine-type="machineType"
         style="width: 314px"
-        :subzone-ids="subzoneIds" />
+        :subzone-ids="subzoneIds"
+        :zone-ids="zoneIds" />
     </DbFormItem>
     <ResourcePreview
       v-model:tag-list="modelValue.labels"
@@ -22,6 +23,7 @@
         city: cityName,
         subzones: subzoneNames.join('，'),
         subzone_ids: subzoneIds.join(','),
+        cloud_zone: zoneNames.join('，'),
         for_bizs: bizId ? [bizId, 0] : [0],
         resource_types: [DBTypes.REDIS, 'PUBLIC'],
         spec_id: Number(modelValue.spec_id),
@@ -100,6 +102,8 @@
     shardNumDisabled?: boolean;
     subzoneIds: number[];
     subzoneNames: string[];
+    zoneIds: number[];
+    zoneNames: string[];
   }
 
   interface ModelValue {
