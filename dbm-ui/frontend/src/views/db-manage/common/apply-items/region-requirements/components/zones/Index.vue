@@ -36,11 +36,11 @@
           @select="handleSelectRandom" />
         <ZoneCard
           v-for="zoneItem in cityZoneList"
-          :key="zoneItem.zone_id"
-          :selected="modelValue.zone_ids.includes(zoneItem.zone_id)"
-          :subzones="zoneItem.sub_zone_list.map((subZoneItem) => subZoneItem.sub_zone)"
-          :title="zoneItem.zone_name"
-          @select="handleSelectZone(zoneItem.zone_id)" />
+          :key="zoneItem.bk_cloud_zone"
+          :selected="modelValue.zone_ids.includes(zoneItem.bk_cloud_zone)"
+          :subzones="zoneItem.subzones"
+          :title="zoneItem.bk_cloud_zone"
+          @select="handleSelectZone(zoneItem.bk_cloud_zone)" />
       </div>
     </BkLoading>
   </BkFormItem>
@@ -55,18 +55,20 @@
   import { useZones } from './hooks/useZones';
 
   interface Props {
+    /** 当前地域值（与可用区数据的 bk_cloud_region 同域比对） */
     cityCode: string;
     disasterToleranceLevel: string;
   }
 
   interface Expose {
-    setInitZones(zoneIds: number[]): void;
+    setInitZones(zoneNames: string[]): void;
   }
 
   const props = defineProps<Props>();
 
   const modelValue = defineModel<{
-    zone_ids: number[];
+    /** 可用区（接口无独立 id，提交体 zone_ids 字段存可用区名称） */
+    zone_ids: string[];
     zone_names: string[];
   }>({
     required: true,
@@ -74,7 +76,7 @@
 
   const { t } = useI18n();
 
-  const { loading, run, zoneList, zonesByCityCode } = useZones();
+  const { loading, run, zonesByRegion } = useZones();
 
   // 跨可用区（含 MongoDB 的跨可用区强/弱，等同纯跨可用区）
   const isCrossSubzone = computed(() =>
@@ -84,7 +86,7 @@
   );
 
   /** 当前地域下的可用区卡片数据 */
-  const cityZoneList = computed(() => zonesByCityCode.value[props.cityCode] || []);
+  const cityZoneList = computed(() => zonesByRegion.value[props.cityCode] || []);
 
   /** 未选具体可用区时视为随机 */
   const isRandomSelected = computed(() => modelValue.value.zone_ids.length === 0);
@@ -126,11 +128,6 @@
     { immediate: true },
   );
 
-  const syncZoneNames = () => {
-    const zoneNameMap = Object.fromEntries(zoneList.value.map((zoneItem) => [zoneItem.zone_id, zoneItem.zone_name]));
-    modelValue.value.zone_names = modelValue.value.zone_ids.map((zoneId) => zoneNameMap[zoneId]);
-  };
-
   /** 选择随机：清空具体可用区 */
   const handleSelectRandom = () => {
     modelValue.value.zone_ids = [];
@@ -138,24 +135,25 @@
   };
 
   /** 选择具体可用区：跨可用区为多选，指定可用区为单选 */
-  const handleSelectZone = (zoneId: number) => {
+  const handleSelectZone = (zoneName: string) => {
     if (isCrossSubzone.value) {
-      const zoneIdIndex = modelValue.value.zone_ids.indexOf(zoneId);
+      const zoneIdIndex = modelValue.value.zone_ids.indexOf(zoneName);
       if (zoneIdIndex >= 0) {
         modelValue.value.zone_ids.splice(zoneIdIndex, 1);
       } else {
-        modelValue.value.zone_ids.push(zoneId);
+        modelValue.value.zone_ids.push(zoneName);
       }
     } else {
-      modelValue.value.zone_ids = [zoneId];
+      modelValue.value.zone_ids = [zoneName];
     }
-    syncZoneNames();
+    // 可用区无独立 id，提交体 zone_ids 存名称，zone_names 与其一致
+    modelValue.value.zone_names = [...modelValue.value.zone_ids];
   };
 
   defineExpose<Expose>({
-    setInitZones(zoneIds: number[]) {
-      modelValue.value.zone_ids = zoneIds;
-      syncZoneNames();
+    setInitZones(zoneNames: string[]) {
+      modelValue.value.zone_ids = zoneNames;
+      modelValue.value.zone_names = [...zoneNames];
     },
   });
 </script>

@@ -449,9 +449,9 @@
         },
       },
       start_mssql_port: 48322, // SQLServer起始端口
-      sub_zone_ids: [] as number[],
+      sub_zone_ids: [] as string[],
       sub_zone_names: [] as string[],
-      zone_ids: [] as number[],
+      zone_ids: [] as string[],
       zone_names: [] as string[],
     },
     remark: '',

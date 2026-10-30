@@ -10,7 +10,9 @@
     <InfoItem :label="t('地域')">
       {{ cityName }}
     </InfoItem>
-    <InfoItem :label="t('可用区')">
+    <InfoItem
+      v-if="showZoneItem"
+      :label="t('可用区')">
       {{ zonesText }}
     </InfoItem>
   </InfoList>
@@ -20,7 +22,7 @@
   import { useI18n } from 'vue-i18n';
   import { useRequest } from 'vue-request';
 
-  import { getInfrasCities, getInfrasCloudSubzones } from '@services/source/infras';
+  import { getInfrasCities } from '@services/source/infras';
 
   import { Affinity, mongodbAffinityMap } from '@common/const';
 
@@ -53,8 +55,15 @@
 
   const affinityText = mongodbAffinityMap[affinity as Affinity] || '--';
 
+  // 仅跨可用区（强/弱）/ 指定可用区展示可用区行
+  const showZoneItem = computed(() =>
+    [Affinity.CROSS_SUBZONE_STRONG, Affinity.CROSS_SUBZONE_WEAK, Affinity.SAME_SUBZONE_CROSS_SWTICH].includes(
+      affinity as Affinity,
+    ),
+  );
+
   const cityName = ref('--');
-  const zonesText = ref(t('随机'));
+  const zonesText = ref('--');
 
   useRequest(getInfrasCities, {
     onSuccess: (cityList) => {
@@ -64,17 +73,11 @@
     },
   });
 
-  // 历史单据无 zone_ids 时前端不做园区反查，保持「随机」
+  // zone_ids 存可用区名称（历史单据的数字 id 无名称映射，仅新单据展示名称）；为空显示「随机」
   if (zoneIds && zoneIds.length > 0) {
-    useRequest(getInfrasCloudSubzones, {
-      manual: true,
-      onSuccess: (cloudSubzoneList) => {
-        const zoneNameMap = cloudSubzoneList.reduce<Record<number, string>>((prevMap, cloudSubzoneItem) => {
-          return Object.assign(prevMap, { [cloudSubzoneItem.zone_id]: cloudSubzoneItem.zone_name });
-        }, {});
-        zonesText.value = zoneIds.map((zoneId) => zoneNameMap[zoneId]).join('，');
-      },
-    });
+    zonesText.value = zoneIds.filter((zoneId) => typeof zoneId === 'string').join('，');
+  } else if (showZoneItem.value) {
+    zonesText.value = t('随机');
   }
 </script>
 

@@ -287,7 +287,8 @@
       city_name: string;
       sub_zone_ids: number[];
       sub_zone_names: string[];
-      zone_ids: number[];
+      /** 可用区（接口无独立 id，zone_ids 存可用区名称） */
+      zone_ids: string[];
       zone_names: string[];
     };
   }

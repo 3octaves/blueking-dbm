@@ -29,23 +29,23 @@ export function fetchAllCloudSubzones() {
 }
 
 /**
- * 可用区数据：一次拉全量，按 city_code 分桶
- * 返回 每个地域下的可用区列表，用于卡片渲染与「跨可用区只列 ≥2 个可用区的地域」过滤
+ * 可用区数据：一次拉全量，按地域（bk_cloud_region）分桶
+ * 返回每个地域下的可用区名称列表，用于卡片渲染
  */
 export function useZones() {
   const zoneList = shallowRef<CloudSubzoneItem[]>([]);
   const loading = ref(false);
 
-  /** 按地域分桶：city_code -> 可用区列表 */
-  const zonesByCityCode = computed(() => {
-    const cityMap: Record<string, CloudSubzoneItem[]> = {};
+  /** 按地域分桶：bk_cloud_region -> 可用区列表 */
+  const zonesByRegion = computed(() => {
+    const regionMap: Record<string, CloudSubzoneItem[]> = {};
     zoneList.value.forEach((zoneItem) => {
-      if (!cityMap[zoneItem.city_code]) {
-        cityMap[zoneItem.city_code] = [];
+      if (!regionMap[zoneItem.bk_cloud_region]) {
+        regionMap[zoneItem.bk_cloud_region] = [];
       }
-      cityMap[zoneItem.city_code]!.push(zoneItem);
+      regionMap[zoneItem.bk_cloud_region]!.push(zoneItem);
     });
-    return cityMap;
+    return regionMap;
   });
 
   const run = async () => {
@@ -61,6 +61,6 @@ export function useZones() {
     loading,
     run,
     zoneList,
-    zonesByCityCode,
+    zonesByRegion,
   };
 }

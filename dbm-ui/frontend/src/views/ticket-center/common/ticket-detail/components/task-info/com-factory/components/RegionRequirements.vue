@@ -10,7 +10,9 @@
     <InfoItem :label="t('地域')">
       {{ cityName }}
     </InfoItem>
-    <InfoItem :label="t('可用区')">
+    <InfoItem
+      v-if="showZoneItem"
+      :label="t('可用区')">
       {{ zonesText }}
     </InfoItem>
   </InfoList>
@@ -20,7 +22,7 @@
   import { useI18n } from 'vue-i18n';
   import { useRequest } from 'vue-request';
 
-  import { getInfrasCities, getInfrasCloudSubzones } from '@services/source/infras';
+  import { getInfrasCities } from '@services/source/infras';
 
   import { Affinity, affinityMap } from '@common/const';
 
@@ -37,7 +39,8 @@
             city: string;
             include_or_exclue?: boolean;
             sub_zone_ids?: number[];
-            zone_ids?: number[];
+            /** 可用区名称（历史单据为数字 id，仅新单据展示可用区名） */
+            zone_ids?: Array<number | string>;
           };
         };
       };
@@ -53,6 +56,11 @@
 
   const affinityText = affinityMap[affinity as Affinity] || '--';
 
+  // 仅跨可用区 / 指定可用区展示可用区行
+  const showZoneItem = computed(() =>
+    [Affinity.CROS_SUBZONE, Affinity.SAME_SUBZONE_CROSS_SWTICH].includes(affinity as Affinity),
+  );
+
   const cityName = ref('--');
   const zonesText = ref('--');
 
@@ -64,17 +72,11 @@
     },
   });
 
-  // 历史单据无 zone_ids 时前端不做园区反查，保持初始值「随机」
+  // zone_ids 存可用区名称（历史单据的数字 id 无名称映射，仅新单据展示名称）；为空显示「随机」
   if (zoneIds && zoneIds.length > 0) {
-    useRequest(getInfrasCloudSubzones, {
-      manual: true,
-      onSuccess: (cloudSubzoneList) => {
-        const zoneNameMap = cloudSubzoneList.reduce<Record<number, string>>((prevMap, cloudSubzoneItem) => {
-          return Object.assign(prevMap, { [cloudSubzoneItem.zone_id]: cloudSubzoneItem.zone_name });
-        }, {});
-        zonesText.value = zoneIds.map((zoneId) => zoneNameMap[zoneId]).join('，');
-      },
-    });
+    zonesText.value = zoneIds.filter((zoneId) => typeof zoneId === 'string').join('，');
+  } else if (showZoneItem.value) {
+    zonesText.value = t('随机');
   }
 </script>
 

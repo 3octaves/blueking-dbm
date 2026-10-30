@@ -61,8 +61,8 @@ export default () => {
         remoteMethod: () => {
           return getInfrasCloudSubzones().then((data) =>
             data.map((item) => ({
-              label: item.zone_name,
-              value: item.zone_id,
+              label: item.bk_cloud_zone,
+              value: item.bk_cloud_zone,
             })),
           );
         },

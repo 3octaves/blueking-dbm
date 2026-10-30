@@ -61,7 +61,7 @@
     showRefresh?: boolean;
     // eslint-disable-next-line vue/require-default-prop
     subzoneIds?: number[];
-    zoneIds?: number[];
+    zoneIds?: string[];
   }
 
   type Emits = (e: 'update:modelValue', value: number | string) => void;
