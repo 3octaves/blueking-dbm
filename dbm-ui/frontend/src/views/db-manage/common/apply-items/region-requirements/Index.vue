@@ -20,9 +20,9 @@
       v-model="modelValue.bk_cloud_id"
       @change="handleCloudChange" />
     <CityCodeItem v-model="modelValue" />
-    <SubzonesItem
-      v-if="showSubZoneItem"
-      ref="subzoneRef"
+    <ZonesItem
+      v-if="showZoneItem"
+      ref="zonesRef"
       v-model="modelValue"
       :city-code="modelValue.city_code"
       :disaster-tolerance-level="modelValue.disaster_tolerance_level" />
@@ -39,7 +39,7 @@
 
   import CityCodeItem from './components/CityCode.vue';
   import DisasterToleranceLevelItem from './components/DisasterToleranceLevel.vue';
-  import SubzonesItem from './components/subzones/Index.vue';
+  import ZonesItem from './components/zones/Index.vue';
 
   interface Props {
     type?: ComponentProps<typeof DisasterToleranceLevelItem>['type'];
@@ -54,9 +54,11 @@
         city: string;
         include_or_exclue?: boolean;
         sub_zone_ids?: number[];
+        zone_ids?: number[];
       };
     };
     setInitSubzone: (subzoneIds: number[]) => void;
+    setInitZones: (zoneIds: number[]) => void;
   }
 
   defineProps<Props>();
@@ -69,15 +71,23 @@
     disaster_tolerance_level: string;
     sub_zone_ids: number[];
     sub_zone_names: string[];
+    zone_ids: number[];
+    zone_names: string[];
   }>({
     required: true,
   });
 
   const { t } = useI18n();
 
-  const subzoneRef = useTemplateRef('subzoneRef');
+  const zonesRef = useTemplateRef('zonesRef');
 
-  const showSubZoneItem = computed(() => modelValue.value.disaster_tolerance_level && modelValue.value.city_code);
+  // 新规则：跨可用区 / 指定可用区才填写可用区，跨机架与无只填到地域
+  const showZoneItem = computed(
+    () =>
+      [Affinity.CROS_SUBZONE, Affinity.SAME_SUBZONE_CROSS_SWTICH].includes(
+        modelValue.value.disaster_tolerance_level as Affinity,
+      ) && modelValue.value.city_code,
+  );
 
   const handleCloudChange = (value: { id: number | string; name: string }) => {
     emits('cloud-change', value);
@@ -85,24 +95,52 @@
 
   defineExpose<Expose>({
     getValue() {
-      const { city_code: city, disaster_tolerance_level: affinity, sub_zone_ids: subZoneIds } = modelValue.value;
-      // 跨园区 / 指定园区 / 无容灾要求-指定地域-指定园区
-      if (
-        affinity === Affinity.CROS_SUBZONE ||
-        affinity === Affinity.SAME_SUBZONE_CROSS_SWTICH ||
-        (affinity === Affinity.NONE && city !== 'default' && subZoneIds.length > 0)
-      ) {
+      const {
+        city_code: city,
+        disaster_tolerance_level: affinity,
+        sub_zone_ids: subZoneIds,
+        zone_ids: zoneIds,
+      } = modelValue.value;
+      // 跨可用区：随机时不传 zone_ids，自选时至少 2 个
+      if (affinity === Affinity.CROS_SUBZONE) {
+        if (zoneIds.length >= 2) {
+          return {
+            affinity,
+            location_spec: {
+              city,
+              sub_zone_ids: subZoneIds,
+              zone_ids: zoneIds,
+            },
+          };
+        }
         return {
           affinity,
           location_spec: {
             city,
-            // include_or_exclue: true,
+          },
+        };
+      }
+      // 指定可用区：必选 1 个
+      if (affinity === Affinity.SAME_SUBZONE_CROSS_SWTICH && zoneIds.length === 1) {
+        return {
+          affinity,
+          location_spec: {
+            city,
+            sub_zone_ids: subZoneIds,
+            zone_ids: zoneIds,
+          },
+        };
+      }
+      // 跨机架 / 无容灾要求（兼容旧链路：无容灾-指定地域-指定园区仍走园区字段）
+      if (affinity === Affinity.NONE && city !== 'default' && subZoneIds.length > 0) {
+        return {
+          affinity,
+          location_spec: {
+            city,
             sub_zone_ids: subZoneIds,
           },
         };
       }
-
-      // 跨机架 / 无容灾要求-随机地域 / 无容灾要求-指定地域-随机园区
       return {
         affinity,
         location_spec: {
@@ -111,7 +149,10 @@
       };
     },
     setInitSubzone(subzoneIds: number[]) {
-      subzoneRef.value?.setInitSubzone(subzoneIds);
+      modelValue.value.sub_zone_ids = subzoneIds;
+    },
+    setInitZones(zoneIds: number[]) {
+      zonesRef.value?.setInitZones(zoneIds);
     },
   });
 </script>

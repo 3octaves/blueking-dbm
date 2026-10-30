@@ -295,7 +295,8 @@
                       :cluster-type="DBTypes.REDIS"
                       machine-type="proxy"
                       style="width: 314px"
-                      :subzone-ids="formData.details.sub_zone_ids" />
+                      :subzone-ids="formData.details.sub_zone_ids"
+                      :zone-ids="formData.details.zone_ids" />
                   </BkFormItem>
                   <ResourcePreview
                     v-model:tag-list="formData.details.resource_spec.proxy.labels"
@@ -304,6 +305,7 @@
                       city: formData.details.city_name,
                       subzones: formData.details.sub_zone_names.join('，'),
                       subzone_ids: formData.details.sub_zone_ids.join(','),
+                      cloud_zone: formData.details.zone_names.join('，'),
                       for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                       resource_types: [DBTypes.REDIS, 'PUBLIC'],
                       spec_id: Number(formData.details.resource_spec.proxy.spec_id),
@@ -352,7 +354,9 @@
                   :cluster-type="typeInfos.cluster_type"
                   :machine-type="backendMachineType"
                   :subzone-ids="formData.details.sub_zone_ids"
-                  :subzone-names="formData.details.sub_zone_names" />
+                  :subzone-names="formData.details.sub_zone_names"
+                  :zone-ids="formData.details.zone_ids"
+                  :zone-names="formData.details.zone_names" />
               </BkFormItem>
             </div>
           </Transition>
@@ -539,14 +543,17 @@
           },
         };
         const subzoneIds = details.resource_spec!.backend_group.location_spec.sub_zone_ids || [];
+        const zoneIds = details.resource_spec!.backend_group.location_spec.zone_ids || [];
         Object.assign(formData.details, {
           resource_spec: resourceSpec,
           sub_zone_ids: subzoneIds,
+          zone_ids: zoneIds,
         });
         // 集群容量需求不保存，后端存储无法按自动推荐方案还原，统一按自定义方案还原；缺少方案明细时单机分片数留空待填
         specBackendRef.value?.setInitCustom((backendGroup.spec_info?.cluster_shard_num ?? 0) / backendGroup.count);
         nextTick(() => {
           regionRequirementsRef.value!.setInitSubzone(subzoneIds);
+          regionRequirementsRef.value!.setInitZones(zoneIds);
         });
       }
     },
@@ -617,6 +624,8 @@
       },
       sub_zone_ids: [] as number[],
       sub_zone_names: [] as string[],
+      zone_ids: [] as number[],
+      zone_names: [] as string[],
     },
     remark: '',
     ticket_type: TicketTypes.REDIS_CLUSTER_APPLY,

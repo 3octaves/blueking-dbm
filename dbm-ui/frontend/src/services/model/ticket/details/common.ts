@@ -130,6 +130,8 @@ export interface ApplySpecInfo {
     city: string;
     include_or_exclue?: boolean;
     sub_zone_ids?: number[];
+    /** 可用区（加性扩展，随机时不传） */
+    zone_ids?: number[];
   };
   mem: {
     max: number;

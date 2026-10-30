@@ -18,9 +18,9 @@
       v-model="modelValue.bk_cloud_id"
       @change="handleCloudChange" />
     <CityCodeItem v-model="modelValue" />
-    <SubzonesItem
-      v-if="showSubZoneItem"
-      ref="subzoneRef"
+    <ZonesItem
+      v-if="showZoneItem"
+      ref="zonesRef"
       v-model="modelValue"
       :city-code="modelValue.city_code"
       :disaster-tolerance-level="modelValue.disaster_tolerance_level" />
@@ -34,9 +34,10 @@
 
   import CloudItem from '@views/db-manage/common/apply-items/CloudItem.vue';
 
+  import ZonesItem from '../region-requirements/components/zones/Index.vue';
+
   import CityCodeItem from './components/CityCode.vue';
   import DisasterToleranceLevelItem from './components/DisasterToleranceLevel.vue';
-  import SubzonesItem from './components/subzones/Index.vue';
 
   type Emits = (e: 'cloud-change', value: { id: number | string; name: string }) => void;
 
@@ -47,9 +48,11 @@
         city: string;
         include_or_exclue?: boolean;
         sub_zone_ids?: number[];
+        zone_ids?: number[];
       };
     };
     setInitSubzone: (subzoneIds: number[]) => void;
+    setInitZones: (zoneIds: number[]) => void;
   }
 
   const emits = defineEmits<Emits>();
@@ -61,15 +64,23 @@
     disaster_tolerance_level: string;
     sub_zone_ids: number[];
     sub_zone_names: string[];
+    zone_ids: number[];
+    zone_names: string[];
   }>({
     required: true,
   });
 
   const { t } = useI18n();
 
-  const subzoneRef = useTemplateRef('subzoneRef');
+  const zonesRef = useTemplateRef('zonesRef');
 
-  const showSubZoneItem = computed(() => modelValue.value.disaster_tolerance_level && modelValue.value.city_code);
+  // 跨可用区（强/弱等同纯跨可用区）与「指定可用区」需要选择可用区，跨机架、无只填到地域
+  const showZoneItem = computed(
+    () =>
+      [Affinity.CROSS_SUBZONE_STRONG, Affinity.CROSS_SUBZONE_WEAK, Affinity.SAME_SUBZONE_CROSS_SWTICH].includes(
+        modelValue.value.disaster_tolerance_level as Affinity,
+      ) && modelValue.value.city_code,
+  );
 
   const handleCloudChange = (value: { id: number | string; name: string }) => {
     emits('cloud-change', value);
@@ -77,8 +88,44 @@
 
   defineExpose<Expose>({
     getValue() {
-      const { city_code: city, disaster_tolerance_level: affinity, sub_zone_ids: subZoneIds } = modelValue.value;
-      // 指定园区 / 无容灾要求-指定地域-指定园区
+      const {
+        city_code: city,
+        disaster_tolerance_level: affinity,
+        sub_zone_ids: subZoneIds,
+        zone_ids: zoneIds,
+      } = modelValue.value;
+      // 跨可用区（强/弱等同纯跨可用区）：随机时不传 zone_ids，自选时至少 2 个
+      if ([Affinity.CROSS_SUBZONE_STRONG, Affinity.CROSS_SUBZONE_WEAK].includes(affinity as Affinity)) {
+        if (zoneIds.length >= 2) {
+          return {
+            affinity,
+            location_spec: {
+              city,
+              sub_zone_ids: subZoneIds,
+              zone_ids: zoneIds,
+            },
+          };
+        }
+        return {
+          affinity,
+          location_spec: {
+            city,
+          },
+        };
+      }
+      // 指定可用区：必选 1 个
+      if (affinity === Affinity.SAME_SUBZONE_CROSS_SWTICH && zoneIds.length === 1) {
+        return {
+          affinity,
+          location_spec: {
+            city,
+            // include_or_exclue: true,
+            sub_zone_ids: subZoneIds,
+            zone_ids: zoneIds,
+          },
+        };
+      }
+      // 指定园区（未选可用区时兼容旧链路）/ 无容灾要求-指定地域-指定园区
       if (
         affinity === Affinity.SAME_SUBZONE_CROSS_SWTICH ||
         (affinity === Affinity.NONE && city !== 'default' && subZoneIds.length > 0)
@@ -93,17 +140,6 @@
         };
       }
 
-      // 跨园区（强）/ 跨园区（弱）
-      if ([Affinity.CROSS_SUBZONE_STRONG, Affinity.CROSS_SUBZONE_WEAK].includes(affinity as Affinity)) {
-        return {
-          affinity,
-          location_spec: {
-            city,
-            sub_zone_ids: [],
-          },
-        };
-      }
-
       // 跨机架 / 无容灾要求-随机地域 / 无容灾要求-指定地域-随机园区
       return {
         affinity,
@@ -113,7 +149,10 @@
       };
     },
     setInitSubzone(subzoneIds: number[]) {
-      subzoneRef.value?.setInitSubzone(subzoneIds);
+      modelValue.value.sub_zone_ids = subzoneIds;
+    },
+    setInitZones(zoneIds: number[]) {
+      zonesRef.value?.setInitZones(zoneIds);
     },
   });
 </script>
