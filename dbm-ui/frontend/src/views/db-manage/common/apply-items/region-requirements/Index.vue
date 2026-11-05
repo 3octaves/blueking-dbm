@@ -59,7 +59,7 @@
       };
     };
     setInitSubzone: (subzoneIds: number[]) => void;
-    setInitZones: (zoneNames: string[]) => void;
+    setInitZones: (zoneNames: Array<number | string>) => void;
   }
 
   defineProps<Props>();
@@ -153,7 +153,7 @@
     setInitSubzone(subzoneIds: number[]) {
       modelValue.value.sub_zone_ids = subzoneIds;
     },
-    setInitZones(zoneIds: string[]) {
+    setInitZones(zoneIds: Array<number | string>) {
       zonesRef.value?.setInitZones(zoneIds);
     },
   });

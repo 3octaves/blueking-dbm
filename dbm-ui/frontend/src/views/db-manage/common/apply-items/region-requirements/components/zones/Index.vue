@@ -61,7 +61,8 @@
   }
 
   interface Expose {
-    setInitZones(zoneNames: string[]): void;
+    /** 历史单据的 zone_ids 可能是数字 id，无名称映射，降级为随机 */
+    setInitZones(zoneNames: Array<number | string>): void;
   }
 
   const props = defineProps<Props>();
@@ -151,9 +152,10 @@
   };
 
   defineExpose<Expose>({
-    setInitZones(zoneNames: string[]) {
-      modelValue.value.zone_ids = zoneNames;
-      modelValue.value.zone_names = [...zoneNames];
+    setInitZones(zoneNames: Array<number | string>) {
+      const validNames = zoneNames.filter((zoneName): zoneName is string => typeof zoneName === 'string');
+      modelValue.value.zone_ids = validNames;
+      modelValue.value.zone_names = [...validNames];
     },
   });
 </script>
