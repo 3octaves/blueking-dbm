@@ -11,8 +11,8 @@ import { t } from '@locales/index';
 export default class ClusterBase<T extends GroupedClusterTypes = GroupedClusterTypes> {
   static getRoleFaildInstanceList = (data: ClusterListNode[]) => _.filter(data, (item) => item.status !== 'running');
 
-  cluster_subzone_ids: number[];
-  cluster_subzones: string[];
+  /** 可用区（集群维度，名称列表；空数组表示随机） */
+  cluster_cloud_zones: string[];
   create_at: string;
   db_type: DBTypeOf<T>;
   id: number;
@@ -26,6 +26,8 @@ export default class ClusterBase<T extends GroupedClusterTypes = GroupedClusterT
     value: string;
   }[];
   update_at: string;
+  /** 关联集群场景的可用区名列表（find_related_clusters_by_cluster_ids 下发，值同 cluster_cloud_zones） */
+  zone_names: string[];
 
   constructor(payload: ClusterBase<T>) {
     this.create_at = payload.create_at;
@@ -34,8 +36,8 @@ export default class ClusterBase<T extends GroupedClusterTypes = GroupedClusterT
     this.phase = payload.phase;
     this.tags = payload.tags || [];
     this.update_at = payload.update_at;
-    this.cluster_subzone_ids = payload.cluster_subzone_ids || [];
-    this.cluster_subzones = payload.cluster_subzones || [];
+    this.cluster_cloud_zones = payload.cluster_cloud_zones || [];
+    this.zone_names = payload.zone_names || [];
     this.region = payload.region;
   }
 
@@ -43,11 +45,12 @@ export default class ClusterBase<T extends GroupedClusterTypes = GroupedClusterT
     return _.sortBy(this.tags, (item) => item.key).filter((item) => !item.system);
   }
 
-  get clusterSubzonesDisplay() {
-    if (this.cluster_subzone_ids.length === 0) {
+  /** 可用区展示值：空值显示「随机」 */
+  get clusterZonesDisplay() {
+    if (this.cluster_cloud_zones.length === 0) {
       return t('随机');
     }
-    return this.cluster_subzones.join('，');
+    return this.cluster_cloud_zones.join('，');
   }
 
   get createAtDisplay() {

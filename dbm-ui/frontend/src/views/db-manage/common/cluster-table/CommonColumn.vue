@@ -33,10 +33,10 @@
     col-key="region"
     :filter="columnFilter?.['region']"
     :min-width="150"
-    :title="t('地域园区')">
+    :title="t('地域可用区')">
     <template #default="{ row }: { row: IRowData }">
       <div>{{ row.regionDisplay }}</div>
-      <TextOverflowLayout>{{ row.clusterSubzonesDisplay }}</TextOverflowLayout>
+      <TextOverflowLayout>{{ row.clusterZonesDisplay }}</TextOverflowLayout>
     </template>
   </TableColumn>
   <TableColumn

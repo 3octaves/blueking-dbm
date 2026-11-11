@@ -88,7 +88,8 @@
                   :cloud-id="formData.details.bk_cloud_id"
                   :cluster-type="DBTypes.MONGODB"
                   :machine-type="MachineTypes.MONGO_CONFIG"
-                  :subzone-ids="formData.details.sub_zone_ids" />
+                  :subzone-ids="formData.details.sub_zone_ids"
+                  :zone-ids="formData.details.zone_names" />
               </BkFormItem>
               <ResourcePreview
                 v-model:tag-list="formData.details.resource_spec.mongo_config.labels"
@@ -97,6 +98,7 @@
                   city: formData.details.city_name,
                   subzones: formData.details.sub_zone_names.join('，'),
                   subzone_ids: formData.details.sub_zone_ids.join(','),
+                  cloud_zone: formData.details.zone_names.join('，'),
                   for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                   resource_types: [DBTypes.MONGODB, 'PUBLIC'],
                   spec_id: Number(formData.details.resource_spec.mongo_config.spec_id),
@@ -131,7 +133,8 @@
                   :cloud-id="formData.details.bk_cloud_id"
                   :cluster-type="DBTypes.MONGODB"
                   :machine-type="MachineTypes.MONGOS"
-                  :subzone-ids="formData.details.sub_zone_ids" />
+                  :subzone-ids="formData.details.sub_zone_ids"
+                  :zone-ids="formData.details.zone_names" />
               </BkFormItem>
               <ResourcePreview
                 v-model:tag-list="formData.details.resource_spec.mongos.labels"
@@ -140,6 +143,7 @@
                   city: formData.details.city_name,
                   subzones: formData.details.sub_zone_names.join('，'),
                   subzone_ids: formData.details.sub_zone_ids.join(','),
+                  cloud_zone: formData.details.zone_names.join('，'),
                   for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                   resource_types: [DBTypes.MONGODB, 'PUBLIC'],
                   spec_id: Number(formData.details.resource_spec.mongos.spec_id),
@@ -172,6 +176,7 @@
                 bk_biz_id: formData.bk_biz_id,
                 sub_zone_ids: formData.details.sub_zone_ids,
                 sub_zone_names: formData.details.sub_zone_names,
+                zone_names: formData.details.zone_names,
                 bk_cloud_id: formData.details.bk_cloud_id,
               }" />
           </BkFormItem>
@@ -326,8 +331,9 @@
         },
       },
       start_port: 27021,
-      sub_zone_ids: [] as number[],
+      sub_zone_ids: [] as string[],
       sub_zone_names: [] as string[],
+      zone_names: [] as string[],
     },
     remark: '',
     ticket_type: TicketTypes.MONGODB_SHARD_APPLY,

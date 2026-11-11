@@ -59,9 +59,14 @@
         </template>
       </TableColumn>
       <TableColumn
-        col-key="city"
-        :filter="columnFilter?.city"
+        col-key="bk_cloud_region"
+        :filter="columnFilter?.bk_cloud_region"
         :title="t('地域')">
+      </TableColumn>
+      <TableColumn
+        col-key="bk_cloud_zone"
+        :filter="columnFilter?.bk_cloud_zone"
+        :title="t('可用区')">
       </TableColumn>
       <TableColumn
         col-key="sub_zone"

@@ -60,7 +60,9 @@
     modelValue: number | string;
     showRefresh?: boolean;
     // eslint-disable-next-line vue/require-default-prop
-    subzoneIds?: number[];
+    subzoneIds?: string[] | number[];
+    // eslint-disable-next-line vue/require-default-prop
+    zoneIds?: string[];
   }
 
   type Emits = (e: 'update:modelValue', value: number | string) => void;
@@ -139,7 +141,13 @@
         city: props.city,
       });
     }
-    if (props.subzoneIds) {
+    // 可用区级别（跨可用区/指定可用区）：sub_zone_ids 复用为可用区名称，group_by_cloud_zone 按可用区分组返回数量
+    if (props.zoneIds?.length) {
+      Object.assign(params, {
+        group_by_cloud_zone: true,
+        sub_zone_ids: props.zoneIds.map((item) => `${item}`),
+      });
+    } else if (props.subzoneIds) {
       Object.assign(params, {
         sub_zone_ids: props.subzoneIds.map((item) => `${item}`),
       });
@@ -158,7 +166,7 @@
   }, 100);
 
   watch(
-    () => [props.bizId, props.cloudId, props.city, props.subzoneIds, data.value],
+    () => [props.bizId, props.cloudId, props.city, props.subzoneIds, props.zoneIds, data.value],
     () => {
       if (
         typeof props.bizId === 'number' &&

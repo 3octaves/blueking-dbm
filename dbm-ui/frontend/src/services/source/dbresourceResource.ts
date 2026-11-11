@@ -102,7 +102,13 @@ export function importResource(params: {
 
 interface ResouceListParams {
   agent_status?: string;
+  /** 资源池参数用 for_biz，传 undefined 覆盖 db-table 内置值 */
+  bk_biz_id?: number;
   bk_cloud_ids?: string;
+  /** 地域（独立字段，与 city 无映射） */
+  bk_cloud_region?: string;
+  /** 可用区（单选） */
+  bk_cloud_zone?: string;
   city?: string;
   cpu?: string;
   device_class?: string;
@@ -112,6 +118,7 @@ interface ResouceListParams {
   headers?: { id: string; name?: string }[];
   hosts?: string;
   label_names?: string;
+  labels?: string;
   limit?: number;
   mem?: string;
   mount_point?: string;
@@ -122,6 +129,7 @@ interface ResouceListParams {
   spec_id?: string;
   status?: string;
   subzone_ids?: string;
+  subzones?: string;
 }
 
 /**
@@ -234,6 +242,7 @@ export function getSpecResourceCount(params: {
   resource_type?: string;
   spec_ids: number[];
   sub_zone_ids?: string[];
+  zone_ids?: string[];
 }) {
   return http.post<Record<number, number>>(`${path}/spec_resource_count/`, params);
 }
@@ -362,6 +371,8 @@ export function calcResourceWaterLevel(params: { cache: boolean }) {
   return http.post<{
     exclusive_machine: {
       empty_city: string[];
+      /** 可用区为空的主机 IP 列表 */
+      empty_cloud_zone: string[];
       empty_os: string[];
       empty_subzone: string[];
     };
@@ -372,6 +383,8 @@ export function calcResourceWaterLevel(params: { cache: boolean }) {
     flush_time: string;
     update_time: string;
     water_level: {
+      bk_cloud_region: string;
+      bk_cloud_zone: string;
       city: string;
       db_type: string;
       machine_count: number;

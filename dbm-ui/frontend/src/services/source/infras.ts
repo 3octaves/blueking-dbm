@@ -54,8 +54,9 @@ export function listLogicCities() {
 
 /**
  * 查询城市园区信息
+ * @param params.bk_cloud_zone 可用区名称，用于按可用区收窄园区
  */
-export function getInfrasSubzonesByCity(params?: { city_code?: string }) {
+export function getInfrasSubzonesByCity(params?: { bk_cloud_zone?: string; city_code?: string }) {
   return http.get<
     {
       bk_city: number;
@@ -64,6 +65,22 @@ export function getInfrasSubzonesByCity(params?: { city_code?: string }) {
       bk_sub_zone_id: number;
     }[]
   >(`${path}/cities/list_subzones/`, params);
+}
+
+/**
+ * 查询可用区信息（含该可用区下登记过的全部园区）
+ * @param params.city_code 按城市过滤；
+ * @param params.region 按地域过滤；均不传返回全量
+ */
+export function getInfrasCloudZones(params?: { city_code?: string; region?: string }) {
+  return http.get<
+    {
+      bk_cloud_region: string;
+      bk_cloud_zone: string;
+      /** 该可用区下登记过的全部园区名称 */
+      sub_zones: string[];
+    }[]
+  >(`${path}/cities/list_cloud_zones/`, params);
 }
 
 /**

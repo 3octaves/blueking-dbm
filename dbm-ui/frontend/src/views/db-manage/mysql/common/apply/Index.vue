@@ -210,7 +210,8 @@
                       :cloud-id="formData.details.bk_cloud_id"
                       cluster-type="mysql"
                       machine-type="backend"
-                      :subzone-ids="formData.details.sub_zone_ids" />
+                      :subzone-ids="formData.details.sub_zone_ids"
+                      :zone-ids="formData.details.zone_names" />
                   </BkFormItem>
                   <ResourcePreview
                     v-model:tag-list="formData.details.resource_spec.single.labels"
@@ -219,6 +220,7 @@
                       city: formData.details.city_name,
                       subzones: formData.details.sub_zone_names.join('，'),
                       subzone_ids: formData.details.sub_zone_ids.join(','),
+                      cloud_zone: formData.details.zone_names.join('，'),
                       for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                       resource_types: [DBTypes.MYSQL, 'PUBLIC'],
                       spec_id: Number(formData.details.resource_spec.single.spec_id),
@@ -244,7 +246,8 @@
                         :cloud-id="formData.details.bk_cloud_id"
                         cluster-type="mysql"
                         machine-type="proxy"
-                        :subzone-ids="formData.details.sub_zone_ids" />
+                        :subzone-ids="formData.details.sub_zone_ids"
+                        :zone-ids="formData.details.zone_names" />
                     </BkFormItem>
                     <ResourcePreview
                       v-model:tag-list="formData.details.resource_spec.proxy.labels"
@@ -253,6 +256,7 @@
                         city: formData.details.city_name,
                         subzones: formData.details.sub_zone_names.join('，'),
                         subzone_ids: formData.details.sub_zone_ids.join(','),
+                        cloud_zone: formData.details.zone_names.join('，'),
                         for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                         resource_types: [DBTypes.MYSQL, 'PUBLIC'],
                         spec_id: Number(formData.details.resource_spec.proxy.spec_id),
@@ -288,7 +292,8 @@
                         :cloud-id="formData.details.bk_cloud_id"
                         cluster-type="mysql"
                         machine-type="backend"
-                        :subzone-ids="formData.details.sub_zone_ids" />
+                        :subzone-ids="formData.details.sub_zone_ids"
+                        :zone-ids="formData.details.zone_names" />
                     </BkFormItem>
                     <ResourcePreview
                       v-model:tag-list="formData.details.resource_spec.backend.labels"
@@ -297,6 +302,7 @@
                         city: formData.details.city_name,
                         subzones: formData.details.sub_zone_names.join('，'),
                         subzone_ids: formData.details.sub_zone_ids.join(','),
+                        cloud_zone: formData.details.zone_names.join('，'),
                         for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                         resource_types: [DBTypes.MYSQL, 'PUBLIC'],
                         spec_id: Number(formData.details.resource_spec.backend.spec_id),
@@ -483,8 +489,9 @@
       spec: '',
       start_mysql_port: 20000,
       start_proxy_port: 10000,
-      sub_zone_ids: [] as number[],
+      sub_zone_ids: [] as string[],
       sub_zone_names: [] as string[],
+      zone_names: [] as string[],
     },
     remark: '',
     ticket_type: ticketType,
@@ -525,6 +532,7 @@
 
     if (details.ip_source === 'resource_pool') {
       const { backend } = details.resource_spec!;
+      // 可用区改造后 sub_zone_ids 存可用区名称；历史单据为园区数字 id，回填时降级为随机
       const subzoneIds = backend.location_spec.sub_zone_ids || [];
       const labels = (backend.labels || []).map((labelItem, labelIndex) => ({
         id: Number(labelItem),
@@ -611,8 +619,7 @@
         },
       };
       Object.assign(formData.details, {
-        // 后端保存了 inst_num；按集群数反推在除不尽时会得到小数，改单会因此多出一项变更
-        inst_num: details.inst_num || details.domains.length / backendGroup.count,
+        inst_num: details.domains.length / backendGroup.count,
         resource_spec: resourceSpec,
         sub_zone_ids: subzoneIds,
       });
@@ -931,7 +938,7 @@
       return {
         charset,
         deployStructure: clusterTypeInfos[clusterType].name,
-        disasterDefence: t('同城跨园区'),
+        disasterDefence: t('同城跨可用区'),
         domain: `${domainInfo.masterDomain.prefix}${key || '{' + t('集群标识') + '}'}${domainInfo.masterDomain.suffix}`,
         slaveDomain: `${domainInfo.slaveDomain?.prefix}${key || '{' + t('集群标识') + '}'}${domainInfo.slaveDomain?.suffix}`,
         spec: hostSpecInfo.value ? `${hostSpecInfo.value.cpu}/${hostSpecInfo.value.mem}` : '',
