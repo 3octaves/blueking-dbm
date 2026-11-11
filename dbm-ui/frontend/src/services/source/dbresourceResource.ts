@@ -110,13 +110,17 @@ interface ResouceListParams {
   /** 可用区（单选） */
   bk_cloud_zone?: string;
   city?: string;
+  /** 资源预览透传别名（实际过滤字段为 bk_cloud_zone） */
+  cloud_zone?: string;
   cpu?: string;
   device_class?: string;
   disk?: string;
   disk_type?: string;
   for_biz?: number;
+  /** 是否按可用区分组返回数量（跨可用区/指定可用区时使用） */
+  group_by_cloud_zone?: boolean;
   headers?: { id: string; name?: string }[];
-  hosts?: string;
+  hosts?: string | { ip: string }[];
   label_names?: string;
   labels?: string;
   limit?: number;

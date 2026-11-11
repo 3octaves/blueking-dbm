@@ -77,8 +77,6 @@
 
   import { Affinity } from '@common/const';
 
-  import { useZones } from './zones/hooks/useZones';
-
   const modelValue = defineModel<{
     city_code: string;
     city_name?: string;
@@ -107,12 +105,8 @@
 
   const { data: cityData, loading } = useRequest(getCommonCities);
 
-  // 可用区数据：用于「跨可用区只列 ≥2 个可用区的地域」过滤
-  const { run, zonesByRegion } = useZones();
-  run();
-
   watch(
-    [cityData, () => modelValue.value.disaster_tolerance_level, zonesByRegion],
+    [cityData, () => modelValue.value.disaster_tolerance_level],
     () => {
       if (cityData.value) {
         const showCityDefault = [Affinity.CROSS_RACK, Affinity.MAX_EACH_ZONE_EQUAL, Affinity.NONE].includes(
@@ -126,22 +120,6 @@
           internalList.value = cityData.value.internal.filter((cityItem) => cityItem.city_code !== 'default');
           if (modelValue.value.city_code === 'default') {
             modelValue.value.city_code = '';
-          }
-          // 跨可用区：只列有 ≥2 个可用区的地域（按可用区数据的 bk_cloud_region 分组统计）
-          if (modelValue.value.disaster_tolerance_level === Affinity.CROS_SUBZONE) {
-            const filterByZones = (list: NonNullable<UnwrapRef<typeof commonList>>) =>
-              list.filter((cityItem) => (zonesByRegion.value[cityItem.city_code]?.length || 0) >= 2);
-            commonList.value = filterByZones(commonList.value);
-            internalList.value = filterByZones(internalList.value);
-            // 已选地域不满足条件时清空重选
-            if (
-              modelValue.value.city_code &&
-              ![...commonList.value, ...internalList.value].some(
-                (cityItem) => cityItem.city_code === modelValue.value.city_code,
-              )
-            ) {
-              modelValue.value.city_code = '';
-            }
           }
         }
 
