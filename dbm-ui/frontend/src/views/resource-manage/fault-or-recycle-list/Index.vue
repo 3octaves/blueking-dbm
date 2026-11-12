@@ -108,7 +108,7 @@
         :title="t('可用区')"
         :width="90">
         <template #default="{ row }: { row: FaultOrRecycleMachineModel }">
-          {{ row.bk_cloud_zone || t('未知') }}
+          {{ getCloudZoneName(row.bk_cloud_zone) || t('未知') }}
         </template>
       </TableColumn>
       <TableColumn
@@ -232,6 +232,7 @@
 
   import { useTableSettings } from '@hooks';
 
+  import { getCloudZoneName } from '@common/const';
   import { UserPersonalSettings } from '@common/const/userPersonalSettings';
 
   import DbStatus from '@components/db-status/index.vue';

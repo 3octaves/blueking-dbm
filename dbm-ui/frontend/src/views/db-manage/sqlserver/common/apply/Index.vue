@@ -150,17 +150,14 @@
                       :cloud-id="formData.details.bk_cloud_id"
                       cluster-type="sqlserver"
                       machine-type="sqlserver"
-                      :subzone-ids="formData.details.sub_zone_ids"
-                      :zone-ids="formData.details.zone_names" />
+                      :subzone-ids="formData.details.sub_zone_ids" />
                   </BkFormItem>
                   <ResourcePreview
                     v-model:tag-list="formData.details.resource_spec.backend_group.labels"
                     :biz-id="formData.bk_biz_id"
                     :params="{
                       city: formData.details.city_name,
-                      subzones: formData.details.sub_zone_names.join('，'),
                       subzone_ids: formData.details.sub_zone_ids.join(','),
-                      cloud_zone: formData.details.zone_names.join('，'),
                       for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                       resource_types: [DBTypes.SQLSERVER, 'PUBLIC'],
                       spec_id: Number(formData.details.resource_spec.backend_group.spec_id),
@@ -464,8 +461,6 @@
       },
       start_mssql_port: 48322, // SQLServer起始端口
       sub_zone_ids: [] as string[],
-      sub_zone_names: [] as string[],
-      zone_names: [] as string[],
     },
     remark: '',
     ticket_type: route.name,

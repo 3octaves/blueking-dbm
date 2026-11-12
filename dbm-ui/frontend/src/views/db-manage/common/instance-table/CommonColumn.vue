@@ -35,7 +35,7 @@
     :title="t('可用区')"
     :width="140">
     <template #default="{ row }: { row: IRowData }">
-      {{ row.bk_cloud_zone || t('未知') }}
+      {{ getCloudZoneName(row.bk_cloud_zone) || t('未知') }}
     </template>
   </TableColumn>
   <TableColumn
@@ -72,6 +72,8 @@
   import { useI18n } from 'vue-i18n';
 
   import { useInstanceColumnFilter } from '@hooks';
+
+  import { getCloudZoneName } from '@common/const';
 
   import ClusterInstanceStatus from '@components/cluster-instance-status/Index.vue';
 

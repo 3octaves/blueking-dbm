@@ -133,7 +133,7 @@
             :title="t('可用区')"
             :width="120">
             <template #default="{ row }: { row: IRowData }">
-              {{ row.bk_cloud_zone || '--' }}
+              {{ getCloudZoneName(row.bk_cloud_zone) || '--' }}
             </template>
           </TableColumn>
           <TableColumn
@@ -220,7 +220,7 @@
 
   import { useFunController, useSystemEnviron } from '@stores';
 
-  import { DBTypeInfos } from '@common/const';
+  import { DBTypeInfos, getCloudZoneName } from '@common/const';
 
   import { exportExcelFile, getOffset, messageSuccess } from '@utils';
 
@@ -302,7 +302,7 @@
       [t('规格类型')]: machineTypeMap[row.spec_machine_type],
       [t('规格')]: row.spec_name,
       [t('地域')]: row.bk_cloud_region || row.city,
-      [t('可用区')]: row.bk_cloud_zone || '--',
+      [t('可用区')]: getCloudZoneName(row.bk_cloud_zone) || '--',
       [t('操作系统')]: row.os_name,
       [t('参考水位（台）')]: row.machine_refer_count,
       [t('当前数量（台）')]: row.resource_count,
@@ -331,12 +331,12 @@
       .map((item) => ({
         bk_cloud_region: item.bk_cloud_region,
         bk_cloud_zone: item.bk_cloud_zone,
-        city: item.city,
+        // city: item.city,
         count: Math.max(item.machine_refer_count - item.resource_count, 0),
         db_type: item.db_type,
         os_name: item.os_name,
         spec_id: item.spec_id,
-        subzone: item.subzone,
+        // subzone: item.subzone,
       }));
     const totalReplenish = replenishList.reduce((total, item) => total + item.count, 0);
 

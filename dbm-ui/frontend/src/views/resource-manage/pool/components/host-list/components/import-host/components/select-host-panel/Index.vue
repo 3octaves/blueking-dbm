@@ -89,7 +89,7 @@
         col-key="bk_cloud_zone"
         :title="t('可用区')">
         <template #default="{ row }: { row: HostInfo }">
-          {{ row.bk_cloud_zone || '--' }}
+          {{ getCloudZoneName(row.bk_cloud_zone) || '--' }}
         </template>
       </TableColumn>
       <TableColumn
@@ -158,6 +158,7 @@
 
   import { useGlobalBizs, useSystemEnviron } from '@stores';
 
+  import { getCloudZoneName } from '@common/const';
   import { batchSplitRegex } from '@common/regex';
 
   import DbStatus from '@components/db-status/index.vue';

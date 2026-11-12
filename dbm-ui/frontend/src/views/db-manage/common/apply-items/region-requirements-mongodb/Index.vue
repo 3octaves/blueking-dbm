@@ -64,9 +64,6 @@
     disaster_tolerance_level: string;
     /** 可用区级别存可用区名称；指定园区兼容链路存园区 id */
     sub_zone_ids: Array<number | string>;
-    sub_zone_names: string[];
-    /** 可用区名称，与 sub_zone_ids 的名称值同步，供资源预览展示 */
-    zone_names: string[];
   }>({
     required: true,
   });
@@ -82,6 +79,14 @@
         modelValue.value.disaster_tolerance_level as Affinity,
       ) && modelValue.value.city_code,
   );
+
+  // 容灾级别 / 地域变化导致可用区隐藏时，zones 组件已卸载、内部清空 watch 不再执行，这里兜底重置，
+  // 避免残留的可用区值被 getValue 的「指定园区兼容链路」误提交
+  watch(showZoneItem, (visible) => {
+    if (!visible) {
+      modelValue.value.sub_zone_ids = [];
+    }
+  });
 
   const handleCloudChange = (value: { id: number | string; name: string }) => {
     emits('cloud-change', value);

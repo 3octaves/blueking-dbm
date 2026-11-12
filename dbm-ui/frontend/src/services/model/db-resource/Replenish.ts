@@ -6,12 +6,12 @@ export interface CreateReplenish {
   bk_cloud_region: string;
   /** 可用区（新口径必传，与 bk_cloud_region 同时传；subzone 保留兼容） */
   bk_cloud_zone: string;
-  city: string;
+  // city: string;
   count: number;
   db_type: string;
   os_name: string;
   spec_id: number;
-  subzone: string;
+  // subzone: string;
 }
 
 /**

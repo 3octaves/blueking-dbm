@@ -233,7 +233,9 @@
         col-key="bk_cloud_zone"
         :title="t('可用区')"
         :width="90">
-        <template #default="{ row }: { row: DbResourceModel }">{{ row.bk_cloud_zone || t('未知') }}</template>
+        <template #default="{ row }: { row: DbResourceModel }">{{
+          getCloudZoneName(row.bk_cloud_zone) || t('未知')
+        }}</template>
       </TableColumn>
       <TableColumn
         col-key="sub_zone"
@@ -366,7 +368,7 @@
 
   import { useGlobalBizs } from '@stores';
 
-  import { TicketTypes } from '@common/const';
+  import { getCloudZoneName, TicketTypes } from '@common/const';
   import { UserPersonalSettings } from '@common/const/userPersonalSettings';
 
   import DbIcon from '@components/db-icon';

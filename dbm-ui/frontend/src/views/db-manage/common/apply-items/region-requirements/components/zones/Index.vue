@@ -14,17 +14,11 @@
 <template>
   <BkFormItem
     class="apply-zones-item"
+    :description="t('可用区下任意园区均可命中；同一可用区的不同园区不算分散')"
     :label="t('可用区')"
     property="details.zone_ids"
     required
     :rules="formRules">
-    <template #label>
-      <span
-        v-bk-tooltips="t('可用区下任意园区均可命中；同一可用区的不同园区不算分散')"
-        class="apply-zones-label">
-        {{ t('可用区') }}
-      </span>
-    </template>
     <BkLoading :loading="loading">
       <div class="apply-zones-cards">
         <!-- 跨可用区：默认随机，可自选至少 2 个 -->
@@ -39,7 +33,7 @@
           :key="zoneItem.bk_cloud_zone"
           :selected="modelValue.sub_zone_ids.includes(zoneItem.bk_cloud_zone)"
           :subzones="zoneItem.sub_zones"
-          :title="zoneItem.bk_cloud_zone"
+          :title="getCloudZoneName(zoneItem.bk_cloud_zone)"
           @select="handleSelectZone(zoneItem.bk_cloud_zone)" />
       </div>
     </BkLoading>
@@ -49,7 +43,7 @@
 <script setup lang="ts">
   import { useI18n } from 'vue-i18n';
 
-  import { Affinity } from '@common/const';
+  import { Affinity, getCloudZoneName } from '@common/const';
 
   import ZoneCard from './components/ZoneCard.vue';
   import { useZones } from './hooks/useZones';
@@ -68,9 +62,8 @@
   const props = defineProps<Props>();
 
   const modelValue = defineModel<{
-    /** 可用区（接口无独立 id，提交体 sub_zone_ids 存可用区名称）；zone_names 供资源预览展示 */
+    /** 可用区（接口无独立 id，提交体 sub_zone_ids 存可用区名称） */
     sub_zone_ids: string[];
-    zone_names: string[];
   }>({
     required: true,
   });
@@ -115,7 +108,6 @@
     () => {
       // 切换级别或地域：清空已选可用区并重置为随机
       modelValue.value.sub_zone_ids = [];
-      modelValue.value.zone_names = [];
     },
   );
 
@@ -132,7 +124,6 @@
   /** 选择随机：清空具体可用区 */
   const handleSelectRandom = () => {
     modelValue.value.sub_zone_ids = [];
-    modelValue.value.zone_names = [];
   };
 
   /** 选择具体可用区：跨可用区为多选，指定可用区为单选 */
@@ -147,15 +138,12 @@
     } else {
       modelValue.value.sub_zone_ids = [zoneName];
     }
-    // 可用区无独立 id，提交体 sub_zone_ids 存名称，zone_names 与其一致
-    modelValue.value.zone_names = [...modelValue.value.sub_zone_ids];
   };
 
   defineExpose<Expose>({
     setInitZones(zoneNames: Array<number | string>) {
       const validNames = zoneNames.filter((zoneName): zoneName is string => typeof zoneName === 'string');
       modelValue.value.sub_zone_ids = validNames;
-      modelValue.value.zone_names = [...validNames];
     },
   });
 </script>

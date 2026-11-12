@@ -77,7 +77,7 @@
 
   import DbResourceModel from '@services/model/db-resource/DbResource';
 
-  import { specialOptionLabelMap, SpecialOptions } from '@common/const';
+  import { getCloudZoneName, specialOptionLabelMap, SpecialOptions } from '@common/const';
 
   import ComFactory from '../com-factory/Index.vue';
   import fieldConfig from '../field-config';
@@ -142,7 +142,7 @@
         parts.push(
           props.value.bk_cloud_zone === SpecialOptions.EMPTY
             ? specialOptionLabelMap[SpecialOptions.EMPTY]
-            : props.value.bk_cloud_zone,
+            : getCloudZoneName(props.value.bk_cloud_zone),
         );
       }
       if (props.value.subzone_ids?.length > 0) {

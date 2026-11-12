@@ -67,6 +67,9 @@
         col-key="bk_cloud_zone"
         :filter="columnFilter?.bk_cloud_zone"
         :title="t('可用区')">
+        <template #default="{ row }: { row: FaultOrRecycleMachineModel }">
+          {{ getCloudZoneName(row.bk_cloud_zone) || t('未知') }}
+        </template>
       </TableColumn>
       <TableColumn
         col-key="sub_zone"
@@ -135,6 +138,7 @@
 
   import { useTableSettings } from '@hooks';
 
+  import { getCloudZoneName } from '@common/const';
   import { UserPersonalSettings } from '@common/const/userPersonalSettings';
 
   import DbTable from '@components/db-table/IndexNew.vue';

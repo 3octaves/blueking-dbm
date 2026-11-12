@@ -24,7 +24,7 @@
 
   import { getInfrasCities } from '@services/source/infras';
 
-  import { Affinity, affinityMap } from '@common/const';
+  import { Affinity, affinityMap, getCloudZoneName } from '@common/const';
 
   import InfoList, { Item as InfoItem } from './info-list/Index.vue';
 
@@ -40,9 +40,8 @@
           location_spec?: {
             city: string;
             include_or_exclue?: boolean;
-            sub_zone_ids?: number[];
-            /** 可用区名称（历史单据为数字 id，仅新单据展示可用区名） */
-            zone_ids?: Array<number | string>;
+            /** 可用区名称（随机时不传）；历史单据为园区数字 id */
+            sub_zone_ids?: Array<number | string>;
           };
         };
       };
@@ -75,9 +74,11 @@
     },
   });
 
-  // zone_ids 存可用区名称（历史单据的数字 id 无名称映射，仅新单据展示名称）；为空显示「随机」
+  // sub_zone_ids 存可用区标识（历史单据的数字 id 无映射，仅新单据展示）；为空显示「随机」
   if (zoneIds && zoneIds.length > 0) {
-    zonesText.value = zoneIds.filter((zoneId) => typeof zoneId === 'string').join('，');
+    const zoneNames = zoneIds.filter((zoneId) => typeof zoneId === 'string').map((zoneId) => getCloudZoneName(zoneId));
+    // 历史单据全是园区数字 id 时无可展示的可用区名
+    zonesText.value = zoneNames.join('，') || '--';
   } else if (showZoneItem.value) {
     zonesText.value = t('随机');
   }

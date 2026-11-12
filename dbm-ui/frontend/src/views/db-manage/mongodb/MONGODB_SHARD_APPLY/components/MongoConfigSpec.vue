@@ -35,9 +35,7 @@
         :biz-id="params.bk_biz_id"
         :params="{
           city: params.city_name,
-          subzones: params.sub_zone_names.join('，'),
           subzone_ids: params.sub_zone_ids.join(','),
-          cloud_zone: params.zone_names.join('，'),
           for_bizs: params.bk_biz_id ? [params.bk_biz_id, 0] : [0],
           resource_types: [DBTypes.MONGODB, 'PUBLIC'],
           spec_id: Number(modelValue.spec_id),
@@ -176,7 +174,6 @@
           :cluster-type="ClusterTypes.MONGODB"
           :machine-type="MachineTypes.MONGODB"
           :subzone-ids="params.sub_zone_ids"
-          :zone-ids="params.zone_names"
           @update:model-value="handleSpecChange" />
       </BkFormItem>
       <ResourcePreview
@@ -184,9 +181,7 @@
         :biz-id="params.bk_biz_id"
         :params="{
           city: params.city_name,
-          subzones: params.sub_zone_names.join('，'),
           subzone_ids: params.sub_zone_ids.join(','),
-          cloud_zone: params.zone_names.join('，'),
           for_bizs: params.bk_biz_id ? [params.bk_biz_id, 0] : [0],
           resource_types: [DBTypes.MONGODB, 'PUBLIC'],
           spec_id: Number(modelValue.spec_id),
@@ -294,9 +289,6 @@
       city_code: string;
       city_name: string;
       sub_zone_ids: string[] | number[];
-      sub_zone_names: string[];
-      /** 可用区名称（提交体 sub_zone_ids 复用） */
-      zone_names: string[];
     };
   }
 

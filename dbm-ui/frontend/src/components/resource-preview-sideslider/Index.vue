@@ -38,10 +38,10 @@
                 <div
                   v-for="(count, zoneName) in groupCountByZone"
                   :key="zoneName">
-                  {{ zoneName }}：<strong>{{ count }}</strong> 台
+                  {{ getCloudZoneName(zoneName) }}：<strong>{{ count }}</strong> 台
                 </div>
               </template>
-              <template v-else>{{ params?.cloud_zone || '--' }}</template>
+              <template v-else>{{ getCloudZoneName(params?.cloud_zone || '') || '--' }}</template>
             </div>
           </template>
           <div class="sub-title-label">{{ t('规格') }}:</div>
@@ -139,6 +139,8 @@
   import { getResourceSpec } from '@services/source/dbresourceSpec';
   import { listTag } from '@services/source/tag';
   import type { HostInfo } from '@services/types';
+
+  import { getCloudZoneName } from '@common/const';
 
   import DbTable from '@components/db-table/IndexNew.vue';
   import HostAgentStatus from '@components/host-agent-status/Index.vue';

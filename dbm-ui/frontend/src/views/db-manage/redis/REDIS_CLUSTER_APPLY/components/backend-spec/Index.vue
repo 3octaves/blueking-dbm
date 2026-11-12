@@ -37,9 +37,7 @@
         :biz-id="bizId"
         :params="{
           city: cityName,
-          subzones: subzoneNames.join('，'),
           subzone_ids: subzoneIds.join(','),
-          cloud_zone: zoneNames.join('，'),
           for_bizs: bizId ? [bizId, 0] : [0],
           resource_types: [DBTypes.REDIS, 'PUBLIC'],
           spec_id: Number(modelValue.spec_id),
@@ -87,10 +85,7 @@
       :cloud-id="cloudId"
       :cluster-type="clusterType"
       :machine-type="machineType"
-      :subzone-ids="subzoneIds"
-      :subzone-names="subzoneNames"
-      :zone-ids="zoneIds"
-      :zone-names="zoneNames" />
+      :subzone-ids="subzoneIds" />
   </div>
 </template>
 
@@ -131,9 +126,6 @@
     clusterType: string;
     machineType: string;
     subzoneIds: number[];
-    subzoneNames: string[];
-    zoneIds: string[];
-    zoneNames: string[];
   }
 
   const props = defineProps<Props>();

@@ -99,7 +99,7 @@
         :title="t('可用区')"
         :width="120">
         <template #default="{ row }: { row: IRowData }">
-          {{ row.bk_cloud_zone || t('未知') }}
+          {{ getCloudZoneName(row.bk_cloud_zone) || t('未知') }}
         </template>
       </TableColumn>
       <TableColumn
@@ -197,7 +197,7 @@
 
   import { queryBizMachineAttrs } from '@services/source/dbbase';
 
-  import { ClusterTypes, specialOptionLabelMap, SpecialOptions } from '@common/const';
+  import { ClusterTypes, getCloudZoneName, specialOptionLabelMap, SpecialOptions } from '@common/const';
   import { batchSplitRegex, ipPort, ipv4 } from '@common/regex';
 
   import MultipleInput from '@components/db-table/components/MultipleInput.vue';

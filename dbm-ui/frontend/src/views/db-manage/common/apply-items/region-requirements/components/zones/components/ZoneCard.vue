@@ -25,7 +25,7 @@
         v-if="overflowCount > 0"
         placement="top"
         theme="light">
-        <span class="zone-card-count">{{ t('共 {n} 个', { n: subzones!.length }) }}</span>
+        <span class="zone-card-count ml-4">{{ t('共 {n} 个', { n: subzones!.length }) }}</span>
         <template #content>
           <div class="zone-card-count-popover">
             <div class="zone-card-count-title mb-4">{{ t('全部园区（{n}）', { n: subzones!.length }) }}</div>

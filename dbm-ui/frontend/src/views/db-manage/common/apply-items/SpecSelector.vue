@@ -48,6 +48,8 @@
 
   interface ResourceSpecData extends ResourceSpecModel {
     availableCount?: number;
+    /** 按可用区分组的可用主机数（group_by_cloud_zone 时返回），供 popover 分组展示 */
+    availableCountByZone?: Record<string, number>;
   }
 
   interface Props {
@@ -61,8 +63,6 @@
     showRefresh?: boolean;
     // eslint-disable-next-line vue/require-default-prop
     subzoneIds?: string[] | number[];
-    // eslint-disable-next-line vue/require-default-prop
-    zoneIds?: string[];
   }
 
   type Emits = (e: 'update:modelValue', value: number | string) => void;
@@ -131,42 +131,39 @@
   };
 
   const fetchSpecResourceCount = _.debounce(() => {
-    const params = {
+    const zoneNames = props.subzoneIds?.map((item) => `${item}`) ?? [];
+    const params: Parameters<typeof getSpecResourceCount>[0] = {
       bk_biz_id: Number(props.bizId),
       bk_cloud_id: Number(props.cloudId),
       spec_ids: list.value.map((item) => item.spec_id),
     };
     if (props.city) {
-      Object.assign(params, {
-        city: props.city,
-      });
+      params.city = props.city;
     }
-    // 可用区级别（跨可用区/指定可用区）：sub_zone_ids 复用为可用区名称，group_by_cloud_zone 按可用区分组返回数量
-    if (props.zoneIds?.length) {
-      Object.assign(params, {
-        group_by_cloud_zone: true,
-        sub_zone_ids: props.zoneIds.map((item) => `${item}`),
-      });
-    } else if (props.subzoneIds) {
-      Object.assign(params, {
-        sub_zone_ids: props.subzoneIds.map((item) => `${item}`),
-      });
+    // 选了可用区（值为可用区名称，后端自行做「可用区 → 园区」展开）时按可用区分组：
+    // 选项外侧展示总数，popover 内按可用区展示各分得的主机数
+    if (zoneNames.length) {
+      params.sub_zone_ids = zoneNames;
+      params.group_by_cloud_zone = true;
     }
     getSpecResourceCount(params).then((data) => {
+      const { byCloudZone, total } =
+        'total' in data
+          ? { byCloudZone: data.by_cloud_zone, total: data.total }
+          : { byCloudZone: null as Record<string, Record<number, number>> | null, total: data };
       list.value = list.value.map((item) =>
         Object.assign(item, {
-          availableCount: data[item.spec_id],
-          // isRecentSeconds: item.isRecentSeconds ?? false,
-          // name: item.spec_name,
-          // qpsText: item.qpsText ?? '',
-          // updateAtDisplay: item.updateAtDisplay ?? '',
+          availableCount: total[item.spec_id],
+          availableCountByZone: byCloudZone
+            ? Object.fromEntries(Object.entries(byCloudZone).map(([zone, counts]) => [zone, counts[item.spec_id] ?? 0]))
+            : undefined,
         }),
       );
     });
   }, 100);
 
   watch(
-    () => [props.bizId, props.cloudId, props.city, props.subzoneIds, props.zoneIds, data.value],
+    () => [props.bizId, props.cloudId, props.city, props.subzoneIds, data.value],
     () => {
       if (
         typeof props.bizId === 'number' &&

@@ -294,17 +294,14 @@
                       :cluster-type="DBTypes.REDIS"
                       machine-type="proxy"
                       style="width: 314px"
-                      :subzone-ids="formData.details.sub_zone_ids"
-                      :zone-ids="formData.details.zone_names" />
+                      :subzone-ids="formData.details.sub_zone_ids" />
                   </BkFormItem>
                   <ResourcePreview
                     v-model:tag-list="formData.details.resource_spec.proxy.labels"
                     :biz-id="formData.bk_biz_id"
                     :params="{
                       city: formData.details.city_name,
-                      subzones: formData.details.sub_zone_names.join('，'),
                       subzone_ids: formData.details.sub_zone_ids.join(','),
-                      cloud_zone: formData.details.zone_names.join('，'),
                       for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                       resource_types: [DBTypes.REDIS, 'PUBLIC'],
                       spec_id: Number(formData.details.resource_spec.proxy.spec_id),
@@ -352,10 +349,7 @@
                   :cloud-id="formData.details.bk_cloud_id"
                   :cluster-type="typeInfos.cluster_type"
                   :machine-type="backendMachineType"
-                  :subzone-ids="formData.details.sub_zone_ids"
-                  :subzone-names="formData.details.sub_zone_names"
-                  :zone-ids="formData.details.zone_names"
-                  :zone-names="formData.details.zone_names" />
+                  :subzone-ids="formData.details.sub_zone_ids" />
               </BkFormItem>
             </div>
           </Transition>
@@ -619,8 +613,6 @@
         },
       },
       sub_zone_ids: [] as string[],
-      sub_zone_names: [] as string[],
-      zone_names: [] as string[],
     },
     remark: '',
     ticket_type: TicketTypes.REDIS_CLUSTER_APPLY,

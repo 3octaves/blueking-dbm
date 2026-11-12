@@ -40,8 +40,8 @@ export type DiffItem = TicketModifyChangeItem;
 // 后端在 details 中注入的字段，提交体里没有
 const COMMON_IGNORE_PATHS = ['__ticket_detail__', 'clusters', 'specs'];
 
-// 随机时 location_spec 不带 sub_zone_ids / zone_ids，在「指定园区 / 指定可用区」与「随机」之间切换要能比出来
-const COMMON_UNION_PATHS = ['resource_spec.*.location_spec.sub_zone_ids', 'resource_spec.*.location_spec.zone_ids'];
+// 随机时 location_spec 不带 sub_zone_ids，在「指定可用区」与「随机」之间切换要能比出来
+const COMMON_UNION_PATHS = ['resource_spec.*.location_spec.sub_zone_ids'];
 
 // 路径与登记项逐段比较，登记项中的 * 匹配任意一段
 const isPathMatch = (path: string, pattern: string) => {

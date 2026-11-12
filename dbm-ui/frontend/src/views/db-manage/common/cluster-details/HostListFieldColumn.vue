@@ -36,7 +36,7 @@
     :filter="tableFilter['bk_cloud_zone']"
     :title="t('可用区')">
     <template #default="{ row }: { row: IRowData }">
-      {{ row.host_info.bk_cloud_zone || t('未知') }}
+      {{ getCloudZoneName(row.host_info.bk_cloud_zone) || t('未知') }}
     </template>
   </TableColumn>
   <TableColumn
@@ -126,6 +126,7 @@
   import { useI18n } from 'vue-i18n';
 
   import type { ClusterTypes } from '@common/const';
+  import { getCloudZoneName } from '@common/const';
 
   import HostAgentStatus from '@components/host-agent-status/Index.vue';
   import SpecDetailPopover from '@components/spec-detail-popover/Index.vue';

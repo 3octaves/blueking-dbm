@@ -84,7 +84,7 @@
 
   import { getCommonCities, getInfrasCloudZones, getInfrasSubzonesByCity } from '@services/source/infras';
 
-  import { specialOptionLabelMap, SpecialOptions } from '@common/const';
+  import { getCloudZoneName, specialOptionLabelMap, SpecialOptions } from '@common/const';
 
   type CityItem = ServiceReturnType<typeof getCommonCities>['common'][number];
   type CloudZoneItem = ServiceReturnType<typeof getInfrasCloudZones>[number];
@@ -115,7 +115,7 @@
   // 可用区候选（zone 与 region 无归属映射，候选为全量；筛选生效由后端完成）
   const filterZoneList = computed(() =>
     cityZoneList.value.map((item) => ({
-      label: item.bk_cloud_zone,
+      label: getCloudZoneName(item.bk_cloud_zone),
       value: item.bk_cloud_zone,
     })),
   );

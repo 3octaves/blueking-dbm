@@ -210,17 +210,14 @@
                       :cloud-id="formData.details.bk_cloud_id"
                       cluster-type="mysql"
                       machine-type="backend"
-                      :subzone-ids="formData.details.sub_zone_ids"
-                      :zone-ids="formData.details.zone_names" />
+                      :subzone-ids="formData.details.sub_zone_ids" />
                   </BkFormItem>
                   <ResourcePreview
                     v-model:tag-list="formData.details.resource_spec.single.labels"
                     :biz-id="formData.bk_biz_id"
                     :params="{
                       city: formData.details.city_name,
-                      subzones: formData.details.sub_zone_names.join('，'),
                       subzone_ids: formData.details.sub_zone_ids.join(','),
-                      cloud_zone: formData.details.zone_names.join('，'),
                       for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                       resource_types: [DBTypes.MYSQL, 'PUBLIC'],
                       spec_id: Number(formData.details.resource_spec.single.spec_id),
@@ -246,17 +243,14 @@
                         :cloud-id="formData.details.bk_cloud_id"
                         cluster-type="mysql"
                         machine-type="proxy"
-                        :subzone-ids="formData.details.sub_zone_ids"
-                        :zone-ids="formData.details.zone_names" />
+                        :subzone-ids="formData.details.sub_zone_ids" />
                     </BkFormItem>
                     <ResourcePreview
                       v-model:tag-list="formData.details.resource_spec.proxy.labels"
                       :biz-id="formData.bk_biz_id"
                       :params="{
                         city: formData.details.city_name,
-                        subzones: formData.details.sub_zone_names.join('，'),
                         subzone_ids: formData.details.sub_zone_ids.join(','),
-                        cloud_zone: formData.details.zone_names.join('，'),
                         for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                         resource_types: [DBTypes.MYSQL, 'PUBLIC'],
                         spec_id: Number(formData.details.resource_spec.proxy.spec_id),
@@ -292,17 +286,14 @@
                         :cloud-id="formData.details.bk_cloud_id"
                         cluster-type="mysql"
                         machine-type="backend"
-                        :subzone-ids="formData.details.sub_zone_ids"
-                        :zone-ids="formData.details.zone_names" />
+                        :subzone-ids="formData.details.sub_zone_ids" />
                     </BkFormItem>
                     <ResourcePreview
                       v-model:tag-list="formData.details.resource_spec.backend.labels"
                       :biz-id="formData.bk_biz_id"
                       :params="{
                         city: formData.details.city_name,
-                        subzones: formData.details.sub_zone_names.join('，'),
                         subzone_ids: formData.details.sub_zone_ids.join(','),
-                        cloud_zone: formData.details.zone_names.join('，'),
                         for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                         resource_types: [DBTypes.MYSQL, 'PUBLIC'],
                         spec_id: Number(formData.details.resource_spec.backend.spec_id),
@@ -490,8 +481,6 @@
       start_mysql_port: 20000,
       start_proxy_port: 10000,
       sub_zone_ids: [] as string[],
-      sub_zone_names: [] as string[],
-      zone_names: [] as string[],
     },
     remark: '',
     ticket_type: ticketType,

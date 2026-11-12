@@ -127,8 +127,7 @@
               :cluster-type="DBTypes.MONGODB"
               :machine-type="MachineTypes.MONGODB"
               style="width: 435px"
-              :subzone-ids="formData.details.sub_zone_ids"
-              :zone-ids="formData.details.zone_names" />
+              :subzone-ids="formData.details.sub_zone_ids" />
             <span class="input-desc ml-32">
               {{ t('共需n台', [hostNumber]) }} ,
               <BkPopover
@@ -154,9 +153,7 @@
             :biz-id="formData.bk_biz_id"
             :params="{
               city: formData.details.city_name,
-              subzones: formData.details.sub_zone_names.join('，'),
               subzone_ids: formData.details.sub_zone_ids.join(','),
-              cloud_zone: formData.details.zone_names.join('，'),
               for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
               resource_types: [DBTypes.MONGODB, 'PUBLIC'],
               spec_id: Number(formData.details.resource_spec.mongo_machine_set.spec_id),
@@ -294,8 +291,6 @@
       },
       start_port: 27001,
       sub_zone_ids: [] as string[],
-      sub_zone_names: [] as string[],
-      zone_names: [] as string[],
     },
     remark: '',
     ticket_type: TicketTypes.MONGODB_REPLICASET_APPLY,

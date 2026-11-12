@@ -3,6 +3,7 @@ import _ from 'lodash';
 import type { ClusterListNode } from '@services/types';
 
 import type { DBTypeOf, GroupedClusterTypes } from '@common/const';
+import { getCloudZoneName } from '@common/const';
 
 import { isRecentDays, utcDisplayTime } from '@utils';
 
@@ -45,12 +46,12 @@ export default class ClusterBase<T extends GroupedClusterTypes = GroupedClusterT
     return _.sortBy(this.tags, (item) => item.key).filter((item) => !item.system);
   }
 
-  /** 可用区展示值：空值显示「随机」 */
+  /** 可用区展示值：空值显示「随机」，标识值转前端维护的中文名 */
   get clusterZonesDisplay() {
     if (this.cluster_cloud_zones.length === 0) {
       return t('随机');
     }
-    return this.cluster_cloud_zones.join('，');
+    return this.cluster_cloud_zones.map((zoneItem) => getCloudZoneName(zoneItem)).join('，');
   }
 
   get createAtDisplay() {

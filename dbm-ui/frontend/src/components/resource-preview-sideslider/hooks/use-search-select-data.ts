@@ -3,6 +3,8 @@ import { useI18n } from 'vue-i18n';
 import { fetchResourceHostDeviceClass, getResourceOsName } from '@services/source/dbresourceResource';
 import { getCommonCities, getInfrasCloudZones } from '@services/source/infras';
 
+import { getCloudZoneName } from '@common/const';
+
 import MultipleSelect from '@components/db-table/components/MultipleSelect.vue';
 
 export default () => {
@@ -61,7 +63,7 @@ export default () => {
         remoteMethod: () => {
           return getInfrasCloudZones().then((data) =>
             data.map((item) => ({
-              label: item.bk_cloud_zone,
+              label: getCloudZoneName(item.bk_cloud_zone),
               value: item.bk_cloud_zone,
             })),
           );

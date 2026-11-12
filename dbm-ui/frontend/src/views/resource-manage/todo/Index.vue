@@ -101,7 +101,7 @@
         :title="t('可用区')"
         :width="90">
         <template #default="{ row }: { row: FaultOrRecycleMachineModel }">
-          {{ row.bk_cloud_zone || t('未知') }}
+          {{ getCloudZoneName(row.bk_cloud_zone) || t('未知') }}
         </template>
       </TableColumn>
       <TableColumn
@@ -216,7 +216,7 @@
 
   import { useHostTodoCount } from '@hooks';
 
-  import { HostHandleTodoType } from '@common/const';
+  import { getCloudZoneName, HostHandleTodoType } from '@common/const';
 
   import DbStatus from '@components/db-status/index.vue';
   import DbTable from '@components/db-table/IndexNew.vue';
