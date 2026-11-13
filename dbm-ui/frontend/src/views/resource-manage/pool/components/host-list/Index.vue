@@ -226,7 +226,7 @@
       <TableColumn
         col-key="bk_cloud_region"
         :title="t('地域')"
-        :width="80">
+        :width="150">
         <template #default="{ row }: { row: DbResourceModel }">
           {{ row.bk_cloud_region || '--' }}
         </template>

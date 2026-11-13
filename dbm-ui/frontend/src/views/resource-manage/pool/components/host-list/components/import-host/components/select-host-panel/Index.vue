@@ -79,10 +79,10 @@
         </template>
       </TableColumn>
       <TableColumn
-        col-key="bk_idc_city_name"
-        :title="t('城市')">
+        col-key="bk_cloud_region"
+        :title="t('地域')">
         <template #default="{ row }: { row: HostInfo }">
-          {{ row.bk_idc_city_name || '--' }}
+          {{ row.bk_cloud_region || '--' }}
         </template>
       </TableColumn>
       <TableColumn

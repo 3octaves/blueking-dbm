@@ -20,10 +20,10 @@
       @change="handleRegionChange">
       <DbOptionGroup group-style="divider">
         <DbOption
-          v-for="item in citiyList"
-          :key="item.city_code"
-          :label="item.city_name"
-          :value="item.city_code" />
+          v-for="item in regionList"
+          :key="item"
+          :label="item"
+          :value="item" />
       </DbOptionGroup>
       <DbOptionGroup group-style="divider">
         <DbOption
@@ -82,11 +82,10 @@
 <script setup lang="ts">
   import { useRequest } from 'vue-request';
 
-  import { getCommonCities, getInfrasCloudZones, getInfrasSubzonesByCity } from '@services/source/infras';
+  import { getInfrasCloudZones, getInfrasSubzonesByCity } from '@services/source/infras';
 
   import { getCloudZoneName, specialOptionLabelMap, SpecialOptions } from '@common/const';
 
-  type CityItem = ServiceReturnType<typeof getCommonCities>['common'][number];
   type CloudZoneItem = ServiceReturnType<typeof getInfrasCloudZones>[number];
 
   interface Props {
@@ -109,7 +108,7 @@
 
   const zoneNames = ref<string>();
   const subzoneIds = ref<string[]>([]);
-  const citiyList = ref<CityItem[]>([]);
+  const regionList = ref<string[]>([]);
   const cityZoneList = ref<CloudZoneItem[]>([]);
 
   // 可用区候选（zone 与 region 无归属映射，候选为全量；筛选生效由后端完成）
@@ -120,7 +119,7 @@
     })),
   );
 
-  // 园区候选：按已选可用区收窄（可用区的 subzones 园区名列表）
+  // 园区候选：全量数据按所选可用区过滤（归属关系取自可用区数据的 sub_zones）
   const filterSubzoneList = computed(() => {
     if (!zoneNames.value) {
       return [];
@@ -135,9 +134,10 @@
       }));
   });
 
-  useRequest(getCommonCities, {
+  // 地域候选：全量可用区数据按 bk_cloud_region 去重
+  useRequest(getInfrasCloudZones, {
     onSuccess(data) {
-      citiyList.value = data.common.concat(data.internal).filter((item) => item.city_code !== 'default');
+      regionList.value = [...new Set(data.map((item) => item.bk_cloud_region))];
     },
   });
 
@@ -149,21 +149,12 @@
     },
   });
 
-  // 园区候选：随已选地域 / 可用区联动（getInfrasSubzonesByCity 按 city_code + bk_cloud_zone 过滤）
-  const { data: subzoneList, run: runSubzoneList } = useRequest(getInfrasSubzonesByCity, {
-    manual: true,
-  });
+  // 园区候选：全量拉取一次，按所选可用区过滤展示
+  const { data: subzoneList } = useRequest(getInfrasSubzonesByCity);
 
-  const fetchZoneList = () => runCloudZones({ city_code: region.value || undefined });
-
-  const fetchSubzoneList = () =>
-    runSubzoneList({
-      bk_cloud_zone: zoneNames.value || undefined,
-      city_code: region.value || undefined,
-    });
+  const fetchZoneList = () => runCloudZones({ region: region.value || undefined });
 
   fetchZoneList();
-  fetchSubzoneList();
 
   watch(
     () => props.model,
@@ -173,6 +164,10 @@
         const modelZones = props.model.bk_cloud_zone || [];
         zoneNames.value = Array.isArray(modelZones) ? modelZones[0] : modelZones;
         subzoneIds.value = props.model.subzone_ids;
+        // 回填时按已选地域实时拉取可用区候选
+        if (region.value) {
+          fetchZoneList();
+        }
       }
     },
     {
@@ -186,17 +181,14 @@
     emits('change', value, 'bk_cloud_region');
     emits('change', '', 'bk_cloud_zone');
     emits('change', [], 'subzone_ids');
-    // 地域变化：重取可用区与园区候选
+    // 地域变化：重取可用区候选；园区下拉此时禁用，选定可用区后再实时查询
     fetchZoneList();
-    fetchSubzoneList();
   };
 
   const handleZoneChange = (value: string) => {
     subzoneIds.value = [];
     emits('change', value, 'bk_cloud_zone');
     emits('change', [], 'subzone_ids');
-    // 可用区变化：重取园区候选
-    fetchSubzoneList();
   };
 
   const handleChange = (value: string[]) => {

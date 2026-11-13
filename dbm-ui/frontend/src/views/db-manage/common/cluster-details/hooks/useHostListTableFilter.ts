@@ -28,8 +28,19 @@ export const useHostListTableFilter = (clusterType: ClusterTypes, clusterId: num
       cluster_type: clusterType,
       machine_attrs: machineAttrs.join(','),
     }).then((data) => {
+      const getLabel = (item: { text: string; value: string }) => {
+        if (attr === 'spec_id') {
+          return `${item.text} [${item.value}]`;
+        }
+        if (attr === 'bk_cloud_zone') {
+          return getCloudZoneName(item.value) || item.text;
+        }
+
+        return item.text;
+      };
+
       const formatList = data[attr].map((item) => ({
-        label: attr === 'spec_id' ? `${item.text} [${item.value}]` : item.text,
+        label: getLabel(item),
         value: item.value,
       }));
 
@@ -78,13 +89,7 @@ export const useHostListTableFilter = (clusterType: ClusterTypes, clusterId: num
       component: markRaw(MultipleSelect),
       name: t('可用区'),
       props: {
-        remoteMethod: () =>
-          getBizMachineAttrs('bk_cloud_zone').then((data) => {
-            return data.map((item) => ({
-              ...item,
-              label: getCloudZoneName(item.value),
-            }));
-          }),
+        remoteMethod: () => getBizMachineAttrs('bk_cloud_zone'),
       },
       showConfirmAndReset: true,
     },

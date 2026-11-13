@@ -45,7 +45,7 @@ export const useInstanceQuickSearch = (params: {
     }
     return queryBizInstanceAttrs(instanceParams).then((data) => {
       const formatList = data[attr].map((item) => ({
-        label: item.text,
+        label: attr === 'bk_cloud_zone' ? getCloudZoneName(item.value) : item.text,
         value: item.value,
       }));
 
@@ -151,13 +151,7 @@ export const useInstanceQuickSearch = (params: {
       {
         id: 'bk_cloud_zone',
         name: t('可用区'),
-        remoteMethod: () =>
-          getBizInstanceAttrs('bk_cloud_zone').then((data) => {
-            return data.map((item) => ({
-              ...item,
-              label: getCloudZoneName(item.value),
-            }));
-          }),
+        remoteMethod: () => getBizInstanceAttrs('bk_cloud_zone'),
         type: 'multiple',
       },
       {

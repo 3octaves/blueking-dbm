@@ -124,7 +124,7 @@
             :title="t('地域')"
             :width="100">
             <template #default="{ row }: { row: IRowData }">
-              {{ row.bk_cloud_region || row.city || '--' }}
+              {{ row.bk_cloud_region || '--' }}
             </template>
           </TableColumn>
           <TableColumn
@@ -301,7 +301,7 @@
       [t('DB 类型')]: dbNameMap[row.db_type],
       [t('规格类型')]: machineTypeMap[row.spec_machine_type],
       [t('规格')]: row.spec_name,
-      [t('地域')]: row.bk_cloud_region || row.city,
+      [t('地域')]: row.bk_cloud_region || '--',
       [t('可用区')]: getCloudZoneName(row.bk_cloud_zone) || '--',
       [t('操作系统')]: row.os_name,
       [t('参考水位（台）')]: row.machine_refer_count,

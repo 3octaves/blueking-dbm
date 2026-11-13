@@ -29,7 +29,7 @@
           :title="t('随机')"
           @select="handleSelectRandom" />
         <ZoneCard
-          v-for="zoneItem in cityZoneList"
+          v-for="zoneItem in zoneList"
           :key="zoneItem.bk_cloud_zone"
           :selected="modelValue.sub_zone_ids.includes(zoneItem.bk_cloud_zone)"
           :subzones="zoneItem.sub_zones"
@@ -42,14 +42,18 @@
 
 <script setup lang="ts">
   import { useI18n } from 'vue-i18n';
+  import { useRequest } from 'vue-request';
+
+  import { getInfrasCloudZones } from '@services/source/infras';
 
   import { Affinity, getCloudZoneName } from '@common/const';
 
   import ZoneCard from './components/ZoneCard.vue';
-  import { useZones } from './hooks/useZones';
+
+  type CloudZoneItem = ServiceReturnType<typeof getInfrasCloudZones>[number];
 
   interface Props {
-    /** 当前地域值（与可用区数据的 bk_cloud_region 同域比对） */
+    /** 当前地域值（作为 city_code 传给可用区查询接口） */
     cityCode: string;
     disasterToleranceLevel: string;
   }
@@ -70,7 +74,14 @@
 
   const { t } = useI18n();
 
-  const { loading, run, zonesByRegion } = useZones();
+  const zoneList = shallowRef<CloudZoneItem[]>([]);
+
+  const { loading, run } = useRequest(getInfrasCloudZones, {
+    manual: true,
+    onSuccess: (data) => {
+      zoneList.value = data;
+    },
+  });
 
   // 跨可用区（含 MongoDB 的跨可用区强/弱，等同纯跨可用区）
   const isCrossSubzone = computed(() =>
@@ -78,10 +89,6 @@
       props.disasterToleranceLevel as Affinity,
     ),
   );
-
-  /** 当前地域下的可用区卡片数据 */
-  const cityZoneList = computed(() => zonesByRegion.value[props.cityCode] || []);
-
   /** 未选具体可用区时视为随机 */
   const isRandomSelected = computed(() => modelValue.value.sub_zone_ids.length === 0);
 
@@ -115,7 +122,9 @@
     () => props.cityCode,
     () => {
       if (props.cityCode) {
-        run();
+        // 清空上一地域的卡片数据，避免新请求返回前闪现旧数据
+        zoneList.value = [];
+        run({ city_code: props.cityCode });
       }
     },
     { immediate: true },

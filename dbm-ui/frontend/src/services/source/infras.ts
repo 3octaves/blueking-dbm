@@ -11,7 +11,7 @@
  * the specific language governing permissions and limitations under the License.
  */
 
-import { cloudZoneNameMap, type ClusterTypes } from '@common/const';
+import { type ClusterTypes } from '@common/const';
 
 import http from '../http';
 
@@ -56,11 +56,13 @@ export function listLogicCities() {
  * 查询城市园区信息
  * @param params.bk_cloud_zone 可用区名称，用于按可用区收窄园区
  */
-export function getInfrasSubzonesByCity(params?: { bk_cloud_zone?: string; city_code?: string }) {
+export function getInfrasSubzonesByCity(params?: { city_code?: string; region?: string }) {
   return http.get<
     {
       bk_city: number;
       bk_city_code: string;
+      bk_cloud_region: string;
+      bk_cloud_zone: string;
       bk_sub_zone: string;
       bk_sub_zone_id: number;
     }[]
@@ -72,55 +74,15 @@ export function getInfrasSubzonesByCity(params?: { bk_cloud_zone?: string; city_
  * @param params.city_code 按城市过滤；
  * @param params.region 按地域过滤；均不传返回全量
  */
-// TODO: list_cloud_zones 接口未上线，先用 mock 数据联调，后端就绪后恢复 http.get 实现
 export function getInfrasCloudZones(params?: { city_code?: string; region?: string }) {
-  /** 可用区标识前缀 → 所属城市（mock 用；部署页 city_code 为中文城市名，分组比对按此值） */
-  const regionCityMap: Record<string, string> = {
-    'ap-chongqing': '重庆',
-    'ap-guangzhou': '广州',
-    'ap-hongkong': '香港',
-    'ap-nanjing': '南京',
-    'ap-shanghai': '上海',
-    'ap-shenyang-ec': '沈阳',
-    'ap-shenzhen': '深圳',
-    'ap-singapore': '新加坡',
-    'ap-tianjin': '天津',
-    'ap-xian-ec': '西安',
-  };
-
-  /** 特例园区：覆盖卡片三种展示形态——空园区、超 3 个（共 N 个 hover 气泡）、常规 1-2 个 */
-  const mockSubZonesOverride: Record<string, string[]> = {
-    'ap-guangzhou-3': ['广州-黄埔', '广州-天河', '广州-南沙', '广州-番禺'],
-    'ap-hongkong-2': [],
-    'ap-nanjing-1': ['南京-江宁', '南京-雨花台'],
-  };
-
-  const getRegionCity = (zone: string) =>
-    Object.keys(regionCityMap).find((region) => zone.startsWith(`${region}-`)) || '';
-
-  // mock 数据由 cloudZoneNameMap 的真实可用区标识派生：城市名作 bk_cloud_region，园区给占位值
-  const mockData = Object.keys(cloudZoneNameMap).map((zone) => {
-    const city = regionCityMap[getRegionCity(zone)];
-    return {
-      bk_cloud_region: city,
-      bk_cloud_zone: zone,
+  return http.get<
+    {
+      bk_cloud_region: string;
+      bk_cloud_zone: string;
       /** 该可用区下登记过的全部园区名称 */
-      sub_zones: mockSubZonesOverride[zone] || [`${city}-园区一`, `${city}-园区二`],
-    };
-  });
-
-  const keyword = params?.city_code || params?.region;
-  return Promise.resolve(keyword ? mockData.filter((item) => item.bk_cloud_region === keyword) : mockData);
-
-  // 后端就绪后恢复：
-  // return http.get<
-  //   {
-  //     bk_cloud_region: string;
-  //     bk_cloud_zone: string;
-  //     /** 该可用区下登记过的全部园区名称 */
-  //     sub_zones: string[];
-  //   }[]
-  // >(`${path}/cities/list_cloud_zones/`, params);
+      sub_zones: string[];
+    }[]
+  >(`${path}/cities/list_cloud_zones/`, params);
 }
 
 /**
