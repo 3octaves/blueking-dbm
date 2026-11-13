@@ -87,6 +87,7 @@
                   :city="formData.details.city_code"
                   :cloud-id="formData.details.bk_cloud_id"
                   :cluster-type="DBTypes.MONGODB"
+                  :disaster-tolerance-level="formData.details.disaster_tolerance_level"
                   :machine-type="MachineTypes.MONGO_CONFIG"
                   :subzone-ids="formData.details.sub_zone_ids" />
               </BkFormItem>
@@ -129,6 +130,7 @@
                   :city="formData.details.city_code"
                   :cloud-id="formData.details.bk_cloud_id"
                   :cluster-type="DBTypes.MONGODB"
+                  :disaster-tolerance-level="formData.details.disaster_tolerance_level"
                   :machine-type="MachineTypes.MONGOS"
                   :subzone-ids="formData.details.sub_zone_ids" />
               </BkFormItem>
@@ -169,6 +171,7 @@
                 city_code: formData.details.city_code,
                 bk_biz_id: formData.bk_biz_id,
                 sub_zone_ids: formData.details.sub_zone_ids,
+                disaster_tolerance_level: formData.details.disaster_tolerance_level,
                 bk_cloud_id: formData.details.bk_cloud_id,
               }" />
           </BkFormItem>

@@ -125,6 +125,7 @@
               :city="formData.details.city_code"
               :cloud-id="formData.details.bk_cloud_id"
               :cluster-type="DBTypes.MONGODB"
+              :disaster-tolerance-level="formData.details.disaster_tolerance_level"
               :machine-type="MachineTypes.MONGODB"
               style="width: 435px"
               :subzone-ids="formData.details.sub_zone_ids" />

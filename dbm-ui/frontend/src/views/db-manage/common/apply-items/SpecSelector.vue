@@ -44,6 +44,8 @@
   import { getSpecResourceCount } from '@services/source/dbresourceResource';
   import { getResourceSpecList } from '@services/source/dbresourceSpec';
 
+  import { Affinity } from '@common/const';
+
   import SpecDetailPopover from '@components/spec-detail-popover/Index.vue';
 
   interface ResourceSpecData extends ResourceSpecModel {
@@ -58,6 +60,8 @@
     clearable?: boolean;
     cloudId: number | string;
     clusterType: string;
+    // eslint-disable-next-line vue/require-default-prop
+    disasterToleranceLevel?: string;
     machineType: string;
     modelValue: number | string;
     showRefresh?: boolean;
@@ -130,9 +134,30 @@
     emits('update:modelValue', value);
   };
 
+  const applySpecCount = (
+    total: Record<number, number>,
+    byCloudZone: Record<string, Record<number, number>> | null,
+  ) => {
+    list.value = list.value.map((item) =>
+      Object.assign(item, {
+        availableCount: total[item.spec_id],
+        availableCountByZone: byCloudZone
+          ? Object.fromEntries(Object.entries(byCloudZone).map(([zone, counts]) => [zone, counts[item.spec_id] ?? 0]))
+          : undefined,
+      }),
+    );
+  };
+
   const fetchSpecResourceCount = _.debounce(() => {
     const zoneNames = props.subzoneIds?.map((item) => `${item}`) ?? [];
-    const params: Parameters<typeof getSpecResourceCount>[0] = {
+    // 跨可用区（含强/弱）与指定可用区按可用区分组：选项外侧展示总数，popover 内按可用区展示各分得的主机数
+    const isGroupByCloudZone = [
+      Affinity.CROS_SUBZONE,
+      Affinity.CROSS_SUBZONE_STRONG,
+      Affinity.CROSS_SUBZONE_WEAK,
+      Affinity.SAME_SUBZONE_CROSS_SWTICH,
+    ].includes(props.disasterToleranceLevel as Affinity);
+    const params: Omit<ServiceParameters<typeof getSpecResourceCount>, 'group_by_cloud_zone'> = {
       bk_biz_id: Number(props.bizId),
       bk_cloud_id: Number(props.cloudId),
       spec_ids: list.value.map((item) => item.spec_id),
@@ -140,30 +165,23 @@
     if (props.city) {
       params.city = props.city;
     }
-    // 选了可用区（值为可用区名称，后端自行做「可用区 → 园区」展开）时按可用区分组：
-    // 选项外侧展示总数，popover 内按可用区展示各分得的主机数
+    // sub_zone_ids 存可用区名称，后端自行做「可用区 → 园区」展开；跨可用区随机时为空（不限可用区）
     if (zoneNames.length) {
       params.sub_zone_ids = zoneNames;
-      params.group_by_cloud_zone = true;
     }
-    getSpecResourceCount(params).then((data) => {
-      const { byCloudZone, total } =
-        'total' in data
-          ? { byCloudZone: data.by_cloud_zone, total: data.total }
-          : { byCloudZone: null as Record<string, Record<number, number>> | null, total: data };
-      list.value = list.value.map((item) =>
-        Object.assign(item, {
-          availableCount: total[item.spec_id],
-          availableCountByZone: byCloudZone
-            ? Object.fromEntries(Object.entries(byCloudZone).map(([zone, counts]) => [zone, counts[item.spec_id] ?? 0]))
-            : undefined,
-        }),
-      );
-    });
+    if (isGroupByCloudZone) {
+      getSpecResourceCount({ ...params, group_by_cloud_zone: true }).then((data) => {
+        applySpecCount(data.total, data.by_cloud_zone);
+      });
+    } else {
+      getSpecResourceCount(params).then((data) => {
+        applySpecCount(data, null);
+      });
+    }
   }, 100);
 
   watch(
-    () => [props.bizId, props.cloudId, props.city, props.subzoneIds, data.value],
+    () => [props.bizId, props.cloudId, props.city, props.subzoneIds, props.disasterToleranceLevel, data.value],
     () => {
       if (
         typeof props.bizId === 'number' &&

@@ -84,6 +84,7 @@
       :city-name="cityName"
       :cloud-id="cloudId"
       :cluster-type="clusterType"
+      :disaster-tolerance-level="disasterToleranceLevel"
       :machine-type="machineType"
       :subzone-ids="subzoneIds" />
   </div>
@@ -124,8 +125,9 @@
     cityName: string;
     cloudId: number | string;
     clusterType: string;
+    disasterToleranceLevel: string;
     machineType: string;
-    subzoneIds: number[];
+    subzoneIds: number[] | string[];
   }
 
   const props = defineProps<Props>();

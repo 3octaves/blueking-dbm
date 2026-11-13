@@ -125,6 +125,7 @@
           :city="cityCode"
           :cloud-id="cloudId"
           :cluster-type="ClusterTypes.TENDBCLUSTER"
+          :disaster-tolerance-level="disasterToleranceLevel"
           machine-type="backend"
           :subzone-ids="subzoneIds" />
       </BkFormItem>
@@ -229,6 +230,7 @@
     cityName: string;
     cloudId: number | string;
     dbType: string;
+    disasterToleranceLevel: string;
     machineType: string;
     subzoneIds: number[] | string[];
   }

@@ -209,6 +209,7 @@
                       :city="formData.details.city_code"
                       :cloud-id="formData.details.bk_cloud_id"
                       cluster-type="mysql"
+                      :disaster-tolerance-level="formData.details.disaster_tolerance_level"
                       machine-type="backend"
                       :subzone-ids="formData.details.sub_zone_ids" />
                   </BkFormItem>
@@ -242,6 +243,7 @@
                         :city="formData.details.city_code"
                         :cloud-id="formData.details.bk_cloud_id"
                         cluster-type="mysql"
+                        :disaster-tolerance-level="formData.details.disaster_tolerance_level"
                         machine-type="proxy"
                         :subzone-ids="formData.details.sub_zone_ids" />
                     </BkFormItem>
@@ -285,6 +287,7 @@
                         :city="formData.details.city_code"
                         :cloud-id="formData.details.bk_cloud_id"
                         cluster-type="mysql"
+                        :disaster-tolerance-level="formData.details.disaster_tolerance_level"
                         machine-type="backend"
                         :subzone-ids="formData.details.sub_zone_ids" />
                     </BkFormItem>

@@ -11,6 +11,7 @@
         :city="cityCode"
         :cloud-id="cloudId"
         cluster-type="redis"
+        :disaster-tolerance-level="disasterToleranceLevel"
         :machine-type="machineType"
         style="width: 314px"
         :subzone-ids="subzoneIds" />
@@ -97,9 +98,10 @@
     cityName: string;
     cloudId: number | string;
     clusterType: string;
+    disasterToleranceLevel: string;
     machineType: string;
     shardNumDisabled?: boolean;
-    subzoneIds: number[];
+    subzoneIds: number[] | string[];
   }
 
   interface ModelValue {

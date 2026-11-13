@@ -172,6 +172,7 @@
           :city="params.city_code"
           :cloud-id="params.bk_cloud_id"
           :cluster-type="ClusterTypes.MONGODB"
+          :disaster-tolerance-level="params.disaster_tolerance_level"
           :machine-type="MachineTypes.MONGODB"
           :subzone-ids="params.sub_zone_ids"
           @update:model-value="handleSpecChange" />
@@ -288,6 +289,7 @@
       bk_cloud_id: number;
       city_code: string;
       city_name: string;
+      disaster_tolerance_level: string;
       sub_zone_ids: string[] | number[];
     };
   }

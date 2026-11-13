@@ -227,15 +227,17 @@
         col-key="bk_cloud_region"
         :title="t('地域')"
         :width="80">
-        <template #default="{ row }: { row: DbResourceModel }">{{ row.bk_cloud_region || '--' }}</template>
+        <template #default="{ row }: { row: DbResourceModel }">
+          {{ row.bk_cloud_region || '--' }}
+        </template>
       </TableColumn>
       <TableColumn
         col-key="bk_cloud_zone"
         :title="t('可用区')"
         :width="90">
-        <template #default="{ row }: { row: DbResourceModel }">{{
-          getCloudZoneName(row.bk_cloud_zone) || t('未知')
-        }}</template>
+        <template #default="{ row }: { row: DbResourceModel }">
+          {{ getCloudZoneName(row.bk_cloud_zone) || t('未知') }}
+        </template>
       </TableColumn>
       <TableColumn
         col-key="sub_zone"

@@ -251,7 +251,7 @@ interface SpecResourceCountParams {
   sub_zone_ids?: string[];
 }
 
-export interface SpecResourceCountGrouped {
+interface SpecResourceCountGrouped {
   by_cloud_zone: Record<string, Record<number, number>>;
   total: Record<number, number>;
 }

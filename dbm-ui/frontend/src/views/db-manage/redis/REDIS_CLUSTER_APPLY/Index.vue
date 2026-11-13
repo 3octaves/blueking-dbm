@@ -292,6 +292,7 @@
                       :city="formData.details.city_code"
                       :cloud-id="formData.details.bk_cloud_id"
                       :cluster-type="DBTypes.REDIS"
+                      :disaster-tolerance-level="formData.details.disaster_tolerance_level"
                       machine-type="proxy"
                       style="width: 314px"
                       :subzone-ids="formData.details.sub_zone_ids" />
@@ -348,6 +349,7 @@
                   :city-name="formData.details.city_name"
                   :cloud-id="formData.details.bk_cloud_id"
                   :cluster-type="typeInfos.cluster_type"
+                  :disaster-tolerance-level="formData.details.disaster_tolerance_level"
                   :machine-type="backendMachineType"
                   :subzone-ids="formData.details.sub_zone_ids" />
               </BkFormItem>
