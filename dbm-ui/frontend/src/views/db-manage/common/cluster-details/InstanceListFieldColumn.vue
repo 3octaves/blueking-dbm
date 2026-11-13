@@ -73,7 +73,7 @@
     :min-width="120"
     :title="t('可用区')">
     <template #default="{ row }: { row: IColumnData }">
-      {{ getCloudZoneName(row.host_info?.bk_cloud_zone) || t('未知') }}
+      {{ getCloudZoneName(row.bk_cloud_zone) || t('未知') }}
     </template>
   </TableColumn>
   <TableColumn

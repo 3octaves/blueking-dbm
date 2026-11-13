@@ -7,7 +7,7 @@ import { queryBizMachineAttrs } from '@services/source/dbbase';
 
 import { useUrlSearch } from '@hooks';
 
-import { ClusterTypes, specialOptionLabelMap, SpecialOptions } from '@common/const';
+import { ClusterTypes, getCloudZoneName, specialOptionLabelMap, SpecialOptions } from '@common/const';
 import { batchSplitRegex, ipv4 } from '@common/regex';
 
 import { parseQueryMemo } from '@utils';
@@ -99,7 +99,13 @@ export const useHostSearchSelect = (
     {
       id: 'bk_cloud_zone',
       name: t('可用区'),
-      remoteMethod: () => getBizMachineAttrs('bk_cloud_zone'),
+      remoteMethod: () =>
+        getBizMachineAttrs('bk_cloud_zone').then((data) => {
+          return data.map((item) => ({
+            ...item,
+            label: getCloudZoneName(item.value),
+          }));
+        }),
       type: 'multiple' as const,
     },
     {

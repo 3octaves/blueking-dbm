@@ -32,17 +32,7 @@
           </template>
           <template v-if="params?.cloud_zone">
             <div class="sub-title-label">{{ t('可用区') }}:</div>
-            <div class="sub-title-value">
-              <template v-if="groupCountByZone && Object.keys(groupCountByZone).length > 0">
-                <!-- 按可用区分组展示剩余台数（仅统计有可用区信息的主机） -->
-                <div
-                  v-for="(count, zoneName) in groupCountByZone"
-                  :key="zoneName">
-                  {{ getCloudZoneName(zoneName) }}：<strong>{{ count }}</strong> 台
-                </div>
-              </template>
-              <template v-else>{{ getCloudZoneName(params?.cloud_zone || '') || '--' }}</template>
-            </div>
+            <div class="sub-title-value">{{ getCloudZoneName(params.cloud_zone) }}</div>
           </template>
           <div class="sub-title-label">{{ t('规格') }}:</div>
           <div class="sub-title-value">{{ specInfo?.spec_name || '--' }}</div>
@@ -186,8 +176,6 @@
 
   const columnFilterValue = ref<Record<string, string>>({});
   const machineNum = ref(0);
-  // 可用区分组的剩余台数（group_by_cloud_zone 时后端返回），键为可用区名
-  const groupCountByZone = ref<Record<string, number>>({});
   const tagList = ref<ServiceReturnType<typeof listTag>['results']>([]);
   // 通用无标签
   const noLimitTag = ref(true);
@@ -216,15 +204,12 @@
       .filter((item) => item !== '0')
       .join(',');
     noLimitTag.value = !labels;
-    // 跨可用区/指定可用区时按可用区分组统计剩余台数（只统计有可用区信息的主机）；跨机架、无保持现状
-    const isGroupByCloudZone = Boolean(props.params.cloud_zone);
     const dataList = await fetchList({
       ...params,
       ...props.params,
       bk_biz_id: undefined, // 资源池参数用for_biz,把db-table内置的bk_biz_id去掉
       bk_cloud_zone: props.params.cloud_zone || undefined,
       city: props.params.city || undefined,
-      group_by_cloud_zone: isGroupByCloudZone || undefined,
       labels: labels || undefined, // 不传即为不限制（即通用无标签）
       spec_id: props.params.spec_id ? String(props.params.spec_id) : undefined,
       subzone_ids: props.params.subzone_ids || undefined,
@@ -232,11 +217,6 @@
     } as ServiceParameters<typeof fetchList>);
 
     machineNum.value = dataList.count;
-    // group_by_cloud_zone 模式下后端返回按可用区分组的数量，用于头部分组展示
-    groupCountByZone.value =
-      isGroupByCloudZone && Object.prototype.hasOwnProperty.call(dataList, 'by_cloud_zone')
-        ? ((dataList as unknown as { by_cloud_zone: Record<string, number> }).by_cloud_zone ?? {})
-        : {};
     return dataList;
   };
 

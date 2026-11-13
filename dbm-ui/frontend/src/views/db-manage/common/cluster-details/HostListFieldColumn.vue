@@ -26,17 +26,19 @@
   <TableColumn
     col-key="bk_cloud_region"
     :filter="tableFilter['bk_cloud_region']"
-    :title="t('地域')">
+    :title="t('地域')"
+    width="120">
     <template #default="{ row }: { row: IRowData }">
-      {{ row.host_info.bk_cloud_region || '--' }}
+      {{ row.bk_cloud_region || '--' }}
     </template>
   </TableColumn>
   <TableColumn
     col-key="bk_cloud_zone"
     :filter="tableFilter['bk_cloud_zone']"
-    :title="t('可用区')">
+    :title="t('可用区')"
+    width="120">
     <template #default="{ row }: { row: IRowData }">
-      {{ getCloudZoneName(row.host_info.bk_cloud_zone) || t('未知') }}
+      {{ getCloudZoneName(row.bk_cloud_zone) || t('未知') }}
     </template>
   </TableColumn>
   <TableColumn

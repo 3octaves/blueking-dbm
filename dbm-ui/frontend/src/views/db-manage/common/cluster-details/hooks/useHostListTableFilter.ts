@@ -2,7 +2,7 @@ import { useI18n } from 'vue-i18n';
 
 import { queryBizMachineAttrs } from '@services/source/dbbase';
 
-import { ClusterTypes, specialOptionLabelMap, SpecialOptions } from '@common/const';
+import { ClusterTypes, getCloudZoneName, specialOptionLabelMap, SpecialOptions } from '@common/const';
 
 import MultipleInput from '@components/db-table/components/MultipleInput.vue';
 import MultipleSelect from '@components/db-table/components/MultipleSelect.vue';
@@ -78,7 +78,13 @@ export const useHostListTableFilter = (clusterType: ClusterTypes, clusterId: num
       component: markRaw(MultipleSelect),
       name: t('可用区'),
       props: {
-        remoteMethod: () => getBizMachineAttrs('bk_cloud_zone'),
+        remoteMethod: () =>
+          getBizMachineAttrs('bk_cloud_zone').then((data) => {
+            return data.map((item) => ({
+              ...item,
+              label: getCloudZoneName(item.value),
+            }));
+          }),
       },
       showConfirmAndReset: true,
     },

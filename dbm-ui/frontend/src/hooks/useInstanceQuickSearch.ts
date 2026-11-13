@@ -5,7 +5,13 @@ import { useI18n } from 'vue-i18n';
 
 import { queryBizInstanceAttrs } from '@services/source/dbbase';
 
-import { clusterInstStatus, ClusterTypes, specialOptionLabelMap, SpecialOptions } from '@common/const';
+import {
+  clusterInstStatus,
+  ClusterTypes,
+  getCloudZoneName,
+  specialOptionLabelMap,
+  SpecialOptions,
+} from '@common/const';
 import { ipPort, ipv4 } from '@common/regex';
 
 import { type Props as QuickSearchProps } from '@components/db-quick-search/bk-quick-search/Index.vue';
@@ -145,7 +151,13 @@ export const useInstanceQuickSearch = (params: {
       {
         id: 'bk_cloud_zone',
         name: t('可用区'),
-        remoteMethod: () => getBizInstanceAttrs('bk_cloud_zone'),
+        remoteMethod: () =>
+          getBizInstanceAttrs('bk_cloud_zone').then((data) => {
+            return data.map((item) => ({
+              ...item,
+              label: getCloudZoneName(item.value),
+            }));
+          }),
         type: 'multiple',
       },
       {

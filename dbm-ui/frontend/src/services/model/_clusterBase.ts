@@ -11,7 +11,8 @@ import { t } from '@locales/index';
 
 export default class ClusterBase<T extends GroupedClusterTypes = GroupedClusterTypes> {
   static getRoleFaildInstanceList = (data: ClusterListNode[]) => _.filter(data, (item) => item.status !== 'running');
-
+  /** 地域（集群维度） */
+  bk_cloud_region: string;
   /** 可用区（集群维度，名称列表；空数组表示随机） */
   cluster_cloud_zones: string[];
   create_at: string;
@@ -31,6 +32,7 @@ export default class ClusterBase<T extends GroupedClusterTypes = GroupedClusterT
   zone_names: string[];
 
   constructor(payload: ClusterBase<T>) {
+    this.bk_cloud_region = payload.bk_cloud_region;
     this.create_at = payload.create_at;
     this.id = payload.id;
     this.db_type = payload.db_type;
@@ -76,10 +78,10 @@ export default class ClusterBase<T extends GroupedClusterTypes = GroupedClusterT
   }
 
   get regionDisplay() {
-    if (!this.region || this.region === 'default') {
+    if (!this.bk_cloud_region || this.bk_cloud_region === 'default') {
       return t('随机');
     }
-    return this.region;
+    return this.bk_cloud_region;
   }
 
   get updateAtDisplay() {

@@ -7,7 +7,7 @@ import FaultOrRecycleMachineModel from '@services/model/db-resource/FaultOrRecyc
 import { queryDirtyMachineAttrs } from '@services/source/dbbase';
 import { getUserList } from '@services/source/user';
 
-import { specialOptionLabelMap, SpecialOptions } from '@common/const';
+import { getCloudZoneName, specialOptionLabelMap, SpecialOptions } from '@common/const';
 import { ipPort, ipv4 } from '@common/regex';
 
 import { type Props as QuickSearchProps } from '@components/db-quick-search/bk-quick-search/Index.vue';
@@ -79,7 +79,13 @@ export const useQuickSearch = (pool?: ServiceParameters<typeof queryDirtyMachine
       {
         id: 'bk_cloud_zone',
         name: t('可用区'),
-        remoteMethod: () => getDirtyMachineAttrs('bk_cloud_zone'),
+        remoteMethod: () =>
+          getDirtyMachineAttrs('bk_cloud_zone').then((data) => {
+            return data.map((item) => ({
+              ...item,
+              label: getCloudZoneName(item.value),
+            }));
+          }),
         type: 'multiple',
       },
       {

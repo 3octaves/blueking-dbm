@@ -325,7 +325,13 @@
     {
       id: 'bk_cloud_zone',
       name: t('可用区'),
-      remoteMethod: () => getBizMachineAttrs('bk_cloud_zone'),
+      remoteMethod: () =>
+        getBizMachineAttrs('bk_cloud_zone').then((data) => {
+          return data.map((item) => ({
+            ...item,
+            label: getCloudZoneName(item.value),
+          }));
+        }),
       type: 'multiple' as const,
     },
     {
@@ -373,7 +379,13 @@
     bk_cloud_zone: {
       component: markRaw(MultipleSelect),
       props: {
-        remoteMethod: () => getBizMachineAttrs('bk_cloud_zone'),
+        remoteMethod: () =>
+          getBizMachineAttrs('bk_cloud_zone').then((data) => {
+            return data.map((item) => ({
+              ...item,
+              label: getCloudZoneName(item.value),
+            }));
+          }),
       },
       showConfirmAndReset: true,
     },
