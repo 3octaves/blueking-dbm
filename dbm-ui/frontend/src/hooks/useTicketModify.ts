@@ -16,7 +16,6 @@ import { useI18n } from 'vue-i18n';
 
 import TicketModifyRecordModel, { type TicketModifyMode } from '@services/model/ticket/modify-record';
 import TicketModel from '@services/model/ticket/ticket';
-import { getInfrasSubzonesByCity } from '@services/source/infras';
 import { getCloudList } from '@services/source/ipchooser';
 import { getRegions } from '@services/source/kubernetesToolbox';
 import { listTag } from '@services/source/tag';
@@ -110,8 +109,6 @@ export const useTicketModify = () => {
 
   const ticketData = shallowRef<TicketModel>();
   // 以下映射只用于变更对比把 id / 代码展示为名称；列表未就绪或数据已下线时展示原值
-  // 园区 id → 名称；不传城市返回全部园区，改前改后可能跨城市
-  const subzoneNameMap = shallowRef<Record<number, string>>({});
   // 管控区域 id → 名称
   const cloudNameMap = shallowRef<Record<number, string>>({});
   // K8s 地域代码 → 名称，共享集群与业务独占集群的地域合并
@@ -229,9 +226,6 @@ export const useTicketModify = () => {
   };
 
   if (isModify) {
-    getInfrasSubzonesByCity().then((list) => {
-      subzoneNameMap.value = Object.fromEntries(list.map((item) => [item.bk_sub_zone_id, item.bk_sub_zone]));
-    });
     getCloudList().then((list) => {
       cloudNameMap.value = Object.fromEntries(list.map((item) => [item.bk_cloud_id, item.bk_cloud_name]));
     });
@@ -306,8 +300,8 @@ export const useTicketModify = () => {
           }
           return formatValue((value as string[] | undefined)?.map((id) => labelNameMap.value[String(id)] || id));
         },
-        'resource_spec.*.location_spec.sub_zone_ids': (value) =>
-          formatValue((value as number[] | undefined)?.map((id) => cloudZoneNameMap[id] || id)),
+        'resource_spec.*.location_spec.bk_cloud_zone_list': (value) =>
+          formatValue((value as string[] | undefined)?.map((zoneName) => cloudZoneNameMap[zoneName] || zoneName)),
       },
     });
   };

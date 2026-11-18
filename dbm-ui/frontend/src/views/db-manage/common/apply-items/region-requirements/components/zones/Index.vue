@@ -53,9 +53,9 @@
   type CloudZoneItem = ServiceReturnType<typeof getInfrasCloudZones>[number];
 
   interface Props {
-    /** 当前地域值（作为 city_code 传给可用区查询接口） */
-    cityCode: string;
+    /** 当前地域标识（作为 region 传给可用区查询接口）；随机为 default */
     disasterToleranceLevel: string;
+    region: string;
   }
 
   interface Expose {
@@ -111,7 +111,7 @@
   ];
 
   watch(
-    () => [props.disasterToleranceLevel, props.cityCode],
+    () => [props.disasterToleranceLevel, props.region],
     () => {
       // 切换级别或地域：清空已选可用区并重置为随机
       modelValue.value.sub_zone_ids = [];
@@ -119,12 +119,12 @@
   );
 
   watch(
-    () => props.cityCode,
+    () => props.region,
     () => {
-      if (props.cityCode) {
+      if (props.region && props.region !== 'default') {
         // 清空上一地域的卡片数据，避免新请求返回前闪现旧数据
         zoneList.value = [];
-        run({ city_code: props.cityCode });
+        run({ region: props.region });
       }
     },
     { immediate: true },

@@ -65,7 +65,7 @@ export const getCloudZoneName = (zone?: string) => (zone ? cloudZoneNameMap[zone
  */
 export const getRegionDisplay = (region?: string) => {
   if (!region) {
-    return '-';
+    return '--';
   }
   if (region === 'default') {
     return t('随机');
