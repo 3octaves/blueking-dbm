@@ -206,7 +206,7 @@
                       ref="specSingleRef"
                       v-model="formData.details.resource_spec.single.spec_id"
                       :biz-id="formData.bk_biz_id"
-                      :city="formData.details.city_code"
+                      :city="formData.details.bk_cloud_region"
                       :cloud-id="formData.details.bk_cloud_id"
                       cluster-type="mysql"
                       :disaster-tolerance-level="formData.details.disaster_tolerance_level"
@@ -217,7 +217,7 @@
                     v-model:tag-list="formData.details.resource_spec.single.labels"
                     :biz-id="formData.bk_biz_id"
                     :params="{
-                      city: formData.details.city_name,
+                      bk_cloud_region: formData.details.bk_cloud_region,
                       bk_cloud_zone: formData.details.sub_zone_ids.join(',') || undefined,
                       for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                       resource_types: [DBTypes.MYSQL, 'PUBLIC'],
@@ -240,7 +240,7 @@
                         ref="specProxyRef"
                         v-model="formData.details.resource_spec.proxy.spec_id"
                         :biz-id="formData.bk_biz_id"
-                        :city="formData.details.city_code"
+                        :city="formData.details.bk_cloud_region"
                         :cloud-id="formData.details.bk_cloud_id"
                         cluster-type="mysql"
                         :disaster-tolerance-level="formData.details.disaster_tolerance_level"
@@ -251,7 +251,7 @@
                       v-model:tag-list="formData.details.resource_spec.proxy.labels"
                       :biz-id="formData.bk_biz_id"
                       :params="{
-                        city: formData.details.city_name,
+                        bk_cloud_region: formData.details.bk_cloud_region,
                         bk_cloud_zone: formData.details.sub_zone_ids.join(',') || undefined,
                         for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                         resource_types: [DBTypes.MYSQL, 'PUBLIC'],
@@ -284,7 +284,7 @@
                         ref="specBackendRef"
                         v-model="formData.details.resource_spec.backend.spec_id"
                         :biz-id="formData.bk_biz_id"
-                        :city="formData.details.city_code"
+                        :city="formData.details.bk_cloud_region"
                         :cloud-id="formData.details.bk_cloud_id"
                         cluster-type="mysql"
                         :disaster-tolerance-level="formData.details.disaster_tolerance_level"
@@ -295,7 +295,7 @@
                       v-model:tag-list="formData.details.resource_spec.backend.labels"
                       :biz-id="formData.bk_biz_id"
                       :params="{
-                        city: formData.details.city_name,
+                        bk_cloud_region: formData.details.bk_cloud_region,
                         bk_cloud_zone: formData.details.sub_zone_ids.join(',') || undefined,
                         for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                         resource_types: [DBTypes.MYSQL, 'PUBLIC'],
@@ -439,9 +439,8 @@
     details: {
       apply_clb: false,
       bk_cloud_id: 0,
+      bk_cloud_region: '',
       charset: '',
-      city_code: '',
-      city_name: '',
       cluster_count: 1,
       db_app_abbr: '',
       db_module_id: null as null | number,
@@ -513,7 +512,7 @@
     });
     Object.assign(formData.details, {
       bk_cloud_id: details.bk_cloud_id,
-      city_code: details.city_code,
+      bk_cloud_region: details.bk_cloud_region || 'default',
       cluster_count: details.domains.length,
       db_version: details.db_version,
       disaster_tolerance_level: details.disaster_tolerance_level,
@@ -524,8 +523,8 @@
 
     if (details.ip_source === 'resource_pool') {
       const { backend } = details.resource_spec!;
-      // 可用区改造后 sub_zone_ids 存可用区名称；历史单据为园区数字 id，回填时降级为随机
-      const subzoneIds = backend.location_spec.sub_zone_ids || [];
+      // 新协议读 bk_cloud_zone_list；存量单据（sub_zone_ids 园区数字 id）降级为随机
+      const subzoneIds = backend.location_spec.bk_cloud_zone_list || [];
       const labels = (backend.labels || []).map((labelItem, labelIndex) => ({
         id: Number(labelItem),
         value: backend.label_names[labelIndex],
@@ -576,7 +575,7 @@
     Object.assign(formData.details, {
       apply_clb: details.apply_clb,
       bk_cloud_id: details.bk_cloud_id,
-      city_code: details.city_code,
+      bk_cloud_region: details.bk_cloud_region || 'default',
       cluster_count: details.domains.length,
       db_version: details.db_version,
       disaster_tolerance_level: details.disaster_tolerance_level,
@@ -589,7 +588,8 @@
     if (details.ip_source === 'resource_pool') {
       const backendGroup = details.resource_spec.backend_group!;
       const proxy = details.resource_spec.proxy!;
-      const subzoneIds = backendGroup.location_spec.sub_zone_ids || [];
+      // 新协议读 bk_cloud_zone_list；存量单据（sub_zone_ids 园区数字 id）降级为随机
+      const subzoneIds = backendGroup.location_spec.bk_cloud_zone_list || [];
       const backendLabels = (backendGroup.labels || []).map((labelItem, labelIndex) => ({
         id: Number(labelItem),
         value: backendGroup.label_names[labelIndex],
@@ -764,7 +764,7 @@
    * 获取服务器规格列表
    */
   watch(
-    () => formData.details.city_code,
+    () => formData.details.bk_cloud_region,
     (value: string) => {
       if (value) {
         formData.details.spec = '';

@@ -36,7 +36,7 @@
         v-model:tag-list="modelValue.labels"
         :biz-id="bizId"
         :params="{
-          city: cityName,
+          bk_cloud_region: cityCode,
           subzone_ids: subzoneIds.join(','),
           for_bizs: bizId ? [bizId, 0] : [0],
           resource_types: [DBTypes.REDIS, 'PUBLIC'],
@@ -81,7 +81,6 @@
       v-model="modelValue"
       :biz-id="bizId"
       :city-code="cityCode"
-      :city-name="cityName"
       :cloud-id="cloudId"
       :cluster-type="clusterType"
       :disaster-tolerance-level="disasterToleranceLevel"
@@ -122,7 +121,6 @@
   interface Props {
     bizId: number | '';
     cityCode: string;
-    cityName: string;
     cloudId: number | string;
     clusterType: string;
     disasterToleranceLevel: string;

@@ -84,7 +84,7 @@
                   ref="mongoCofigSpecRef"
                   v-model="formData.details.resource_spec.mongo_config.spec_id"
                   :biz-id="formData.bk_biz_id"
-                  :city="formData.details.city_code"
+                  :city="formData.details.bk_cloud_region"
                   :cloud-id="formData.details.bk_cloud_id"
                   :cluster-type="DBTypes.MONGODB"
                   :disaster-tolerance-level="formData.details.disaster_tolerance_level"
@@ -95,7 +95,7 @@
                 v-model:tag-list="formData.details.resource_spec.mongo_config.labels"
                 :biz-id="formData.bk_biz_id"
                 :params="{
-                  city: formData.details.city_name,
+                  bk_cloud_region: formData.details.bk_cloud_region,
                   bk_cloud_zone: formData.details.sub_zone_ids.join(',') || undefined,
                   for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                   resource_types: [DBTypes.MONGODB, 'PUBLIC'],
@@ -127,7 +127,7 @@
                   ref="mongosSpecRef"
                   v-model="formData.details.resource_spec.mongos.spec_id"
                   :biz-id="formData.bk_biz_id"
-                  :city="formData.details.city_code"
+                  :city="formData.details.bk_cloud_region"
                   :cloud-id="formData.details.bk_cloud_id"
                   :cluster-type="DBTypes.MONGODB"
                   :disaster-tolerance-level="formData.details.disaster_tolerance_level"
@@ -138,7 +138,7 @@
                 v-model:tag-list="formData.details.resource_spec.mongos.labels"
                 :biz-id="formData.bk_biz_id"
                 :params="{
-                  city: formData.details.city_name,
+                  bk_cloud_region: formData.details.bk_cloud_region,
                   bk_cloud_zone: formData.details.sub_zone_ids.join(',') || undefined,
                   for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                   resource_types: [DBTypes.MONGODB, 'PUBLIC'],
@@ -167,8 +167,8 @@
               v-model:apply-schema="applySchema"
               v-model:spec-data="mongoConfigSpecData"
               :params="{
-                city_name: formData.details.city_name,
-                city_code: formData.details.city_code,
+                city_name: formData.details.bk_cloud_region,
+                city_code: formData.details.bk_cloud_region,
                 bk_biz_id: formData.bk_biz_id,
                 sub_zone_ids: formData.details.sub_zone_ids,
                 disaster_tolerance_level: formData.details.disaster_tolerance_level,
@@ -284,8 +284,7 @@
     },
     details: {
       bk_cloud_id: 0,
-      city_code: '',
-      city_name: '',
+      bk_cloud_region: '',
       cluster_alias: '',
       cluster_name: '',
       cluster_type: ClusterTypes.MONGO_SHARED_CLUSTER,
@@ -357,7 +356,7 @@
       });
       Object.assign(formData.details, {
         bk_cloud_id: details.bk_cloud_id,
-        city_code: details.city_code,
+        bk_cloud_region: details.bk_cloud_region || 'default',
         cluster_alias: details.cluster_alias,
         cluster_name: details.cluster_name,
         cluster_type: details.cluster_type,
@@ -386,7 +385,7 @@
             },
           });
         }, {});
-        const subzoneIds = details.resource_spec!.mongo_config.location_spec?.sub_zone_ids || [];
+        const subzoneIds = details.resource_spec!.mongo_config.location_spec?.bk_cloud_zone_list || [];
         Object.assign(formData.details, {
           resource_spec: resourceSpec,
           sub_zone_ids: subzoneIds,

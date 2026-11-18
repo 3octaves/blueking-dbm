@@ -73,7 +73,7 @@
                   ref="specProxyRef"
                   v-model="formData.details.resource_spec.spider.spec_id"
                   :biz-id="formData.bk_biz_id"
-                  :city="formData.details.city_code"
+                  :city="formData.details.bk_cloud_region"
                   :cloud-id="formData.details.bk_cloud_id"
                   cluster-type="tendbcluster"
                   :disaster-tolerance-level="formData.details.disaster_tolerance_level"
@@ -84,7 +84,7 @@
                 v-model:tag-list="formData.details.resource_spec.spider.labels"
                 :biz-id="formData.bk_biz_id"
                 :params="{
-                  city: formData.details.city_name,
+                  bk_cloud_region: formData.details.bk_cloud_region,
                   bk_cloud_zone: formData.details.sub_zone_ids.join(',') || undefined,
                   for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
                   resource_types: [DBTypes.TENDBCLUSTER, 'PUBLIC'],
@@ -125,8 +125,7 @@
               ref="specBackendRef"
               v-model="formData.details.resource_spec.backend_group"
               :biz-id="formData.bk_biz_id"
-              :city-code="formData.details.city_code"
-              :city-name="formData.details.city_name"
+              :city-code="formData.details.bk_cloud_region"
               :cloud-id="formData.details.bk_cloud_id"
               db-type="tendbcluster"
               :disaster-tolerance-level="formData.details.disaster_tolerance_level"
@@ -233,8 +232,7 @@
     details: {
       apply_clb: false,
       bk_cloud_id: 0,
-      city_code: '',
-      city_name: '',
+      bk_cloud_region: '',
       cluster_alias: '',
       cluster_name: '',
       cluster_shard_num: 0,
@@ -253,8 +251,8 @@
             value: string;
           }[],
           location_spec: {
-            city: '',
-            sub_zone_ids: [],
+            bk_cloud_region: '',
+            bk_cloud_zone_list: [] as string[],
           },
           spec_id: '' as number | '',
         },
@@ -298,7 +296,7 @@
       Object.assign(formData.details, {
         apply_clb: details.apply_clb,
         bk_cloud_id: details.bk_cloud_id,
-        city_code: details.city_code,
+        bk_cloud_region: details.bk_cloud_region || 'default',
         cluster_alias: details.cluster_alias,
         cluster_name: details.cluster_name,
         cluster_shard_num: details.cluster_shard_num,
@@ -333,7 +331,7 @@
             spec_id: spider.spec_id,
           },
         };
-        const subzoneIds = details.resource_spec!.backend_group.location_spec.sub_zone_ids || [];
+        const subzoneIds = details.resource_spec!.backend_group.location_spec.bk_cloud_zone_list || [];
         Object.assign(formData.details, {
           resource_spec: resourceSpec,
           sub_zone_ids: subzoneIds,

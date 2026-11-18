@@ -34,7 +34,7 @@
         v-model:tag-list="modelValue.labels"
         :biz-id="params.bk_biz_id"
         :params="{
-          city: params.city_name,
+          bk_cloud_region: params.city_name,
           bk_cloud_zone: params.sub_zone_ids.join(',') || undefined,
           for_bizs: params.bk_biz_id ? [params.bk_biz_id, 0] : [0],
           resource_types: [DBTypes.MONGODB, 'PUBLIC'],
@@ -181,7 +181,7 @@
         v-model:tag-list="modelValue.labels"
         :biz-id="params.bk_biz_id"
         :params="{
-          city: params.city_name,
+          bk_cloud_region: params.city_name,
           subzone_ids: params.sub_zone_ids.join(','),
           for_bizs: params.bk_biz_id ? [params.bk_biz_id, 0] : [0],
           resource_types: [DBTypes.MONGODB, 'PUBLIC'],

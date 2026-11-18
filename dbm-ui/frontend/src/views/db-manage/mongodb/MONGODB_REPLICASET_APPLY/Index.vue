@@ -122,7 +122,7 @@
               ref="specRef"
               v-model="formData.details.resource_spec.mongo_machine_set.spec_id"
               :biz-id="formData.bk_biz_id"
-              :city="formData.details.city_code"
+              :city="formData.details.bk_cloud_region"
               :cloud-id="formData.details.bk_cloud_id"
               :cluster-type="DBTypes.MONGODB"
               :disaster-tolerance-level="formData.details.disaster_tolerance_level"
@@ -153,7 +153,7 @@
             v-model:tag-list="formData.details.resource_spec.mongo_machine_set.labels"
             :biz-id="formData.bk_biz_id"
             :params="{
-              city: formData.details.city_name,
+              bk_cloud_region: formData.details.bk_cloud_region,
               bk_cloud_zone: formData.details.sub_zone_ids.join(',') || undefined,
               for_bizs: formData.bk_biz_id ? [formData.bk_biz_id, 0] : [0],
               resource_types: [DBTypes.MONGODB, 'PUBLIC'],
@@ -264,8 +264,7 @@
     },
     details: {
       bk_cloud_id: 0,
-      city_code: '',
-      city_name: '',
+      bk_cloud_region: '',
       cluster_type: ClusterTypes.MONGO_REPLICA_SET,
       db_app_abbr: '',
       db_version: '',
@@ -322,7 +321,7 @@
       });
       Object.assign(formData.details, {
         bk_cloud_id: details.bk_cloud_id,
-        city_code: details.city_code,
+        bk_cloud_region: details.bk_cloud_region || 'default',
         cluster_type: details.cluster_type,
         db_version: details.db_version,
         disaster_tolerance_level: details.disaster_tolerance_level,
@@ -349,7 +348,7 @@
             spec_id: mongoMachineSet.spec_id,
           },
         };
-        const subzoneIds = mongoMachineSet.location_spec?.sub_zone_ids || [];
+        const subzoneIds = mongoMachineSet.location_spec?.bk_cloud_zone_list || [];
         Object.assign(formData.details, {
           resource_spec: resourceSpec,
           sub_zone_ids: subzoneIds,

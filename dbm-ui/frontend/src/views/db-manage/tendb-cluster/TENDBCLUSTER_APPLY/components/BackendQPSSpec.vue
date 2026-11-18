@@ -74,7 +74,7 @@
         v-model:tag-list="modelValue.labels"
         :biz-id="bizId"
         :params="{
-          city: cityName,
+          bk_cloud_region: cityCode,
           subzone_ids: subzoneIds.join(','),
           for_bizs: bizId ? [bizId, 0] : [0],
           resource_types: [DBTypes.TENDBCLUSTER, 'PUBLIC'],
@@ -133,7 +133,7 @@
         v-model:tag-list="modelValue.labels"
         :biz-id="bizId"
         :params="{
-          city: cityName,
+          bk_cloud_region: cityCode,
           subzone_ids: subzoneIds.join(','),
           for_bizs: bizId ? [bizId, 0] : [0],
           resource_types: [DBTypes.TENDBCLUSTER, 'PUBLIC'],
@@ -227,7 +227,6 @@
   interface Props {
     bizId: number | '';
     cityCode: string;
-    cityName: string;
     cloudId: number | string;
     dbType: string;
     disasterToleranceLevel: string;
